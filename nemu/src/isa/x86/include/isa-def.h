@@ -17,6 +17,7 @@
 #define __ISA_X86_H__
 
 #include <common.h>
+#include <stdint.h>
 
 /* TODO: Re-organize the `CPU_state' structure to match the register
  * encoding scheme in i386 instruction format. For example, if we
@@ -25,12 +26,14 @@
  * For more details about the register encoding scheme, see i386 manual.
  */
 
+union GPR {
+  uint32_t _32;
+  uint16_t _16;
+  uint8_t _8[2];
+};
+
 typedef struct {
-  struct {
-    uint32_t _32;
-    uint16_t _16;
-    uint8_t _8[2];
-  } gpr[8];  // general purpose register(通用寄存器)
+  union GPR gpr[8];  // general purpose register(通用寄存器)
 
   /* Do NOT change the order of the GPRs' definitions. */
   uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
