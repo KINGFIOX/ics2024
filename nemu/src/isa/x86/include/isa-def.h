@@ -32,7 +32,7 @@ union GPR {
   uint8_t _8[2];
 };
 
-typedef struct {
+typedef union {
   union GPR gpr[8];  // general purpose register(通用寄存器)
 
   /* Do NOT change the order of the GPRs' definitions. */
