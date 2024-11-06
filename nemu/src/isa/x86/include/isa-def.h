@@ -35,10 +35,10 @@ typedef union {
 
   /* Do NOT change the order of the GPRs' definitions. */
   struct {
-    uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi, pc;
+    uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
+    vaddr_t pc;
   };
 
-  // vaddr_t pc;
 } x86_CPU_state;
 
 // decode
