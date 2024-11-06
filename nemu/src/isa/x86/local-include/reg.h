@@ -1,17 +1,17 @@
 /***************************************************************************************
-* Copyright (c) 2014-2024 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
+ * Copyright (c) 2014-2024 Zihao Yu, Nanjing University
+ *
+ * NEMU is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ *
+ * See the Mulan PSL v2 for more details.
+ ***************************************************************************************/
 
 #ifndef __X86_REG_H__
 #define __X86_REG_H__
@@ -36,15 +36,19 @@ static inline const char* reg_name(int index, int width) {
   IFDEF(CONFIG_RT_CHECK, assert(index >= 0 && index < 8));
 
   switch (width) {
-    case 4: return regsl[index];
-    case 1: return regsb[index];
-    case 2: return regsw[index];
-    default: assert(0);
+    case 4:
+      return regsl[index];
+    case 1:
+      return regsb[index];
+    case 2:
+      return regsw[index];
+    default:
+      assert(0);
   }
 }
 
 static inline const char* sreg_name(int index) {
-  const char *name[] = { "es", "cs", "ss", "ds", "fs", "gs" };
+  const char* name[] = {"es", "cs", "ss", "ds", "fs", "gs"};
   IFDEF(CONFIG_RT_CHECK, assert(index >= 0 && index < ARRLEN(name)));
   return name[index];
 }
