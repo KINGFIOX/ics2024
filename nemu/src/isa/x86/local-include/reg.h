@@ -25,30 +25,34 @@ static inline int check_reg_index(int index) {
   return index;
 }
 
-#define reg_l(index) (cpu.gpr[check_reg_index(index)]._32)
-#define reg_w(index) (cpu.gpr[check_reg_index(index)]._16)
-#define reg_b(index) (cpu.gpr[check_reg_index(index) & 0x3]._8[index >> 2])
+#define reg_l(index) (cpu.gpr[check_reg_index(index)]._32)                   // long
+#define reg_w(index) (cpu.gpr[check_reg_index(index)]._16)                   // word
+#define reg_b(index) (cpu.gpr[check_reg_index(index) & 0x3]._8[index >> 2])  // byte
 
 static inline const char* reg_name(int index, int width) {
-  extern const char* regsl[];
-  extern const char* regsw[];
-  extern const char* regsb[];
+  // extern const char* regsl[];
+  // extern const char* regsw[];
+  // extern const char* regsb[];
+  static const char* regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
+  static const char* regsw[] = {"ax", "cx", "dx", "bx", "sp", "bp", "si", "di"};
+  static const char* regsb[] = {"al", "cl", "dl", "bl", "ah", "ch", "dh", "bh"};
   IFDEF(CONFIG_RT_CHECK, assert(index >= 0 && index < 8));
 
   switch (width) {
     case 4:
       return regsl[index];
-    case 1:
-      return regsb[index];
     case 2:
       return regsw[index];
+    case 1:
+      return regsb[index];
     default:
       assert(0);
   }
 }
 
+/// @brief segment register
 static inline const char* sreg_name(int index) {
-  const char* name[] = {"es", "cs", "ss", "ds", "fs", "gs"};
+  static const char* name[] = {"es", "cs", "ss", "ds", "fs", "gs"};
   IFDEF(CONFIG_RT_CHECK, assert(index >= 0 && index < ARRLEN(name)));
   return name[index];
 }
