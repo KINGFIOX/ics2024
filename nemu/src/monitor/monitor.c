@@ -74,8 +74,9 @@ static int parse_args(int argc, char *argv[]) {
       {"port", required_argument, NULL, 'p'}, {"help", no_argument, NULL, 'h'},      {0, 0, NULL, 0},
   };
 
-  // l: 表示: required_argument, 上面
-
+  // shortopts:
+  // l:/d:/p: 表示: required_argument
+  // - 表示: 允许使用长选项
   int o;
   while ((o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
     switch (o) {
