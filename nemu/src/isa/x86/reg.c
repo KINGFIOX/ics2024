@@ -18,6 +18,7 @@
 #include <isa.h>
 
 void reg_test() {
+  // emulate stat before reset
   word_t sample[8];
   word_t pc_sample = rand();
   cpu.pc = pc_sample;
