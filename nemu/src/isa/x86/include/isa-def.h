@@ -26,12 +26,15 @@
  * For more details about the register encoding scheme, see i386 manual.
  */
 
+// 这是一个 union 数组
+// 然后这个结构体刚好与 union 的定义一一对应, 当然 pc 是多出来的
+
 typedef union {
   union GPR {
     uint32_t _32;
     uint16_t _16;
     uint8_t _8[2];
-  } gpr[8];  // general purpose register(通用寄存器)
+  } gpr[8];  // general purpose register
 
   /* Do NOT change the order of the GPRs' definitions. */
   struct {
