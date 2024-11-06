@@ -43,7 +43,7 @@ static char *rl_gets() {
   return line_read;
 }
 
-static int cmd_c(char *args) {
+static int cmd_c(char *_) {
   cpu_exec(-1);
   return 0;
 }
