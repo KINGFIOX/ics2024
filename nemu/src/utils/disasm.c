@@ -52,8 +52,7 @@ void init_disasm() {
   assert(ret == CS_ERR_OK);
 
 #ifdef CONFIG_ISA_x86
-  cs_err (*cs_option_dl)(csh handle, cs_opt_type type, size_t value) = NULL;
-  cs_option_dl = dlsym(dl_handle, "cs_option");
+  cs_err (*cs_option_dl)(csh handle, cs_opt_type type, size_t value) = dlsym(dl_handle, "cs_option");
   assert(cs_option_dl);
 
   ret = cs_option_dl(handle, CS_OPT_SYNTAX, CS_OPT_SYNTAX_ATT);
