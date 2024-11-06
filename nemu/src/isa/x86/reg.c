@@ -16,6 +16,7 @@
 #include "local-include/reg.h"
 
 #include <isa.h>
+#include <stdio.h>
 
 void reg_test() {
   // emulate stat before reset
@@ -40,6 +41,7 @@ void reg_test() {
   assert(reg_b(R_DH) == ((sample[R_EDX] >> 8) & 0xff));
 
   assert(sample[R_EAX] == cpu.eax);
+  printf("sample[R_ECX] = %d, cpu.ecx = %d\n", sample[R_ECX], cpu.ecx);
   assert(sample[R_ECX] == cpu.ecx);
   assert(sample[R_EDX] == cpu.edx);
   assert(sample[R_EBX] == cpu.ebx);
