@@ -84,6 +84,8 @@ static struct {
     {"d", "delete watchpoint", cmd_d},
 };
 
+#define NR_CMD ARRLEN(cmd_table)
+
 static int cmd_si(char *arg) {
   // TODO:
   return 0;
@@ -122,14 +124,29 @@ static int cmd_x(char *args) {
 // - r : registers
 // - w : watchpoints
 static int cmd_info(char *_) {
-  char *arg = NULL;
-  while ((arg = strtok(NULL, " ")) != NULL) {
-    printf("arg: %s\n", arg);
+  char *arg = strtok(NULL, " ");
+  if (arg == NULL) {
+    for (int i = 0; i < NR_CMD; i++) {
+      if (0 == strcmp("info", cmd_table[i].name)) {
+        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+        return 0;
+      }
+    }
+  } else if (0 == strcmp(arg, "r")) {
+    // TODO:
+    isa_reg_display();
+  } else if (0 == strcmp(arg, "w")) {
+    // TODO:
+  } else {
+    for (int i = 0; i < NR_CMD; i++) {
+      if (0 == strcmp(arg, cmd_table[i].name)) {
+        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+        return 0;
+      }
+    }
   }
   return 0;
 }
-
-#define NR_CMD ARRLEN(cmd_table)
 
 static int cmd_help(char *_) {
   /* extract the first argument */
