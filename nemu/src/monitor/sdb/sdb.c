@@ -122,12 +122,10 @@ static int cmd_x(char *args) {
 // - r : registers
 // - w : watchpoints
 static int cmd_info(char *args) {
-  char *arg = args;
   int argc = 0;
-  arg = strtok(arg, " ");
+  char *arg = strtok(args, " ");
   while (arg != NULL) {
     argc++;
-    printf("arg: %s\n", arg);
     arg = strtok(NULL, " ");
   }
   if (argc != 1) {
@@ -140,17 +138,15 @@ static int cmd_info(char *args) {
 
 static int cmd_help(char *args) {
   /* extract the first argument */
-  char *arg = strtok(NULL, " ");
-  printf("arg: %s\n", arg);
-  int i;
+  char *arg = strtok(args, " ");
 
   if (arg == NULL) {
     /* no argument given */
-    for (i = 0; i < NR_CMD; i++) {
+    for (int i = 0; i < NR_CMD; i++) {
       printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
     }
   } else {
-    for (i = 0; i < NR_CMD; i++) {
+    for (int i = 0; i < NR_CMD; i++) {
       if (strcmp(arg, cmd_table[i].name) == 0) {
         printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
         return 0;
