@@ -121,31 +121,26 @@ static int cmd_x(char *args) {
 // info [r|w]
 // - r : registers
 // - w : watchpoints
-static int cmd_info(char *args) {
-  int argc = 0;
-  char *arg = strtok(args, " ");
-  while (arg != NULL) {
-    argc++;
-    arg = strtok(NULL, " ");
-  }
-  if (argc != 1) {
-    printf("Unknown command '%s'\n", args);
+static int cmd_info(char *_) {
+  char *arg = NULL;
+  while ((arg = strtok(NULL, " ")) != NULL) {
+    printf("arg: %s\n", arg);
   }
   return 0;
 }
 
 #define NR_CMD ARRLEN(cmd_table)
 
-static int cmd_help(char *args) {
+static int cmd_help(char *_) {
   /* extract the first argument */
-  char *arg = strtok(args, " ");
+  char *arg = strtok(NULL, " ");
 
-  if (arg == NULL) {
+  if (arg == NULL) {  // 打印所有的命令
     /* no argument given */
     for (int i = 0; i < NR_CMD; i++) {
       printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
     }
-  } else {
+  } else {  // 打印指定命令的信息
     for (int i = 0; i < NR_CMD; i++) {
       if (strcmp(arg, cmd_table[i].name) == 0) {
         printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
