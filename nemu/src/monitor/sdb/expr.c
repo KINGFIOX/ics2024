@@ -23,6 +23,7 @@
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
   TK_EQ,
+  TK_NUM,
 
   /* TODO: Add more token types */
 
@@ -39,14 +40,15 @@ static struct rule {
      * Pay attention to the precedence level of different rules.
      */
 
-    {" +", TK_NOTYPE},  // spaces
-    {"\\+", '+'},       // plus
-    {"==", TK_EQ},      // equal
-    {"-", '-'},         // minus
-    {"\\*", '*'},       // multiply
-    {"/", '/'},         // divide
-    {"\\(", '('},       // left parenthesis
-    {"\\)", ')'},       // right parenthesis
+    {" +", TK_NOTYPE},   // spaces
+    {"\\+", '+'},        // plus
+    {"==", TK_EQ},       // equal
+    {"-", '-'},          // minus
+    {"\\*", '*'},        // multiply
+    {"/", '/'},          // divide
+    {"\\(", '('},        // left parenthesis
+    {"\\)", ')'},        // right parenthesis
+    {"[0-9]+", TK_NUM},  // number
 
 };
 

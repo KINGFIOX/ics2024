@@ -109,7 +109,6 @@ static int cmd_w(char *args) {
 // example: p $eax + 1
 static int cmd_p(char *args) {
   bool success;
-  printf("args: %s\n", args);
   word_t result = expr(args, &success);
   if (!success) {
     printf("Invalid expression\n");
