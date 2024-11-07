@@ -19,6 +19,7 @@
 #include <isa.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <stdio.h>
 
 static int is_batch_mode = false;
 
@@ -29,12 +30,13 @@ void init_wp_pool();
 static char *rl_gets() {
   static char *line_read = NULL;
 
-  if (line_read) {
+  if (line_read) {  // 在读取新行之前释放旧行
     free(line_read);
     line_read = NULL;
   }
 
-  line_read = readline("(nemu) ");
+  line_read = readline("(nemu) " /*prompt*/);
+  printf("%s\n", line_read);
 
   if (line_read && *line_read) {
     add_history(line_read);  // add line_read to history
