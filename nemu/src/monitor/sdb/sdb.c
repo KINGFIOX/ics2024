@@ -122,10 +122,11 @@ static int cmd_x(char *args) {
 // - r : registers
 // - w : watchpoints
 static int cmd_info(char *args) {
-  printf("info %s\n", args);
   char *arg = args;
-  while ((arg = strtok(arg, " ")) != NULL) {
+  arg = strtok(arg, " ");
+  while (arg != NULL) {
     printf("arg: %s\n", arg);
+    arg = strtok(NULL, " ");
   }
   return 0;
 }
