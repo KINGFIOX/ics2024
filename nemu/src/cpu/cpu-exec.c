@@ -26,8 +26,8 @@
 #define MAX_INST_TO_PRINT 10
 
 CPU_state cpu = {};
-uint64_t g_nr_guest_inst = 0;
-static uint64_t g_timer = 0;  // unit: us
+uint64_t g_nr_guest_inst = 0;  // global variable, number of guest instructions executed
+static uint64_t g_timer = 0;   // unit: us
 static bool g_print_step = false;
 
 void device_update();
@@ -49,17 +49,14 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
+
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst;
-#ifdef CONFIG_ISA_x86
   for (i = 0; i < ilen; i++) {
-#else
-  for (i = ilen - 1; i >= 0; i--) {
-#endif
     p += snprintf(p, 4, " %02x", inst[i]);
   }
   int ilen_max = MUXDEF(CONFIG_ISA_x86, 8, 4);
@@ -116,7 +113,7 @@ void cpu_exec(uint64_t n) {
 
   uint64_t timer_start = get_time();
 
-  execute(n);
+  execute(n);  // n is the number of instructions(cycles) to execute
 
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
