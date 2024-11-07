@@ -36,7 +36,7 @@ static char *rl_gets() {
   }
 
   line_read = readline("(nemu) " /*prompt*/);
-  // printf("%s\n", line_read);  // 如果前面有很多空格, 并不会被清除
+  // readline 很智能, 如果是空行, 那么就会再次打印
 
   if (line_read && *line_read) {
     // it will help the user conveniently use the ↑ and ↓ to recall the previous command
