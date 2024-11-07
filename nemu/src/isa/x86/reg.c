@@ -41,7 +41,6 @@ void reg_test() {
   assert(reg_b(R_DH) == ((sample[R_EDX] >> 8) & 0xff));
 
   assert(sample[R_EAX] == cpu.eax);
-  printf("sample[R_ECX] = %x, cpu.ecx = %x\n", sample[R_ECX], cpu.ecx);
   assert(sample[R_ECX] == cpu.ecx);
   assert(sample[R_EDX] == cpu.edx);
   assert(sample[R_EBX] == cpu.ebx);
@@ -54,8 +53,9 @@ void reg_test() {
 }
 
 void isa_reg_display() {
-  // TODO:
-  assert(0);
+  for (int i = R_EAX; i <= R_EDI; i++) {
+    printf("%s = %x\n", reg_name(i, 4), reg_l(i));
+  }
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) { return 0; }
