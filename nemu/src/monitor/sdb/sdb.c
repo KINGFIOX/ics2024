@@ -21,6 +21,7 @@
 #include <readline/keymaps.h>
 #include <readline/readline.h>
 #include <stdio.h>
+#include <string.h>
 
 static int is_batch_mode = false;
 
@@ -122,7 +123,10 @@ static int cmd_x(char *args) {
 // - w : watchpoints
 static int cmd_info(char *args) {
   printf("info %s\n", args);
-  // TODO:
+  char *arg = args;
+  while ((arg = strtok(arg, " ")) != NULL) {
+    printf("arg: %s\n", arg);
+  }
   return 0;
 }
 
