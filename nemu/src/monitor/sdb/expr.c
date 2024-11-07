@@ -150,6 +150,9 @@ static bool check_parentheses_sanity(void) {
       parentheses_count++;
     } else if (tokens[i].type == ')') {
       parentheses_count--;
+      if (parentheses_count < 0) {
+        return false;
+      }
     }
   }
   return parentheses_count == 0;
