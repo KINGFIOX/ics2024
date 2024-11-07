@@ -121,6 +121,7 @@ static int cmd_x(char *args) {
 // - r : registers
 // - w : watchpoints
 static int cmd_info(char *args) {
+  printf("info %s\n", args);
   // TODO:
   return 0;
 }
