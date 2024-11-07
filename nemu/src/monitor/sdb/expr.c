@@ -142,8 +142,25 @@ static bool make_token(char *e) {
   return true;
 }
 
+static bool check_parentheses_sanity(void) {
+  int parentheses_count = 0;
+  for (int i = 0; i < nr_token; i++) {
+    if (tokens[i].type == '(') {
+      parentheses_count++;
+    } else if (tokens[i].type == ')') {
+      parentheses_count--;
+    }
+  }
+  return parentheses_count == 0;
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+
+  if (!check_parentheses_sanity()) {
     *success = false;
     return 0;
   }
