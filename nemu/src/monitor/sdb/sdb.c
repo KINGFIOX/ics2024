@@ -110,6 +110,7 @@ static int cmd_w(char *args) {
 static int cmd_p(char *args) {
   bool success;
   char *e = strtok(NULL, " ");
+  printf("args: %s\n", args);
   printf("expr: %s\n", e);
   word_t result = expr(e, &success);
   if (!success) {
