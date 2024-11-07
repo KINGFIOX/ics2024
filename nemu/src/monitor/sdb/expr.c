@@ -21,6 +21,8 @@
 #include <regex.h>
 #include <stdio.h>
 
+#include <cassert>
+
 #include "debug.h"
 
 enum {
@@ -144,6 +146,9 @@ static bool make_token(char *e) {
 }
 
 static bool check_parentheses_sanity(void) {
+  // TODO: the message of parentheses
+  // position of parentheses is not matched
+
   int parentheses_count = 0;
   for (int i = 0; i < nr_token; i++) {
     if (tokens[i].type == '(') {
@@ -158,6 +163,21 @@ static bool check_parentheses_sanity(void) {
   return parentheses_count == 0;
 }
 
+static bool check_parentheses(int p, int q) {
+  Assert((p < q) && (p >= 0) && (q <= nr_token - 1), "parentheses position is invalid: p=%d q=%d, nr_token=%d", p, q, nr_token);
+  return tokens[p].type == '(' && tokens[q].type == ')';
+}
+
+static word_t eval(int p, int q) {
+  if (p > q) {
+    // TODO: empty
+    return 0;
+  } else if (check_parentheses(p, q)) {
+    return eval(p + 1, q - 1);
+  } else {
+  }
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
@@ -169,8 +189,5 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+  return eval(0, nr_token - 1);
 }

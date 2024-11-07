@@ -57,7 +57,7 @@ static int cmd_c(char *_) {
 
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
-  return 0;
+  return -1;
 }
 
 static int cmd_help(char *_);
@@ -68,6 +68,7 @@ static int cmd_w(char *args);   // set watchpoint
 static int cmd_d(char *args);   // delete watchpoint
 static int cmd_si(char *args);  // single step
 
+// handler return -1 means: exit the main loop
 static struct {
   const char *name;
   const char *description;
@@ -141,7 +142,6 @@ static int cmd_info(char *_) {
   } else if (0 == strcmp(arg, "r")) {
     isa_reg_display();
   } else if (0 == strcmp(arg, "w")) {
-    // TODO:
     watchpoint_display();
   } else {
     for (int i = 0; i < NR_CMD; i++) {
