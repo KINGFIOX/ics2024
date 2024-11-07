@@ -37,7 +37,7 @@ static char *rl_gets() {
 
   line_read = readline("(nemu) " /*prompt*/);
   // readline 可以识别 tab, ↑, ↓, ←, →, 回车. 不像 xv6 需要自己实现
-  // readline 并不会清除前面的空格
+  // readline 并不会清除前面的空格, 因此要有 strtok(str, " ")
   // 这里即使输入了空行, line_read 也不会为 NULL
 
   if (line_read && *line_read) {
