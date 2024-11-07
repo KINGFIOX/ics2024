@@ -150,7 +150,7 @@ static bool check_parentheses_sanity(void) {
       parentheses_count++;
     } else if (tokens[i].type == ')') {
       parentheses_count--;
-      if (parentheses_count < 0) {
+      if (parentheses_count < 0) {  // (4 + 3)) * ((2 - 1)
         return false;
       }
     }
@@ -166,10 +166,7 @@ word_t expr(char *e, bool *success) {
 
   if (!check_parentheses_sanity()) {
     *success = false;
-    printf("parentheses sanity check failed\n");
     return 0;
-  } else {
-    printf("parentheses sanity check passed\n");
   }
 
   /* TODO: Insert codes to evaluate the expression. */
