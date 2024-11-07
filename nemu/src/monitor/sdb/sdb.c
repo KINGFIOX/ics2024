@@ -36,7 +36,7 @@ static char *rl_gets() {
   }
 
   line_read = readline("(nemu) " /*prompt*/);
-  printf("%s\n", line_read);
+  // printf("%s\n", line_read);  // 如果前面有很多空格, 并不会被清除
 
   if (line_read && *line_read) {
     add_history(line_read);  // add line_read to history
