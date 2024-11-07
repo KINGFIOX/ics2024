@@ -20,6 +20,8 @@
  */
 #include <regex.h>
 
+#include "debug.h"
+
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
   TK_EQ,
@@ -78,7 +80,7 @@ typedef struct token {
 } Token;
 
 static Token tokens[32] __attribute__((used)) = {};
-static int nr_token __attribute__((used)) = 0;  // number token
+static int nr_token __attribute__((used)) = 0;  // number of token
 
 static bool make_token(char *e) {
   int position = 0;
@@ -104,6 +106,25 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
+          case TK_NUM:
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].type = TK_NUM;
+            nr_token++;
+            break;
+          case '+':
+          case '-':
+          case '*':
+          case '/':
+          case '(':
+          case ')':
+            tokens[nr_token].type = rules[i].token_type;
+            nr_token++;
+            break;
+          case TK_EQ:
+            TODO();
+          case TK_NOTYPE:
+            // do nothing
+            break;
           default:
             TODO();
         }
