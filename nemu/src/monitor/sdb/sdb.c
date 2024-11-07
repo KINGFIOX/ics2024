@@ -39,6 +39,7 @@ static char *rl_gets() {
   // printf("%s\n", line_read);  // 如果前面有很多空格, 并不会被清除
 
   if (line_read && *line_read) {
+    // it will help the user conveniently use the ↑ and ↓ to recall the previous command
     add_history(line_read);  // add line_read to history
   }
 
