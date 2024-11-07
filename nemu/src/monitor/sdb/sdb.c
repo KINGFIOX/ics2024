@@ -152,7 +152,7 @@ static int cmd_help(char *args) {
         return 0;
       }
     }
-    printf("Unknown command '%s'\n", args);
+    printf("Unknown command '%s'\n", arg);
   }
   return 0;
 }
