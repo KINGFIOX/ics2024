@@ -133,10 +133,10 @@ static int cmd_info(char *_) {
       }
     }
   } else if (0 == strcmp(arg, "r")) {
-    // TODO:
     isa_reg_display();
   } else if (0 == strcmp(arg, "w")) {
     // TODO:
+    watchpoint_display();
   } else {
     for (int i = 0; i < NR_CMD; i++) {
       if (0 == strcmp(arg, cmd_table[i].name)) {
