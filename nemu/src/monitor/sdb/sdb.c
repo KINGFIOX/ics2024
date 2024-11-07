@@ -36,7 +36,9 @@ static char *rl_gets() {
   }
 
   line_read = readline("(nemu) " /*prompt*/);
-  // readline 很智能, 如果是空行, 那么就会再次打印
+  // readline 可以识别 tab, ↑, ↓, ←, →, 回车. 不像 xv6 需要自己实现
+  // readline 并不会清除前面的空格
+  // 这里即使输入了空行, line_read 也不会为 NULL
 
   if (line_read && *line_read) {
     // it will help the user conveniently use the ↑ and ↓ to recall the previous command
