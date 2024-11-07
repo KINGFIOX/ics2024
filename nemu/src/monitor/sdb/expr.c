@@ -19,6 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <stdio.h>
 
 #include "debug.h"
 
@@ -162,7 +163,10 @@ word_t expr(char *e, bool *success) {
 
   if (!check_parentheses_sanity()) {
     *success = false;
+    printf("parentheses sanity check failed\n");
     return 0;
+  } else {
+    printf("parentheses sanity check passed\n");
   }
 
   /* TODO: Insert codes to evaluate the expression. */
