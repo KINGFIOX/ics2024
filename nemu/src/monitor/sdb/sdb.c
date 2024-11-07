@@ -126,7 +126,7 @@ static int cmd_info(char *args) {
   arg = strtok(arg, " ");
   while (arg != NULL) {
     printf("arg: %s\n", arg);
-    arg = strtok(arg, " ");
+    arg = strtok(NULL, " ");
   }
   return 0;
 }
