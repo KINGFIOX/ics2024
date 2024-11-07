@@ -18,6 +18,7 @@
 #include <cpu/cpu.h>
 #include <isa.h>
 #include <readline/history.h>
+#include <readline/keymaps.h>
 #include <readline/readline.h>
 #include <stdio.h>
 
@@ -59,17 +60,70 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+static int cmd_info(char *args);
+static int cmd_x(char *args);
+static int cmd_p(char *args);   // expression evaluation
+static int cmd_w(char *args);   // set watchpoint
+static int cmd_d(char *args);   // delete watchpoint
+static int cmd_si(char *args);  // single step
 
 static struct {
   const char *name;
   const char *description;
   int (*handler)(char *);
 } cmd_table[] = {
-    {"help", "Display information about all supported commands", cmd_help}, {"c", "Continue the execution of the program", cmd_c}, {"q", "Exit NEMU", cmd_q},
-
-    /* TODO: Add more commands */
-
+    {"help", "Display information about all supported commands", cmd_help},
+    {"c", "Continue the execution of the program", cmd_c},
+    {"q", "Exit NEMU", cmd_q},
+    {"si", "single step", cmd_si},
+    {"info", "show information about registers, watchpoints, etc.", cmd_info},
+    {"x", "show the content of the memory", cmd_x},
+    {"p", "evaluate the expression", cmd_p},
+    {"w", "set watchpoint", cmd_w},
+    {"d", "delete watchpoint", cmd_d},
 };
+
+static int cmd_si(char *arg) {
+  // TODO:
+  return 0;
+}
+
+// d WP_ID
+// example: d 2
+static int cmd_d(char *args) {
+  // TODO:
+  return 0;
+}
+
+// w EXPR
+// example: w *0x2000
+static int cmd_w(char *args) {
+  // TODO:
+  return 0;
+}
+
+// p EXPR
+// example: p $eax + 1
+static int cmd_p(char *args) {
+  // TODO:
+  return 0;
+}
+
+// x N EXPR
+// example: x 10 $esp
+// 以十六进制输出连续的 N 个 4 字节
+static int cmd_x(char *args) {
+  // TODO:
+  return 0;
+}
+
+// info [r|w]
+// - r : registers
+// - w : watchpoints
+static int cmd_info(char *args) {
+  // TODO:
+  return 0;
+}
 
 #define NR_CMD ARRLEN(cmd_table)
 
@@ -109,13 +163,14 @@ void sdb_mainloop() {
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
     if (cmd == NULL) {
-      continue;
+      continue;  // 空行, 或者一行全是 space
     }
 
     /* treat the remaining string as the arguments,
      * which may need further parsing
      */
-    char *args = cmd + strlen(cmd) + 1;
+    // <cmd> <arg1> <arg2> ..., 这里 args 指向 <arg1>
+    char *args = cmd + strlen(cmd) /*skip <cmd>*/ + 1 /*skip space before <arg1>*/;
     if (args >= str_end) {
       args = NULL;
     }
