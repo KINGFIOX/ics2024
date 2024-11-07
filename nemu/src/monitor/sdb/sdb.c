@@ -60,7 +60,7 @@ static int cmd_q(char *args) {
   return -1;
 }
 
-static int cmd_help(char *args);
+static int cmd_help(char *_);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
 static int cmd_p(char *args);   // expression evaluation
@@ -123,10 +123,15 @@ static int cmd_x(char *args) {
 // - w : watchpoints
 static int cmd_info(char *args) {
   char *arg = args;
+  int argc = 0;
   arg = strtok(arg, " ");
   while (arg != NULL) {
+    argc++;
     printf("arg: %s\n", arg);
     arg = strtok(NULL, " ");
+  }
+  if (argc != 1) {
+    printf("Unknown command '%s'\n", args);
   }
   return 0;
 }
@@ -136,6 +141,7 @@ static int cmd_info(char *args) {
 static int cmd_help(char *args) {
   /* extract the first argument */
   char *arg = strtok(NULL, " ");
+  printf("arg: %s\n", arg);
   int i;
 
   if (arg == NULL) {
