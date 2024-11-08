@@ -48,6 +48,8 @@ static struct rule {
      * Pay attention to the precedence level of different rules.
      */
 
+    {"\\*0x[0-9a-fA-F]+", TK_MEM},  // highest precedence
+
     {" +", TK_NOTYPE},  // spaces
 
     {"\\+", '+'},  // plus
@@ -70,8 +72,6 @@ static struct rule {
 
     {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh",
      TK_REG},  // register
-
-    {"\\*0x[0-9a-fA-F]+", TK_MEM},
 
 };
 
@@ -172,13 +172,13 @@ static bool make_value(void) {
   nr_token = __nr_token;
   for (int i = 0; i < nr_token; i++) {
     tokens[i].type = __tokens[i].type;
-    if (__tokens[i].type == TK_NUM) {  // number
+    if (TK_NUM == __tokens[i].type) {  // number
       if (0 == strncmp(__tokens[i].str, "0x", 2)) {
         tokens[i].val = strtol(__tokens[i].str, NULL, 16);
       } else {
         tokens[i].val = atoi(__tokens[i].str);
       }
-    } else if (__tokens[i].type == TK_REG) {  // register
+    } else if (TK_REG == __tokens[i].type) {  // register
       const char *reg = __tokens[i].str;
       tokens[i].type = TK_NUM;
       bool success;
@@ -186,7 +186,7 @@ static bool make_value(void) {
       if (!success) {
         panic("impossible, reg: %s", reg);
       }
-    } else if (__tokens[i].type == TK_MEM) {
+    } else if (TK_MEM == __tokens[i].type) {
       const char *mem = __tokens[i].str + 1;
       vaddr_t addr = strtol(mem, NULL, 16);
       tokens[i].val = vaddr_read(addr, 4);
