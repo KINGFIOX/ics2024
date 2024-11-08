@@ -71,12 +71,17 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
+extern bool check_wp(void);
+
 static void execute(uint64_t n) {
   Decode s;
   for (; n > 0; n--) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst++;
     trace_and_difftest(&s, cpu.pc);
+    if (check_wp()) {
+      nemu_state.state = NEMU_STOP;
+    }
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
@@ -131,6 +136,6 @@ void cpu_exec(uint64_t n) {
           nemu_state.halt_pc);
       // fall through
     case NEMU_QUIT:
-      statistic();
+      statistic();  // print the statistic information while quitting
   }
 }

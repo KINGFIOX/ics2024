@@ -13,6 +13,7 @@
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
+#include "debug.h"
 #include "sdb.h"
 
 #define NR_WP 32
@@ -42,7 +43,7 @@ WP *find_wp(int no) {
   }
 }
 
-void watchpoint_display() {
+void watchpoint_display(void) {
   // TODO:
   printf("Num\tWhat\n");
   for (int i = 0; i < NR_WP; i++) {
@@ -54,7 +55,7 @@ void watchpoint_display() {
 
 /* TODO: Implement the functionality of watchpoint */
 
-WP *new_wp() {
+WP *new_wp(void) {
   if (free_ == NULL) {
     assert(0);
   }
@@ -73,4 +74,23 @@ void free_wp(WP *wp) {
   wp->next = free_;
   free_ = wp;
   wp->valid = false;
+}
+
+bool check_wp(void) {
+  bool changed = false;
+  for (int i = 0; i < NR_WP; i++) {
+    if (wp_pool[i].valid) {
+      bool success = true;
+      word_t value = expr(wp_pool[i].expr, &success);
+      if (!success) {
+        panic("it is impossible, because checking expr first before adding it to the watchpoint list");
+      }
+      if (value != wp_pool[i].last_value) {
+        changed = true;
+        printf("watchpoint %d: %s\n", wp_pool[i].NO, wp_pool[i].expr);
+        wp_pool[i].last_value = value;
+      }
+    }
+  }
+  return changed;
 }

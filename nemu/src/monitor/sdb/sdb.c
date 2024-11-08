@@ -92,6 +92,7 @@ static struct {
 
 static int cmd_si(char *arg) {
   // TODO:
+  cpu_exec(1);
   return 0;
 }
 
