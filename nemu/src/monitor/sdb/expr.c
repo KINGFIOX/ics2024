@@ -268,6 +268,8 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
+  assert(yy_success);
+
   *success = true;
   return yy_result;
 }
