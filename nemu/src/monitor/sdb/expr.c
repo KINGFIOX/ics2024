@@ -90,7 +90,10 @@ void init_regex() {
   }
 }
 
-Token tokens[32] __attribute__((used)) = {};
+struct {
+  int type;
+  char str[32];
+} tokens[32] __attribute__((used)) = {};
 int nr_token __attribute__((used)) = 0;  // number of token
 
 static bool make_token(char *e) {
