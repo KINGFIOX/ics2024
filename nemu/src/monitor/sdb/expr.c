@@ -21,14 +21,13 @@
 #include <regex.h>
 #include <stdio.h>
 
-#include <cassert>
-
 #include "debug.h"
 
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
   TK_EQ,
   TK_NUM,
+  TK_REG,
 
   /* TODO: Add more token types */
 
@@ -54,6 +53,8 @@ static struct rule {
     {"\\(", '('},        // left parenthesis
     {"\\)", ')'},        // right parenthesis
     {"[0-9]+", TK_NUM},  // number
+
+    {"$eax|$ecx|$edx|$ebx|$esp|$ebp|$esi|$edi|$ax|$cx|$dx|$bx|$sp|$bp|$si|$di|$al|$cl|$dl|$bl|$ah|$ch|$dh|$bh", TK_REG},  // register
 
 };
 
@@ -176,6 +177,7 @@ static word_t eval(int p, int q) {
     return eval(p + 1, q - 1);
   } else {
   }
+  TODO();
 }
 
 word_t expr(char *e, bool *success) {
