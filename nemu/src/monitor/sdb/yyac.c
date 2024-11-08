@@ -11,6 +11,9 @@ int current_token = 0;
 int yylex(void) {
   Token tok = tokens[current_token];
   current_token++;
+  if (tok.type == 0) {
+    return 0;
+  }
   switch (tok.type) {
     case TK_NUM:
       return TK_NUM_;
