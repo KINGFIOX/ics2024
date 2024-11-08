@@ -177,26 +177,11 @@ static bool make_value(void) {
     } else if (__tokens[i].type == TK_REG) {  // register
       const char *reg = __tokens[i].str;
       tokens[i].type = TK_NUM;
-      if (0 == strcmp(reg, "$eax")) {
-        tokens[i].val = cpu.eax;
-      } else if (0 == strcmp(reg, "$ecx")) {
-        tokens[i].val = cpu.ecx;
-      } else if (0 == strcmp(reg, "$edx")) {
-        tokens[i].val = cpu.edx;
-      } else if (0 == strcmp(reg, "$ebx")) {
-        tokens[i].val = cpu.ebx;
-      } else if (0 == strcmp(reg, "$esp")) {
-        tokens[i].val = cpu.esp;
-      } else if (0 == strcmp(reg, "$ebp")) {
-        tokens[i].val = cpu.ebp;
-      } else if (0 == strcmp(reg, "$esi")) {
-        tokens[i].val = cpu.esi;
-      } else if (0 == strcmp(reg, "$edi")) {
-        tokens[i].val = cpu.edi;
-      } else {
+      bool success;
+      tokens[i].val = isa_reg_str2val(reg, &success);
+      if (!success) {
         panic("impossible");
       }
-      // printf("reg: %s, val: 0x%x\n", reg, tokens[i].val);
     }
   }
   return true;
