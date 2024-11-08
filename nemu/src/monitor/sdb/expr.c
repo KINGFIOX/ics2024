@@ -188,6 +188,7 @@ static bool make_value(void) {
       bool success;
       tokens[i].val = isa_reg_str2val(reg, &success);
       if (!success) {
+        printf("reg: %s\n", reg);
         panic("impossible, str: %s", __tokens[i].str);
       }
     } else if (TK_MEM == __tokens[i].type) {
