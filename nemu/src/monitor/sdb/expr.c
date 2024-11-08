@@ -49,6 +49,9 @@ static struct rule {
      */
 
     {"\\*0x[0-9a-fA-F]+", TK_MEM},  // highest precedence
+    {"\\*0x($eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$"
+     "bh)",
+     TK_REG},  // register
 
     {" +", TK_NOTYPE},  // spaces
 
@@ -60,10 +63,10 @@ static struct rule {
     {"!=", TK_NE},  // not equal
     {"==", TK_EQ},  // equal
 
-    {">", TK_GT},   // greater than
     {">=", TK_GE},  // greater than or equal
-    {"<", TK_LT},   // less than
     {"<=", TK_LE},  // less than or equal
+    {">", TK_GT},   // greater than
+    {"<", TK_LT},   // less than
 
     {"\\(", '('},  // left parenthesis
     {"\\)", ')'},  // right parenthesis
