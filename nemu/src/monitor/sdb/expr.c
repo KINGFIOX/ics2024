@@ -59,7 +59,7 @@ static struct rule {
     {"\\+", '+'},  // plus
     {"-", '-'},    // minus
     {"\\*", '*'},  // multiply
-    {"/", '/'},    // divide
+    {"\\/", '/'},  // divide
 
     {"!=", TK_NE},  // not equal
     {"==", TK_EQ},  // equal
