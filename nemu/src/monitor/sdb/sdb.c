@@ -166,13 +166,14 @@ static int cmd_x(char *args) {
   printf("%s\n", args);
   args = strtok(NULL, " ");
   bool success;
-  vaddr_t addr = expr(args, &success);
+  vaddr_t base = expr(args, &success);
+  printf("0x%x\n", base);
   if (!success) {
     printf("Invalid expression\n");
     return 0;
   }
   for (int i = 0; i < nr; i++) {
-    printf("%s[%d] = 0x%x\n", args, i, vaddr_read(addr + 4 * i, 1));
+    printf("%s[%d] = 0x%x\n", args, i, vaddr_read(base + 4 * i, 1));
   }
 
   return 0;
