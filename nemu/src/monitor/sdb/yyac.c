@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "expr.h"
 #include "expr.tab.h"
 
@@ -27,6 +29,7 @@ int yylex(void) {
       return TK_LT_;
 
     default:  // + - * / ( )
+      assert(tok.type == '+' || tok.type == '-' || tok.type == '*' || tok.type == '/' || tok.type == '(' || tok.type == ')');
       return tok.type;
   }
 }
