@@ -199,8 +199,6 @@ static bool make_value(void) {
 }
 
 word_t expr(char *e, bool *success) {
-  current_token = 0;
-
   // clear the __tokens
   __nr_token = 0;
   for (int i = 0; i < ARRLEN(__tokens); i++) {
@@ -215,6 +213,7 @@ word_t expr(char *e, bool *success) {
     tokens[i].val = 0;
   }
 
+  // lex the expr
   if (!make_token(e)) {
     *success = false;
     return 0;
@@ -225,6 +224,7 @@ word_t expr(char *e, bool *success) {
     Assert(__tokens[i].type != 0 && __tokens[i].type != TK_NOTYPE, "invalid token");
   }
 
+  // canonicalize the tokens
   if (!make_value()) {
     *success = false;
     return 0;
@@ -235,13 +235,17 @@ word_t expr(char *e, bool *success) {
     Assert(tokens[i].type != 0 && tokens[i].type != TK_NOTYPE && tokens[i].type != TK_REG, "invalid token");
   }
 
+  // clear the state of bison
+  current_token = 0;
+  yy_success = true;
+  yy_err_msg = NULL;
+  yy_result = 0;
+
   if (0 != yyparse()) {
     *success = false;
     printf("yyparse error: %s\n", yy_err_msg);
     return 0;
   }
-
-  printf("yy_result: %x\n", yy_result);
 
   *success = true;
   return yy_result;

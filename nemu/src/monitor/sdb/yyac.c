@@ -11,7 +11,7 @@ int current_token = 0;
 int yylex(void) {
   Token tok = tokens[current_token];
   current_token++;
-  if (tok.type == 0) {
+  if (0 == tok.type) {
     return 0;
   }
   switch (tok.type) {
@@ -33,7 +33,7 @@ int yylex(void) {
       return TK_LT_;
 
     default:  // + - * / ( )
-      Assert(tok.type == '+' || tok.type == '-' || tok.type == '*' || tok.type == '/' || tok.type == '(' || tok.type == ')', "invalid token: %c", tok.type);
+      Assert('+' == tok.type || '-' == tok.type || '*' == tok.type || '/' == tok.type || '(' == tok.type || ')' == tok.type, "invalid token: %c", tok.type);
       return tok.type;
   }
 }
