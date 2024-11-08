@@ -32,6 +32,11 @@ int yylex(void) {
     case TK_LT:
       return TK_LT_;
 
+    case TK_OR:
+      return TK_OR_;
+    case TK_AND:
+      return TK_AND_;
+
     default:  // + - * / ( )
       Assert('+' == tok.type || '-' == tok.type || '*' == tok.type || '/' == tok.type || '(' == tok.type || ')' == tok.type, "invalid token: %c", tok.type);
       return tok.type;

@@ -11,11 +11,12 @@
 %left '*' '/'
 %left TK_NE_ TK_EQ_
 %left TK_GT_ TK_GE_ TK_LT_ TK_LE_
+%left TK_OR_ TK_AND_
 %right UMINUS
 %right DEREF
 
 %token <num> TK_NUM_
-%type <num> expression equality comparison term factor unary primary
+%type <num> expression logic_or logic_and equality comparison term factor unary primary
 
 %union {
     word_t num;
@@ -24,7 +25,17 @@
 %%
 
 expression:
-    equality { yy_result = $1; }
+    logic_or { yy_result = $1; }
+    ;
+
+logic_or:
+    logic_and { $$ = $1; }
+    | logic_or TK_OR_ logic_and { $$ = ($1 || $3); }
+    ;
+
+logic_and:
+    equality { $$ = $1; }
+    | logic_and TK_AND_ equality { $$ = ($1 && $3); }
     ;
 
 equality:

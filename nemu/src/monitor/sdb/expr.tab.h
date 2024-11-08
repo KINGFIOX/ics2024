@@ -60,9 +60,11 @@ extern int yydebug;
     TK_GE_ = 261,                  /* TK_GE_  */
     TK_LT_ = 262,                  /* TK_LT_  */
     TK_LE_ = 263,                  /* TK_LE_  */
-    UMINUS = 264,                  /* UMINUS  */
-    DEREF = 265,                   /* DEREF  */
-    TK_NUM_ = 266                  /* TK_NUM_  */
+    TK_OR_ = 264,                  /* TK_OR_  */
+    TK_AND_ = 265,                 /* TK_AND_  */
+    UMINUS = 266,                  /* UMINUS  */
+    DEREF = 267,                   /* DEREF  */
+    TK_NUM_ = 268                  /* TK_NUM_  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -71,11 +73,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "expr.y"
+#line 21 "expr.y"
 
     word_t num;
 
-#line 79 "expr.tab.h"
+#line 81 "expr.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
