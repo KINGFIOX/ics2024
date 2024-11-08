@@ -20,6 +20,7 @@
 
 #include <regex.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "debug.h"
 #include "macro.h"
@@ -93,19 +94,19 @@ void init_regex() {
 struct {
   int type;
   char str[32];
-} tokens[32] __attribute__((used)) = {};
-int nr_token __attribute__((used)) = 0;  // number of token
+} __tokens[32] __attribute__((used)) = {};
+int __nr_token __attribute__((used)) = 0;  // number of token
 
 static bool make_token(char *e) {
   int position = 0;
   int i;
   regmatch_t pmatch;
 
-  nr_token = 0;
+  __nr_token = 0;
 
-  for (int i = 0; i < ARRLEN(tokens); i++) {
-    tokens[i].type = 0;
-    memset(tokens[i].str, 0, 32);
+  for (int i = 0; i < ARRLEN(__tokens); i++) {
+    __tokens[i].type = 0;
+    memset(__tokens[i].str, 0, 32);
   }
 
   while (e[position] != '\0') {
@@ -146,9 +147,9 @@ static bool make_token(char *e) {
           case TK_REG:
 
           case TK_NUM:
-            strncpy(tokens[nr_token].str, substr_start, substr_len);
-            tokens[nr_token].type = rules[i].token_type;
-            nr_token++;
+            strncpy(__tokens[__nr_token].str, substr_start, substr_len);
+            __tokens[__nr_token].type = rules[i].token_type;
+            __nr_token++;
             break;
           default:
             TODO();
@@ -167,8 +168,54 @@ static bool make_token(char *e) {
   return true;
 }
 
+typedef struct token {
+  int type;
+  word_t val;
+} Token;
+
+Token tokens[32] __attribute__((used)) = {};
+int nr_token __attribute__((used)) = 0;  // number of token
+
+static bool make_value(void) {
+  nr_token = __nr_token;
+  for (int i = 0; i < nr_token; i++) {
+    tokens[i].type = __tokens[i].type;
+    if (__tokens[i].type == TK_NUM) {
+      tokens[i].val = atoi(__tokens[i].str);
+    } else if (__tokens[i].type == TK_REG) {
+      const char *reg = __tokens[i].str;
+      if (0 == strcmp(reg, "$eax")) {
+        tokens[i].val = cpu.eax;
+      } else if (0 == strcmp(reg, "$ecx")) {
+        tokens[i].val = cpu.ecx;
+      } else if (0 == strcmp(reg, "$edx")) {
+        tokens[i].val = cpu.edx;
+      } else if (0 == strcmp(reg, "$ebx")) {
+        tokens[i].val = cpu.ebx;
+      } else if (0 == strcmp(reg, "$esp")) {
+        tokens[i].val = cpu.esp;
+      } else if (0 == strcmp(reg, "$ebp")) {
+        tokens[i].val = cpu.ebp;
+      } else if (0 == strcmp(reg, "$esi")) {
+        tokens[i].val = cpu.esi;
+      } else if (0 == strcmp(reg, "$edi")) {
+        tokens[i].val = cpu.edi;
+      } else {
+        panic("impossible");
+      }
+      printf("reg: %s, val: %x\n", reg, tokens[i].val);
+    }
+  }
+  return true;
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+
+  if (!make_value()) {
     *success = false;
     return 0;
   }
