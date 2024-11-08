@@ -20,4 +20,17 @@ enum {
 
 };
 
+typedef struct token {
+  int type;
+  word_t val;
+} Token;
+
+extern Token tokens[];
+extern int nr_token;
+
+extern bool yy_success;
+extern word_t yy_result;
+extern const char *yy_err_msg;
+extern int current_token;
+
 #endif

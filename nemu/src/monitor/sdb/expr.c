@@ -102,13 +102,6 @@ static bool make_token(char *e) {
   int i;
   regmatch_t pmatch;
 
-  __nr_token = 0;
-
-  for (int i = 0; i < ARRLEN(__tokens); i++) {
-    __tokens[i].type = 0;
-    memset(__tokens[i].str, 0, 32);
-  }
-
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i++) {
@@ -126,7 +119,7 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          case TK_NOTYPE:  // do nothing
+          case TK_NOTYPE:  // do nothing, skip
             break;
 
           case '+':
@@ -168,22 +161,18 @@ static bool make_token(char *e) {
   return true;
 }
 
-typedef struct token {
-  int type;
-  word_t val;
-} Token;
-
-Token tokens[32] __attribute__((used)) = {};
-int nr_token __attribute__((used)) = 0;  // number of token
+Token tokens[32] = {};
+int nr_token = 0;  // number of token
 
 static bool make_value(void) {
   nr_token = __nr_token;
   for (int i = 0; i < nr_token; i++) {
     tokens[i].type = __tokens[i].type;
-    if (__tokens[i].type == TK_NUM) {
+    if (__tokens[i].type == TK_NUM) {  // number
       tokens[i].val = atoi(__tokens[i].str);
-    } else if (__tokens[i].type == TK_REG) {
+    } else if (__tokens[i].type == TK_REG) {  // register
       const char *reg = __tokens[i].str;
+      tokens[i].type = TK_NUM;
       if (0 == strcmp(reg, "$eax")) {
         tokens[i].val = cpu.eax;
       } else if (0 == strcmp(reg, "$ecx")) {
@@ -203,21 +192,47 @@ static bool make_value(void) {
       } else {
         panic("impossible");
       }
-      printf("reg: %s, val: %x\n", reg, tokens[i].val);
+      printf("reg: %s, val: 0x%x\n", reg, tokens[i].val);
     }
   }
   return true;
 }
 
 word_t expr(char *e, bool *success) {
+  current_token = 0;
+
+  // clear the __tokens
+  __nr_token = 0;
+  for (int i = 0; i < ARRLEN(__tokens); i++) {
+    __tokens[i].type = 0;
+    memset(__tokens[i].str, 0, 32);
+  }
+
+  // clear the tokens
+  nr_token = 0;
+  for (int i = 0; i < ARRLEN(tokens); i++) {
+    tokens[i].type = 0;
+    tokens[i].val = 0;
+  }
+
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
 
+  // check the __tokens
+  for (int i = 0; i < __nr_token; i++) {
+    Assert(__tokens[i].type != 0 && __tokens[i].type != TK_NOTYPE, "invalid token");
+  }
+
   if (!make_value()) {
     *success = false;
     return 0;
+  }
+
+  // check the tokens
+  for (int i = 0; i < nr_token; i++) {
+    Assert(tokens[i].type != 0 && tokens[i].type != TK_NOTYPE && tokens[i].type != TK_REG, "invalid token");
   }
 
   TODO();
