@@ -129,6 +129,9 @@ static bool make_token(char *e) {
           case TK_NOTYPE:
             // do nothing
             break;
+          case TK_REG:
+            printf("TK_REG: %s\n", substr_start);
+            TODO();
           default:
             TODO();
         }
