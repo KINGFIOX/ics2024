@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "common.h"
 #include "watchpoint.h"
 
 static int is_batch_mode = false;
@@ -98,6 +99,17 @@ static int cmd_si(char *arg) {
 // example: d 2
 static int cmd_d(char *args) {
   // TODO:
+  int no = atoi(args);
+  WP *wp = find_wp(no);
+  if (wp == NULL) {
+    printf("Watchpoint %d not found\n", no);
+    return 0;
+  } else if (!wp->valid) {
+    printf("Watchpoint %d is not set\n", no);
+    return 0;
+  }
+  wp->valid = false;
+  free_wp(wp);
   return 0;
 }
 
@@ -105,13 +117,20 @@ static int cmd_d(char *args) {
 // example: w *0x2000
 static int cmd_w(char *args) {
   // TODO:
+  bool success;
+  word_t value = expr(args, &success);
+  if (!success) {
+    printf("Invalid expression\n");
+    return 0;
+  }
   WP *wp = new_wp();
   if (wp == NULL) {
     printf("No free watchpoint\n");  // FIXME: log warning
     return 0;
   }
-  strcpy(wp->expr, args);
-  printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
+  wp->last_value = value;
+  strncpy(wp->expr, args, WP_EXPR_LEN);
+  wp->valid = true;
   return 0;
 }
 

@@ -194,6 +194,8 @@ static bool make_value(void) {
 }
 
 word_t expr(char *e, bool *success) {
+  assert(success != NULL);
+
   // clear the __tokens
   __nr_token = 0;
   for (int i = 0; i < ARRLEN(__tokens); i++) {

@@ -34,6 +34,13 @@ void init_wp_pool() {
   free_ = wp_pool;
 }
 
+WP *find_wp(int no) {
+  if (no < 0 || no >= NR_WP) {
+    return NULL;
+  }
+  return &wp_pool[no];
+}
+
 void watchpoint_display() {
   // TODO:
   printf("Num What\n");
