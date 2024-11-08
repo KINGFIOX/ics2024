@@ -22,8 +22,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "common.h"
 #include "debug.h"
 #include "macro.h"
+#include "memory/vaddr.h"
 
 // NOTE: 这里比较有趣, C 语言里的正则表达式, 要使用, 转义要使用 \\, 第一个 \ 是 C 语言里面的转义, 第二个 \ 是正则表达式里面的转义
 
@@ -68,6 +70,8 @@ static struct rule {
 
     {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh",
      TK_REG},  // register
+
+    {"\\*0x[0-9a-fA-F]+", TK_MEM},
 
 };
 
@@ -182,6 +186,11 @@ static bool make_value(void) {
       if (!success) {
         panic("impossible, reg: %s", reg);
       }
+    } else if (__tokens[i].type == TK_MEM) {
+      const char *mem = __tokens[i].str + 1;
+      tokens[i].type = TK_NUM;
+      vaddr_t addr = strtol(mem, NULL, 16);
+      tokens[i].val = vaddr_read(addr, 4);
     }
   }
   return true;
