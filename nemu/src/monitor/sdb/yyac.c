@@ -1,4 +1,4 @@
-#include <assert.h>
+#include <stdio.h>
 
 #include "expr.h"
 #include "expr.tab.h"
@@ -29,7 +29,7 @@ int yylex(void) {
       return TK_LT_;
 
     default:  // + - * / ( )
-      assert(tok.type == '+' || tok.type == '-' || tok.type == '*' || tok.type == '/' || tok.type == '(' || tok.type == ')');
+      Assert(tok.type == '+' || tok.type == '-' || tok.type == '*' || tok.type == '/' || tok.type == '(' || tok.type == ')', "invalid token: %c", tok.type);
       return tok.type;
   }
 }
