@@ -54,7 +54,8 @@ static struct rule {
     {"\\)", ')'},        // right parenthesis
     {"[0-9]+", TK_NUM},  // number
 
-    {"$eax|$ecx|$edx|$ebx|$esp|$ebp|$esi|$edi|$ax|$cx|$dx|$bx|$sp|$bp|$si|$di|$al|$cl|$dl|$bl|$ah|$ch|$dh|$bh", TK_REG},  // register
+    {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh",
+     TK_REG},  // register
 
 };
 
