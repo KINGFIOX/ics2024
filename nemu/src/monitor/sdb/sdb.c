@@ -173,7 +173,9 @@ static int cmd_x(char *args) {
     return 0;
   }
   for (int i = 0; i < nr; i++) {
-    printf("%s[%d] = 0x%x\n", args, i, vaddr_read(base + 4 * i, 1));
+    vaddr_t addr = base + 4 * i;
+    word_t value = vaddr_read(addr, 4);
+    printf("0x%x\t0x%x\n", addr, value);
   }
 
   return 0;
