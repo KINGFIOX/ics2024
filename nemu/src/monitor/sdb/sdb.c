@@ -156,15 +156,24 @@ static int cmd_p(char *args) {
 // example: x 10 $esp
 // 以十六进制输出连续的 N 个 4 字节
 static int cmd_x(char *args) {
-  printf("%s\n", args);
   // TODO:
+  args = strtok(NULL, " ");
   int nr = atoi(args);
   if (nr <= 0) {
     printf("Invalid number of bytes to display\n");
     return 0;
   }
-  args = strtok(NULL, " ");
   printf("%s\n", args);
+  args = strtok(NULL, " ");
+  bool success;
+  vaddr_t addr = expr(args, &success);
+  if (!success) {
+    printf("Invalid expression\n");
+    return 0;
+  }
+  for (int i = 0; i < nr; i++) {
+    printf("%s[%d] = 0x%x\n", args, i, vaddr_read(addr + 4 * i, 1));
+  }
 
   return 0;
 }
