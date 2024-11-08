@@ -45,9 +45,9 @@ WP *find_wp(int no) {
 void watchpoint_display() {
   // TODO:
   printf("Num What\n");
-  for (WP *cur = head; cur != NULL; cur = cur->next) {
-    if (cur->valid) {
-      printf("%d %s\n", cur->NO, cur->expr);
+  for (int i = 0; i < NR_WP; i++) {
+    if (wp_pool[i].valid) {
+      printf("%d %s\n", wp_pool[i].NO, wp_pool[i].expr);
     }
   }
 }
