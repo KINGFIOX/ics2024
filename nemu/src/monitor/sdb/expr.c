@@ -13,16 +13,13 @@
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
-#include <isa.h>
-
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
+#include "expr.h"
+
 #include <regex.h>
 #include <stdio.h>
-
-#include "debug.h"
-#include "macro.h"
 
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
@@ -106,13 +103,8 @@ void init_regex() {
   }
 }
 
-typedef struct token {
-  int type;
-  char str[32];
-} Token;
-
-static Token tokens[32] __attribute__((used)) = {};
-static int nr_token __attribute__((used)) = 0;  // number of token
+Token tokens[32] __attribute__((used)) = {};
+int nr_token __attribute__((used)) = 0;  // number of token
 
 static bool make_token(char *e) {
   int position = 0;
@@ -165,10 +157,6 @@ static bool make_token(char *e) {
 
           case TK_NUM:
             strncpy(tokens[nr_token].str, substr_start, substr_len);
-            if (rules[i].token_type == TK_NUM) {
-              int num = atoi(substr_start);
-              printf("num: %x\n", num);
-            }
             tokens[nr_token].type = rules[i].token_type;
             nr_token++;
             break;
