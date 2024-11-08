@@ -117,6 +117,10 @@ static int cmd_d(char *args) {
 // example: w *0x2000
 static int cmd_w(char *args) {
   // TODO:
+  if (strlen(args) >= WP_EXPR_LEN) {
+    printf("Expression too long\n");
+    return 0;
+  }
   bool success;
   word_t value = expr(args, &success);
   if (!success) {
