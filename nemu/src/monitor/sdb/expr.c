@@ -180,7 +180,7 @@ static bool make_value(void) {
       bool success;
       tokens[i].val = isa_reg_str2val(reg, &success);
       if (!success) {
-        panic("impossible");
+        panic("impossible, reg: %s", reg);
       }
     }
   }
