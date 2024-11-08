@@ -17,7 +17,6 @@ enum TokenType {
   TK_NUM,
   TK_REG,
 
-  TK_MEM,
   /* TODO: Add more token types */
 
 };

@@ -48,12 +48,6 @@ static struct rule {
      * Pay attention to the precedence level of different rules.
      */
 
-    // FIXME: 这里有瑕疵, 或许应该要推倒语法分析处理
-    {"\\*0x[0-9a-fA-F]+", TK_MEM},  // highest precedence
-    {"\\*($eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$"
-     "bh)",
-     TK_MEM},  // register
-
     {" +", TK_NOTYPE},  // spaces
 
     {"\\+", '+'},  // plus
@@ -146,7 +140,6 @@ static bool make_token(char *e) {
           case ')':
 
           case TK_REG:
-          case TK_MEM:
           case TK_NUM:
             strncpy(__tokens[__nr_token].str, substr_start, substr_len);
             __tokens[__nr_token].type = rules[i].token_type;
@@ -189,24 +182,6 @@ static bool make_value(void) {
       tokens[i].val = isa_reg_str2val(reg, &success);
       if (!success) {
         panic("impossible, str: %s", __tokens[i].str);
-      }
-    } else if (TK_MEM == __tokens[i].type) {
-      const char *mem = __tokens[i].str + 1;  // skip the '*'
-      if ('$' == mem[0]) {
-        const char *reg = mem + 1;  // skip the '$'
-        bool success;
-        vaddr_t addr = isa_reg_str2val(reg, &success);
-        if (!success) {
-          panic("impossible, str: %s, reg: %s", __tokens[i].str, reg);
-        }
-        tokens[i].val = vaddr_read(addr, 4);
-        tokens[i].type = TK_NUM;
-      } else if (0 == strncmp(mem, "0x", 2)) {
-        vaddr_t addr = strtol(mem, NULL, 16);
-        tokens[i].val = vaddr_read(addr, 4);
-        tokens[i].type = TK_NUM;
-      } else {
-        panic("impossible, str: %s, mem[0]: %c", __tokens[i].str, mem[0]);
       }
     }
   }

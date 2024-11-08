@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "expr.h"
+#include "memory/vaddr.h"
 
 %}
 
@@ -11,6 +12,7 @@
 %left TK_NE_ TK_EQ_
 %left TK_GT_ TK_GE_ TK_LT_ TK_LE_
 %right UMINUS
+%right DEREF
 
 %token <num> TK_NUM_
 %type <num> expression equality comparison term factor unary primary
@@ -59,6 +61,7 @@ factor:
 
 unary:
     '-' unary %prec UMINUS { $$ = -$2; }
+    | '*' unary %prec DEREF { $$ = vaddr_read($2, 4); }
     | primary { $$ = $1; }
     ;
 
