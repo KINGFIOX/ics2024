@@ -44,10 +44,10 @@ WP *find_wp(int no) {
 
 void watchpoint_display() {
   // TODO:
-  printf("Num What\n");
+  printf("Num\tWhat\n");
   for (int i = 0; i < NR_WP; i++) {
     if (wp_pool[i].valid) {
-      printf("%d %s\n", wp_pool[i].NO, wp_pool[i].expr);
+      printf("%d\t%s\n", wp_pool[i].NO, wp_pool[i].expr);
     }
   }
 }
