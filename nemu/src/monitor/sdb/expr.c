@@ -183,7 +183,7 @@ static bool make_value(void) {
         tokens[i].val = atoi(__tokens[i].str);
       }
     } else if (TK_REG == __tokens[i].type) {  // register
-      const char *reg = __tokens[i].str;
+      const char *reg = __tokens[i].str + 1;  // skip the '$'
       tokens[i].type = TK_NUM;
       bool success;
       tokens[i].val = isa_reg_str2val(reg, &success);

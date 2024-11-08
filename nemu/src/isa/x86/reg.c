@@ -60,21 +60,21 @@ void isa_reg_display() {
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   *success = true;
-  if (0 == strcmp(s, "$eax")) {
+  if (0 == strcmp(s, "eax")) {
     return cpu.eax;
-  } else if (0 == strcmp(s, "$ecx")) {
+  } else if (0 == strcmp(s, "ecx")) {
     return cpu.ecx;
-  } else if (0 == strcmp(s, "$edx")) {
+  } else if (0 == strcmp(s, "edx")) {
     return cpu.edx;
-  } else if (0 == strcmp(s, "$ebx")) {
+  } else if (0 == strcmp(s, "ebx")) {
     return cpu.ebx;
-  } else if (0 == strcmp(s, "$esp")) {
+  } else if (0 == strcmp(s, "esp")) {
     return cpu.esp;
-  } else if (0 == strcmp(s, "$ebp")) {
+  } else if (0 == strcmp(s, "ebp")) {
     return cpu.ebp;
-  } else if (0 == strcmp(s, "$esi")) {
+  } else if (0 == strcmp(s, "esi")) {
     return cpu.esi;
-  } else if (0 == strcmp(s, "$edi")) {
+  } else if (0 == strcmp(s, "edi")) {
     return cpu.edi;
   } else {
     *success = false;
