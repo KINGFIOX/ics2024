@@ -26,6 +26,7 @@
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
   TK_EQ,
+  TK_NE,
   TK_NUM,
   TK_REG,
 
@@ -34,6 +35,11 @@ enum {
 };
 
 // NOTE: 这里比较有趣, C 语言里的正则表达式, 要使用, 转义要使用 \\, 第一个 \ 是 C 语言里面的转义, 第二个 \ 是正则表达式里面的转义
+
+// expression     -> factor ( ( "-" | "+" ) factor )*
+// factor         -> unary ( ( "/" | "*" ) unary )*
+// unary          -> ( "-" ) unary | primary
+// primary        -> NUMBER | REGISTER | "(" expression ")"
 
 static struct rule {
   const char *regex;
@@ -44,14 +50,19 @@ static struct rule {
      * Pay attention to the precedence level of different rules.
      */
 
-    {" +", TK_NOTYPE},   // spaces
-    {"\\+", '+'},        // plus
-    {"==", TK_EQ},       // equal
-    {"-", '-'},          // minus
-    {"\\*", '*'},        // multiply
-    {"/", '/'},          // divide
-    {"\\(", '('},        // left parenthesis
-    {"\\)", ')'},        // right parenthesis
+    {" +", TK_NOTYPE},  // spaces
+
+    {"\\+", '+'},  // plus
+    {"-", '-'},    // minus
+    {"\\*", '*'},  // multiply
+    {"/", '/'},    // divide
+
+    {"!=", TK_NE},  // not equal
+    {"==", TK_EQ},  // equal
+
+    {"\\(", '('},  // left parenthesis
+    {"\\)", ')'},  // right parenthesis
+
     {"[0-9]+", TK_NUM},  // number
 
     {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh",
@@ -122,6 +133,7 @@ static bool make_token(char *e) {
           case '/':
           case '(':
           case ')':
+            tokens[nr_token].str[0] = substr_start[0];
             tokens[nr_token].type = rules[i].token_type;
             nr_token++;
             break;
@@ -184,11 +196,15 @@ static word_t eval(int p, int q) {
   TODO();
 }
 
+extern int test();
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
+
+  test();
 
   if (!check_parentheses_sanity()) {
     *success = false;
