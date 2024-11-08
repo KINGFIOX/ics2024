@@ -240,6 +240,8 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
+  printf("yy_result: %x\n", yy_result);
+
   *success = true;
   return yy_result;
 }
