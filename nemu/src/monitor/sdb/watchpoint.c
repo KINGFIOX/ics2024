@@ -17,16 +17,7 @@
 
 #define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-  bool valid;
-  word_t last_value;
-  char expr[64];
-
-  /* TODO: Add more members if necessary */
-
-} WP;
+#include "watchpoint.h"
 
 static WP wp_pool[NR_WP] = {};  // 32 watchpoints at most
 static WP *head = NULL, *free_ = NULL;
@@ -47,7 +38,9 @@ void watchpoint_display() {
   // TODO:
   printf("Num What\n");
   for (WP *cur = head; cur != NULL; cur = cur->next) {
-    printf("%d %s\n", cur->NO, cur->expr);
+    if (cur->valid) {
+      printf("%d %s\n", cur->NO, cur->expr);
+    }
   }
 }
 

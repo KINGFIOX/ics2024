@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "watchpoint.h"
+
 static int is_batch_mode = false;
 
 void init_regex();
@@ -96,9 +98,6 @@ static int cmd_si(char *arg) {
 // example: d 2
 static int cmd_d(char *args) {
   // TODO:
-  int id = atoi(args);
-  printf(" delete watchpoint\n");
-  printf("%d\n", id);
   return 0;
 }
 
@@ -106,6 +105,13 @@ static int cmd_d(char *args) {
 // example: w *0x2000
 static int cmd_w(char *args) {
   // TODO:
+  WP *wp = new_wp();
+  if (wp == NULL) {
+    printf("No free watchpoint\n");
+    return 0;
+  }
+  strcpy(wp->expr, args);
+  printf("Watchpoint %d: %s\n", wp->NO, wp->expr);
   return 0;
 }
 
