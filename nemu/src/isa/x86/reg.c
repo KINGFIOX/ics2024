@@ -84,7 +84,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
     return cpu.gpr[R_EDX]._16;
   } else if (0 == strcmp(s, "bx")) {
     return cpu.gpr[R_EBX]._16;
-  } else if (0 == strcmp(s, "esp")) {
+  } else if (0 == strcmp(s, "sp")) {
     return cpu.gpr[R_ESP]._16;
   } else if (0 == strcmp(s, "bp")) {
     return cpu.gpr[R_EBP]._16;
