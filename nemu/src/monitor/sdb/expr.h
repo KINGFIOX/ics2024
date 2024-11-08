@@ -4,7 +4,7 @@
 #include <common.h>
 #include <isa.h>
 
-enum {
+enum TokenType {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
 
   TK_EQ,
