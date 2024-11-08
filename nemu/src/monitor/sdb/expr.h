@@ -4,12 +4,12 @@
 #include <common.h>
 #include <isa.h>
 
-#include "debug.h"
-#include "macro.h"
-
 typedef struct token {
   int type;
   char str[32];
 } Token;
+
+extern Token tokens[];
+extern int nr_token;
 
 #endif

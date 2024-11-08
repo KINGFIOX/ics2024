@@ -21,6 +21,9 @@
 #include <regex.h>
 #include <stdio.h>
 
+#include "debug.h"
+#include "macro.h"
+
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
 
