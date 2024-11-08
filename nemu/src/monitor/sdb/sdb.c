@@ -163,11 +163,9 @@ static int cmd_x(char *args) {
     printf("Invalid number of bytes to display\n");
     return 0;
   }
-  printf("%s\n", args);
   args = strtok(NULL, " ");
   bool success;
   vaddr_t base = expr(args, &success);
-  printf("0x%x\n", base);
   if (!success) {
     printf("Invalid expression\n");
     return 0;
