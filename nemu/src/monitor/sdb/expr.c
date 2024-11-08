@@ -235,5 +235,11 @@ word_t expr(char *e, bool *success) {
     Assert(tokens[i].type != 0 && tokens[i].type != TK_NOTYPE && tokens[i].type != TK_REG, "invalid token");
   }
 
-  TODO();
+  if (0 != yyparse()) {
+    *success = false;
+    return 0;
+  }
+
+  *success = true;
+  return yy_result;
 }

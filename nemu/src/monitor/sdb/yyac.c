@@ -1,9 +1,9 @@
 #include "expr.h"
 
-int current_token = 0;
 bool yy_success = true;
 word_t yy_result = 0;
 const char* yy_err_msg = NULL;
+int current_token = 0;
 
 int yylex(void) {
   Token tok = tokens[current_token];
@@ -12,4 +12,9 @@ int yylex(void) {
     return tok.val;
   }
   return tok.type;
+}
+
+void yyerror(const char* s) {
+  yy_success = false;
+  yy_err_msg = s;
 }
