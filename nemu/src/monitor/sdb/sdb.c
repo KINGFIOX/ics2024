@@ -115,7 +115,7 @@ static int cmd_p(char *args) {
     printf("Invalid expression\n");
     return 0;
   }
-  printf("%x\n", result);
+  printf("0x%x\n", result);
   return 0;
 }
 
