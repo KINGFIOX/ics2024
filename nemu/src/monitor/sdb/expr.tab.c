@@ -1093,7 +1093,7 @@ yyreduce:
     {
   case 2: /* expression: equality  */
 #line 25 "expr.y"
-             { yyresult = (yyvsp[0].num); }
+             { yy_result = (yyvsp[0].num); }
 #line 1098 "expr.tab.c"
     break;
 

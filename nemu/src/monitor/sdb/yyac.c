@@ -17,7 +17,6 @@ int yylex(void) {
   switch (tok.type) {
     case TK_NUM:
       yylval.num = tok.val;
-      printf("token value: %d\n", tok.val);
       return TK_NUM_;
 
     case TK_EQ:
