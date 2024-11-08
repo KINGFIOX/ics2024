@@ -14,9 +14,9 @@
 #**************************************************************************************/
 
 src/monitor/sdb/expr.tab.h src/monitor/sdb/expr.tab.c: src/monitor/sdb/expr.y
-	@bison -d src/monitor/sdb/expr.y
-	mv expr.tab.h src/monitor/sdb/
-	mv expr.tab.c src/monitor/sdb/
+	@cd src/monitor/sdb
+	@bison -d expr.y
+
 
 # Sanity check
 ifeq ($(wildcard $(NEMU_HOME)/src/nemu-main.c),)

@@ -61,7 +61,8 @@ extern int yydebug;
     TK_LT_ = 262,                  /* TK_LT_  */
     TK_LE_ = 263,                  /* TK_LE_  */
     UMINUS = 264,                  /* UMINUS  */
-    TK_NUM_ = 265                  /* TK_NUM_  */
+    DEREF = 265,                   /* DEREF  */
+    TK_NUM_ = 266                  /* TK_NUM_  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -70,11 +71,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "expr.y"
+#line 20 "expr.y"
 
     word_t num;
 
-#line 78 "expr.tab.h"
+#line 79 "expr.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
