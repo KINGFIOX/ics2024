@@ -52,7 +52,7 @@ static struct rule {
     {"\\*0x[0-9a-fA-F]+", TK_MEM},  // highest precedence
     {"\\*($eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$"
      "bh)",
-     TK_REG},  // register
+     TK_MEM},  // register
 
     {" +", TK_NOTYPE},  // spaces
 
@@ -188,7 +188,6 @@ static bool make_value(void) {
       bool success;
       tokens[i].val = isa_reg_str2val(reg, &success);
       if (!success) {
-        printf("reg: %s\n", reg);
         panic("impossible, str: %s", __tokens[i].str);
       }
     } else if (TK_MEM == __tokens[i].type) {
