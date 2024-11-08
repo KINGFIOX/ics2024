@@ -96,6 +96,8 @@ static int cmd_si(char *arg) {
 // example: d 2
 static int cmd_d(char *args) {
   // TODO:
+  int id = atoi(args);
+  printf(" delete watchpoint %d\n", id);
   return 0;
 }
 
