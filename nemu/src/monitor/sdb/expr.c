@@ -192,7 +192,7 @@ static bool make_value(void) {
       } else {
         panic("impossible");
       }
-      printf("reg: %s, val: 0x%x\n", reg, tokens[i].val);
+      // printf("reg: %s, val: 0x%x\n", reg, tokens[i].val);
     }
   }
   return true;
