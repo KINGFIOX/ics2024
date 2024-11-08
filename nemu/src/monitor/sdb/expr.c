@@ -64,7 +64,7 @@ static struct rule {
     {"\\(", '('},  // left parenthesis
     {"\\)", ')'},  // right parenthesis
 
-    {"[0-9]+", TK_NUM},  // number
+    {"[0-9]+ | 0x[0-9a-fA-F]+", TK_NUM},  // number
 
     {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh",
      TK_REG},  // register
@@ -169,7 +169,11 @@ static bool make_value(void) {
   for (int i = 0; i < nr_token; i++) {
     tokens[i].type = __tokens[i].type;
     if (__tokens[i].type == TK_NUM) {  // number
-      tokens[i].val = atoi(__tokens[i].str);
+      if (0 == strncmp(__tokens[i].str, "0x", 2)) {
+        tokens[i].val = strtol(__tokens[i].str, NULL, 16);
+      } else {
+        tokens[i].val = atoi(__tokens[i].str);
+      }
     } else if (__tokens[i].type == TK_REG) {  // register
       const char *reg = __tokens[i].str;
       tokens[i].type = TK_NUM;
