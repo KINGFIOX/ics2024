@@ -24,22 +24,6 @@
 #include "debug.h"
 #include "macro.h"
 
-enum {
-  TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
-
-  TK_EQ,
-  TK_NE,
-  TK_GE,
-  TK_LE,
-  TK_GT,
-  TK_LT,
-
-  TK_NUM,
-  TK_REG,
-  /* TODO: Add more token types */
-
-};
-
 // NOTE: 这里比较有趣, C 语言里的正则表达式, 要使用, 转义要使用 \\, 第一个 \ 是 C 语言里面的转义, 第二个 \ 是正则表达式里面的转义
 
 // expression     → equality ;
