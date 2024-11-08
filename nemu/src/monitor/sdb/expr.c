@@ -198,7 +198,7 @@ static bool make_value(void) {
         bool success;
         vaddr_t addr = isa_reg_str2val(reg, &success);
         if (!success) {
-          panic("impossible, str: %s", __tokens[i].str);
+          panic("impossible, str: %s, reg: %s", __tokens[i].str, reg);
         }
         tokens[i].val = vaddr_read(addr, 4);
         tokens[i].type = TK_NUM;
@@ -207,7 +207,7 @@ static bool make_value(void) {
         tokens[i].val = vaddr_read(addr, 4);
         tokens[i].type = TK_NUM;
       } else {
-        panic("impossible, str: %s", __tokens[i].str);
+        panic("impossible, str: %s, mem[0]: %c", __tokens[i].str, mem[0]);
       }
     }
   }
