@@ -107,7 +107,7 @@ static int cmd_w(char *args) {
   // TODO:
   WP *wp = new_wp();
   if (wp == NULL) {
-    printf("No free watchpoint\n");
+    printf("No free watchpoint\n");  // FIXME: log warning
     return 0;
   }
   strcpy(wp->expr, args);
