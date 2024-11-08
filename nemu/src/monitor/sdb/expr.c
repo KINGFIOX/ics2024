@@ -262,6 +262,12 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
+  if (false == yy_success) {
+    *success = false;
+    printf("yyparse error: %s\n", yy_err_msg);
+    return 0;
+  }
+
   *success = true;
   return yy_result;
 }
