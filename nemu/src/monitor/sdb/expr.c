@@ -49,7 +49,7 @@ static struct rule {
      */
 
     {"\\*0x[0-9a-fA-F]+", TK_MEM},  // highest precedence
-    {"\\*0x($eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$"
+    {"\\*($eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$"
      "bh)",
      TK_REG},  // register
 
