@@ -16,14 +16,13 @@
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
-#include "expr.h"
-
 #include <regex.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "common.h"
 #include "debug.h"
+#include "expr.h"
 #include "macro.h"
 #include "memory/vaddr.h"
 
