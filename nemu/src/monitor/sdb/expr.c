@@ -188,9 +188,10 @@ static bool make_value(void) {
       }
     } else if (__tokens[i].type == TK_MEM) {
       const char *mem = __tokens[i].str + 1;
-      tokens[i].type = TK_NUM;
       vaddr_t addr = strtol(mem, NULL, 16);
       tokens[i].val = vaddr_read(addr, 4);
+      tokens[i].type = TK_NUM;
+      printf("mem: %s, addr: 0x%x, val: 0x%x\n", mem, addr, tokens[i].val);
     }
   }
   return true;
