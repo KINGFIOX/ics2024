@@ -142,6 +142,9 @@ static bool make_token(char *e) {
           case '(':
           case ')':
 
+          case TK_OR:
+          case TK_AND:
+
           case TK_REG:
           case TK_NUM:
             strncpy(__tokens[__nr_token].str, substr_start, substr_len);
