@@ -13,11 +13,6 @@
 # See the Mulan PSL v2 for more details.
 #**************************************************************************************/
 
-src/monitor/sdb/expr.tab.h src/monitor/sdb/expr.tab.c: src/monitor/sdb/expr.y
-	@cd src/monitor/sdb
-	@bison -d expr.y
-
-
 # Sanity check
 ifeq ($(wildcard $(NEMU_HOME)/src/nemu-main.c),)
   $(error NEMU_HOME=$(NEMU_HOME) is not a NEMU repo)
