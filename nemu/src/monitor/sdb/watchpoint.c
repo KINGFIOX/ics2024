@@ -87,7 +87,7 @@ bool check_wp(void) {
       }
       if (value != wp_pool[i].last_value) {
         changed = true;
-        printf("watchpoint %d: %s\n", wp_pool[i].NO, wp_pool[i].expr);
+        printf("stopped at watchpoint %d: %s\n", wp_pool[i].NO, wp_pool[i].expr);
         wp_pool[i].last_value = value;
       }
     }
