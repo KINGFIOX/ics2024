@@ -66,6 +66,9 @@ static struct rule {
     {"\\(", '('},  // left parenthesis
     {"\\)", ')'},  // right parenthesis
 
+    {"\\|\\|", TK_OR},  // or
+    {"&&", TK_AND},     // and
+
     {"([0-9]+)|(0x[0-9a-fA-F]+)", TK_NUM},  // number
 
     {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh",
