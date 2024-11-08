@@ -237,6 +237,7 @@ word_t expr(char *e, bool *success) {
 
   if (0 != yyparse()) {
     *success = false;
+    printf("yyparse error: %s\n", yy_err_msg);
     return 0;
   }
 
