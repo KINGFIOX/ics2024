@@ -22,24 +22,35 @@
 #include <stdio.h>
 
 #include "debug.h"
+#include "macro.h"
 
 enum {
   TK_NOTYPE = 256,  // 256 是因为: 正好超过了 char 的范围
+
   TK_EQ,
   TK_NE,
+  TK_GE,
+  TK_LE,
+  TK_GT,
+  TK_LT,
+
   TK_NUM,
   TK_REG,
-
   /* TODO: Add more token types */
 
 };
 
 // NOTE: 这里比较有趣, C 语言里的正则表达式, 要使用, 转义要使用 \\, 第一个 \ 是 C 语言里面的转义, 第二个 \ 是正则表达式里面的转义
 
-// expression     -> factor ( ( "-" | "+" ) factor )*
-// factor         -> unary ( ( "/" | "*" ) unary )*
-// unary          -> ( "-" ) unary | primary
-// primary        -> NUMBER | REGISTER | "(" expression ")"
+// expression     → equality ;
+// equality       → comparison ( ( "!=" | "==" ) comparison )* ;
+// comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+// term           → factor ( ( "-" | "+" ) factor )* ;
+// factor         → unary ( ( "/" | "*" ) unary )* ;
+// unary          → ( "!" | "-" ) unary
+//                | primary ;
+// primary        → NUMBER | STRING | "true" | "false" | "nil"
+//                | "(" expression ")" ;
 
 static struct rule {
   const char *regex;
@@ -59,6 +70,11 @@ static struct rule {
 
     {"!=", TK_NE},  // not equal
     {"==", TK_EQ},  // equal
+
+    {">", TK_GT},   // greater than
+    {">=", TK_GE},  // greater than or equal
+    {"<", TK_LT},   // less than
+    {"<=", TK_LE},  // less than or equal
 
     {"\\(", '('},  // left parenthesis
     {"\\)", ')'},  // right parenthesis
@@ -105,6 +121,11 @@ static bool make_token(char *e) {
 
   nr_token = 0;
 
+  for (int i = 0; i < ARRLEN(tokens); i++) {
+    tokens[i].type = 0;
+    memset(tokens[i].str, 0, 32);
+  }
+
   while (e[position] != '\0') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i++) {
@@ -122,29 +143,31 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          case TK_NUM:
-            strncpy(tokens[nr_token].str, substr_start, substr_len);
-            tokens[nr_token].type = TK_NUM;
-            nr_token++;
+          case TK_NOTYPE:  // do nothing
             break;
+
           case '+':
           case '-':
           case '*':
           case '/':
+
+          case TK_EQ:
+          case TK_NE:
+          case TK_GT:
+          case TK_GE:
+          case TK_LT:
+          case TK_LE:
+
           case '(':
           case ')':
-            tokens[nr_token].str[0] = substr_start[0];
+
+          case TK_REG:
+
+          case TK_NUM:
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].type = rules[i].token_type;
             nr_token++;
             break;
-          case TK_EQ:
-            TODO();
-          case TK_NOTYPE:
-            // do nothing
-            break;
-          case TK_REG:
-            printf("TK_REG: %s\n", substr_start);
-            TODO();
           default:
             TODO();
         }
@@ -196,15 +219,11 @@ static word_t eval(int p, int q) {
   TODO();
 }
 
-extern int test();
-
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
-
-  test();
 
   if (!check_parentheses_sanity()) {
     *success = false;
