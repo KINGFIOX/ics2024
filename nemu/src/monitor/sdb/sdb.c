@@ -140,7 +140,6 @@ static int cmd_x(char *args) {
 // - r : registers
 // - w : watchpoints
 static int cmd_info(char *arg) {
-  // char *arg = strtok(NULL, " ");
   if (arg == NULL) {
     for (int i = 0; i < NR_CMD; i++) {
       if (0 == strcmp("info", cmd_table[i].name)) {
@@ -165,7 +164,6 @@ static int cmd_info(char *arg) {
 
 static int cmd_help(char *arg) {
   /* extract the first argument */
-  // char *arg = strtok(NULL, " ");
 
   if (arg == NULL) {  // 打印所有的命令
     /* no argument given */
