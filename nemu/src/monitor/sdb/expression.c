@@ -145,6 +145,9 @@ static bool make_token(char *e) {
 
           case TK_REG:
           case TK_NUM:
+            if (substr_len >= ARRLEN(__tokens[__nr_token].str)) {
+              return false;
+            }
             strncpy(__tokens[__nr_token].str, substr_start, substr_len);
             __tokens[__nr_token].type = rules[i].token_type;
             __nr_token++;
