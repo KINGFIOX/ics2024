@@ -11,3 +11,5 @@
 !Kconfig
 include/config
 include/generated
+
+!*.pdf
