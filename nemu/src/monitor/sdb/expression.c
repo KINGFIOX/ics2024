@@ -24,7 +24,6 @@
 #include "debug.h"
 #include "expr.h"
 #include "macro.h"
-#include "memory/vaddr.h"
 
 // NOTE: 这里比较有趣, C 语言里的正则表达式, 要使用, 转义要使用 \\, 第一个 \ 是 C 语言里面的转义, 第二个 \ 是正则表达式里面的转义
 
