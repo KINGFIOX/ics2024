@@ -26,25 +26,6 @@ typedef struct Decode {
   IFDEF(CONFIG_ITRACE, char logbuf[128]);
 } Decode;
 
-// --- pattern matching mechanism ---
-__attribute__((always_inline)) static inline void pattern_decode(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
-  /* ---------- ---------- declaration begin ---------- ---------- */
-#define macro(i)                                                                               \
-  if ((i) >= len) {                                                                            \
-    *key = __key >> __shift;                                                                   \
-    *mask = __mask >> __shift;                                                                 \
-    *shift = __shift;                                                                          \
-    return;                                                                                    \
-  } else {                                                                                     \
-    char c = str[i];                                                                           \
-    if (c != ' ') {                                                                            \
-      Assert(c == '0' || c == '1' || c == '?', "invalid character '%c' in pattern string", c); \
-      __key = (__key << 1) | (c == '1' ? 1 : 0);                                               \
-      __mask = (__mask << 1) | (c == '?' ? 0 : 1);                                             \
-      __shift = (c == '?' ? __shift + 1 : 0);                                                  \
-    }                                                                                          \
-  }
-
 #define macro2(i) \
   macro(i);       \
   macro((i) + 1)
@@ -63,6 +44,25 @@ __attribute__((always_inline)) static inline void pattern_decode(const char *str
 #define macro64(i) \
   macro32(i);      \
   macro32((i) + 32)
+
+// --- pattern matching mechanism ---
+__attribute__((always_inline)) static inline void pattern_decode(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
+  /* ---------- ---------- declaration begin ---------- ---------- */
+#define macro(i)                                                                               \
+  if ((i) >= len) {                                                                            \
+    *key = __key >> __shift;                                                                   \
+    *mask = __mask >> __shift;                                                                 \
+    *shift = __shift;                                                                          \
+    return;                                                                                    \
+  } else {                                                                                     \
+    char c = str[i];                                                                           \
+    if (c != ' ') {                                                                            \
+      Assert(c == '0' || c == '1' || c == '?', "invalid character '%c' in pattern string", c); \
+      __key = (__key << 1) | (c == '1' ? 1 : 0);                                               \
+      __mask = (__mask << 1) | (c == '?' ? 0 : 1);                                             \
+      __shift = (c == '?' ? __shift + 1 : 0);                                                  \
+    }                                                                                          \
+  }
   /* ---------- ---------- declaration end ---------- ---------- */
 
   // actually running the macro. above are just declarations.
@@ -90,7 +90,6 @@ __attribute__((always_inline)) static inline void pattern_decode_hex(const char 
       __shift = (c == '?' ? __shift + 4 : 0);                                                                              \
     }                                                                                                                      \
   }
-
   /* ---------- ---------- declaration end ---------- ---------- */
 
   // actually running the macro. above are just declarations.
