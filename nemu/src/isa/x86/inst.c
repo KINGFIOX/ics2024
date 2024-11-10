@@ -19,6 +19,24 @@
 
 #include "local-include/reg.h"
 
+// +-----------+-----------+-----------+--------+------+------+------+------------+-----------+
+// |instruction| address-  |  operand- |segment |opcode|ModR/M| SIB  |displacement| immediate |
+// |  prefix   |size prefix|size prefix|override|      |      |      |            |           |
+// |-----------+-----------+-----------+--------+------+------+------+------------+-----------|
+// |   0 OR 1  |  0 OR 1   |   0 OR 1  | 0 OR 1 |1 OR 2|0 OR 1|0 OR 1| 0,1,2 OR 4 |0,1,2 OR 4 |
+// | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+// |                                     number of bytes                                      |
+// +------------------------------------------------------------------------------------------+
+//
+//  66 c7 84 99 00 e0 ff ff 01 00      movw   $0x1,-0x2000(%ecx,%ebx,4)
+//
+// +-----------+-----------+-----------+--------+------+------+------+------------+-----------+
+// |instruction| address-  |  operand- |segment |opcode|ModR/M| SIB  |displacement| immediate |
+// |  prefix   |size prefix|size prefix|override|      |      |      |            |           |
+// |-----------+-----------+-----------+--------+------+------+------+------------+-----------|
+// |                            66                 c7     84     99    00 e0 ff ff    01 00   |
+// +------------------------------------------------------------------------------------------+
+
 typedef union {
   struct {
     uint8_t R_M : 3;
@@ -282,7 +300,7 @@ again:
 
   INSTPAT_START();
 
-  // INSTPAT( pattern, name, type, width, BLOCK )
+  /* INSTPAT( pattern, name, type, width, BLOCK ) */
 
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
