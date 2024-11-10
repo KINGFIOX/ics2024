@@ -46,6 +46,26 @@ typedef struct Decode {
   macro32((i) + 32)
 
 // --- pattern matching mechanism ---
+
+// example:
+// uint64_t key, mask, shift;
+//
+// pattern_decode("1011 0???", STRLEN("1011 0???"), &key, &mask, &shift);
+// STRLEN("1011 0???") = 9
+//
+// key   = 0b1011_0000
+// mask  = 0b1111_1000
+// shift = 3
+
+/**
+ * @brief decode the pattern string to key, mask and shift
+ *
+ * @param str pattern string
+ * @param len length of the pattern string
+ * @param key (returned)
+ * @param mask (returned)
+ * @param shift (returned) decoded shift (count of the '?')
+ */
 __attribute__((always_inline)) static inline void pattern_decode(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
   /* ---------- ---------- declaration begin ---------- ---------- */
 #define macro(i)                                                                               \
@@ -68,9 +88,9 @@ __attribute__((always_inline)) static inline void pattern_decode(const char *str
   // actually running the macro. above are just declarations.
   uint64_t __key = 0, __mask = 0, __shift = 0;
   macro64(0);
+#undef macro
 
   panic("pattern too long");
-#undef macro
 }
 
 __attribute__((always_inline)) static inline void pattern_decode_hex(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
@@ -95,9 +115,9 @@ __attribute__((always_inline)) static inline void pattern_decode_hex(const char 
   // actually running the macro. above are just declarations.
   uint64_t __key = 0, __mask = 0, __shift = 0;
   macro16(0);
+#undef macro
 
   panic("pattern too long");
-#undef macro
 }
 
 // --- pattern matching wrappers for decode ---

@@ -16,6 +16,7 @@
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/ifetch.h>
+#include <stdio.h>
 
 #include "local-include/reg.h"
 
@@ -61,12 +62,13 @@ typedef union {
 
 static word_t x86_inst_fetch(Decode *s, int len) {
 #if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
-  uint8_t *p = &s->isa.inst[s->snpc - s->pc];
+  uint8_t *p = &s->isa.inst[s->snpc - s->pc];  // uint8_t inst[16];
+  printf("s->snpc = 0x%08x, s->pc = 0x%08x\n", s->snpc, s->pc);
   word_t ret = inst_fetch(&s->snpc, len);
   word_t ret_save = ret;
   int i;
   assert(s->snpc - s->pc < sizeof(s->isa.inst));
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < len; i++) {  // save the inst to s->isa.inst
     p[i] = ret & 0xff;
     ret >>= 8;
   }
