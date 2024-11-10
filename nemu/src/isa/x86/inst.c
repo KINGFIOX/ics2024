@@ -60,10 +60,47 @@ typedef union {
   uint8_t val;
 } SIB;
 
+// s->snpc = 0x00100000, s->pc = 0x00100000, len = 1
+// s->snpc = 0x00100001, s->pc = 0x00100000, len = 4
+// 0x00100000: b8 (34 12) 00 00          movl        $0x1234, %eax
+//
+// s->snpc = 0x00100005, s->pc = 0x00100005, len = 1
+// s->snpc = 0x00100006, s->pc = 0x00100005, len = 4
+// 0x00100005: b9 (27 00 10) 00          movl        $0x100027, %ecx
+//
+// s->snpc = 0x0010000a, s->pc = 0x0010000a, len = 1
+// s->snpc = 0x0010000b, s->pc = 0x0010000a, len = 1
+// 0x0010000a: 89 01                   movl        %eax, (%ecx)
+//
+// s->snpc = 0x0010000c, s->pc = 0x0010000c, len = 1
+// s->snpc = 0x0010000d, s->pc = 0x0010000c, len = 1
+// s->snpc = 0x0010000e, s->pc = 0x0010000c, len = 1
+// s->snpc = 0x0010000f, s->pc = 0x0010000c, len = 1
+// s->snpc = 0x00100010, s->pc = 0x0010000c, len = 2
+// 0x0010000c: 66 c7 41 04 01 00       movw        $1, 4(%ecx)
+//
+// s->snpc = 0x00100012, s->pc = 0x00100012, len = 1
+// s->snpc = 0x00100013, s->pc = 0x00100012, len = 4
+// 0x00100012: bb (02 00 00 00)          movl        $2, %ebx
+//
+// s->snpc = 0x00100017, s->pc = 0x00100017, len = 1
+// s->snpc = 0x00100018, s->pc = 0x00100017, len = 1
+// s->snpc = 0x00100019, s->pc = 0x00100017, len = 1
+// s->snpc = 0x0010001a, s->pc = 0x00100017, len = 1
+// s->snpc = 0x0010001b, s->pc = 0x00100017, len = 4
+// s->snpc = 0x0010001f, s->pc = 0x00100017, len = 2
+// 0x00100017: 66 c7 84 99 (00 e0 ff ff) 01 00 movw  $1, -0x2000(%ecx, %ebx, 4)
+//
+// s->snpc = 0x00100021, s->pc = 0x00100021, len = 1
+// s->snpc = 0x00100022, s->pc = 0x00100021, len = 4
+// 0x00100021: b8 (00 00 00 00)          movl        $0, %eax
+//
+// s->snpc = 0x00100026, s->pc = 0x00100026, len = 1
+// 0x00100026: cc                      int3
 static word_t x86_inst_fetch(Decode *s, int len) {
 #if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
   uint8_t *p = &s->isa.inst[s->snpc - s->pc];  // uint8_t inst[16];
-  printf("s->snpc = 0x%08x, s->pc = 0x%08x, len = %d\n", s->snpc, s->pc, len);
+  // printf("s->snpc = 0x%08x, s->pc = 0x%08x, len = %d\n", s->snpc, s->pc, len);
   word_t ret = inst_fetch(&s->snpc, len);
   word_t ret_save = ret;
   int i;
@@ -336,9 +373,26 @@ again:
 
   // B0 + rb ib  MOV reg8,imm8 , ??? here is the id of reg
   INSTPAT("1011 0???", mov, I2r, 1, Rw(rd, 1, imm));
+
   // B8 + rw iw  MOV reg16,imm16
   // B8 + rd id  MOV reg32,imm32
-  INSTPAT("1011 1???", mov, I2r, 0, Rw(rd, w, imm));
+  // INSTPAT("1011 1???", mov, I2r, 0, Rw(rd, w, imm));
+  do {
+    uint64_t key, mask, shift;
+    pattern_decode("1011 1???", (sizeof("1011 1???") - 1), &key, &mask, &shift);
+    printf("key = 0b%lb, mask = 0b%lb, shift = %ld\n", key, mask, shift);
+    if ((((uint64_t)opcode >> shift) & mask) == key) {
+      {
+        int rd = 0, rs = 0, gp_idx = 0;
+        word_t src1 = 0, addr = 0, imm = 0;
+        int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;
+        decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2r);
+        s->dnpc = s->snpc;
+        reg_write(rd, w, imm);
+      };
+      goto *(__instpat_end);
+    }
+  } while (0);
 
   // C6 ib    MOV r/m8,imm8
   INSTPAT("1100 0110", mov, I2E, 1, RMw(imm));

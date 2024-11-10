@@ -52,6 +52,7 @@ typedef struct Decode {
 //
 // pattern_decode("1011 0???", STRLEN("1011 0???"), &key, &mask, &shift);
 // STRLEN("1011 0???") = 9
+// pat   = 0b1011_0???
 //
 // key   = 0b1011_0000
 // mask  = 0b1111_1000
