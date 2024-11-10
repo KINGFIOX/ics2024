@@ -63,7 +63,7 @@ typedef union {
 static word_t x86_inst_fetch(Decode *s, int len) {
 #if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
   uint8_t *p = &s->isa.inst[s->snpc - s->pc];  // uint8_t inst[16];
-  printf("s->snpc = 0x%08x, s->pc = 0x%08x, p = %p\n", s->snpc, s->pc, p);
+  printf("s->snpc = 0x%08x, s->pc = 0x%08x, len = %d\n", s->snpc, s->pc, len);
   word_t ret = inst_fetch(&s->snpc, len);
   word_t ret_save = ret;
   int i;
