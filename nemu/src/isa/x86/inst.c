@@ -97,6 +97,16 @@ typedef union {
 //
 // s->snpc = 0x00100026, s->pc = 0x00100026, len = 1
 // 0x00100026: cc                      int3
+
+/**
+ * @brief
+ *
+ * @param s (mut)
+ * - s->snpc (mut)
+ * - s->isa.inst (mut if ITRACE)
+ * @param len (input)
+ * @return word_t
+ */
 static word_t x86_inst_fetch(Decode *s, int len) {
 #if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
   uint8_t *p = &s->isa.inst[s->snpc - s->pc];  // uint8_t inst[16];
@@ -274,10 +284,24 @@ enum {
     __VA_ARGS__;                                                                              \
   }
 
+/**
+ * @brief
+ *
+ * @param s (return)
+ * @param opcode (input)
+ * @param rd_ (return)
+ * @param src1 (return)
+ * @param addr (return)
+ * @param rs (return)
+ * @param gp_idx (return)
+ * @param imm (return)
+ * @param w (input)
+ * @param type (input)
+ */
 static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, word_t *addr, int *rs, int *gp_idx, word_t *imm, int w, int type) {
   switch (type) {
     case TYPE_I2r:
-      destr(opcode & 0x7);
+      destr(opcode & 0b0111);
       imm();
       break;
     case TYPE_G2E:
@@ -381,14 +405,18 @@ again:
     uint64_t key, mask, shift;
     pattern_decode("1011 1???", (sizeof("1011 1???") - 1), &key, &mask, &shift);
     printf("key = 0b%lb, mask = 0b%lb, shift = %ld\n", key, mask, shift);
+    // 取出来的 opcode 相符合
     if ((((uint64_t)opcode >> shift) & mask) == key) {
       {
         int rd = 0, rs = 0, gp_idx = 0;
         word_t src1 = 0, addr = 0, imm = 0;
         int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;
+        printf("w = %d\n", w);
         decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2r);
+        // BLOCK begin
         s->dnpc = s->snpc;
         reg_write(rd, w, imm);
+        // BLOCK end
       };
       goto *(__instpat_end);
     }

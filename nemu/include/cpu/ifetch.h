@@ -20,7 +20,7 @@
 /**
  * @brief
  *
- * @param pc (mut) next inst addr
+ * @param pc (mut) next inst addr to snpc
  * @param len
  * @return uint32_t
  */

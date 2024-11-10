@@ -54,8 +54,8 @@ typedef struct Decode {
 // STRLEN("1011 0???") = 9
 // pat   = 0b1011_0???
 //
-// key   = 0b1011_0000
-// mask  = 0b1111_1000
+// key   = 0b1011_1
+// mask  = 0b1111_1
 // shift = 3
 
 /**
