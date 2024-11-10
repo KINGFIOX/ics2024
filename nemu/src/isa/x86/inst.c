@@ -26,7 +26,7 @@ typedef union {
     uint8_t mod : 2;
   };
   struct {
-    uint8_t dont_care : 3;
+    uint8_t : 3;
     uint8_t opcode : 3;
   };
   uint8_t val;
@@ -143,10 +143,15 @@ static void decode_rm(Decode *s, int *rm_reg, word_t *rm_addr, int *reg, int wid
 }
 
 #define Rr reg_read
+
 #define Rw reg_write
+
 #define Mr vaddr_read
+
 #define Mw vaddr_write
+
 #define RMr(reg, w) (reg != -1 ? Rr(reg, w) : Mr(addr, w))
+
 #define RMw(data)        \
   do {                   \
     if (rd != -1)        \
@@ -159,14 +164,17 @@ static void decode_rm(Decode *s, int *rm_reg, word_t *rm_addr, int *reg, int wid
   do {           \
     *rd_ = (r);  \
   } while (0)
+
 #define src1r(r)      \
   do {                \
     *src1 = Rr(r, w); \
   } while (0)
+
 #define imm()                    \
   do {                           \
     *imm = x86_inst_fetch(s, w); \
   } while (0)
+
 #define simm(w)                               \
   do {                                        \
     *imm = SEXT(x86_inst_fetch(s, w), w * 8); \
