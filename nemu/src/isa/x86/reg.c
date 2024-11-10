@@ -65,10 +65,11 @@ void isa_reg_display() {
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   *success = true;
-  if (0 == strcmp(s, "eip")) {
+  if (0 == strcmp(s, "eflags")) {
+    return cpu.eflags;
+  } else if (0 == strcmp(s, "eip")) {
     return cpu.pc;
-  }
-  if (0 == strcmp(s, "eax")) {
+  } else if (0 == strcmp(s, "eax")) {
     return cpu.gpr[R_EAX]._32;
   } else if (0 == strcmp(s, "ecx")) {
     return cpu.gpr[R_ECX]._32;
