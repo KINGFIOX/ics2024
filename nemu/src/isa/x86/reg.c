@@ -21,8 +21,12 @@
 void reg_test() {
   // emulate stat before reset
   word_t sample[8];
+
   word_t pc_sample = rand();
   cpu.pc = pc_sample;
+
+  word_t eflags_sample = rand();
+  cpu.eflags = eflags_sample;
 
   int i;
   for (i = R_EAX; i <= R_EDI; i++) {
@@ -50,6 +54,7 @@ void reg_test() {
   assert(sample[R_EDI] == cpu.edi);
 
   assert(pc_sample == cpu.pc);
+  assert(eflags_sample == cpu.eflags);
 }
 
 void isa_reg_display() {
@@ -60,6 +65,9 @@ void isa_reg_display() {
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   *success = true;
+  if (0 == strcmp(s, "eip")) {
+    return cpu.pc;
+  }
   if (0 == strcmp(s, "eax")) {
     return cpu.gpr[R_EAX]._32;
   } else if (0 == strcmp(s, "ecx")) {
