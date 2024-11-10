@@ -61,6 +61,8 @@ void isa_reg_display() {
   for (int i = R_EAX; i <= R_EDI; i++) {
     printf("%s = 0x%08x\n", reg_name(i, 4), reg_l(i));
   }
+  printf("eip = 0x%08x\n", cpu.pc);
+  printf("eflags = 0x%08x\n", cpu.eflags);  // TODO: 可能要显示详细参数吧
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
