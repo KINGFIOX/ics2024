@@ -180,9 +180,9 @@ enum {
   TYPE_E,
   TYPE_I2r,  // XX <- Ib / eXX <- Iv
   TYPE_I2a,  // AL <- Ib / eAX <- Iv
-  TYPE_G2E,  // Eb <- Gb / Ev <- Gv
+  TYPE_G2E,  // Eb <- Gb / Ev <- Gv, General
   TYPE_E2G,  // Gb <- Eb / Gv <- Ev
-  TYPE_I2E,  // Eb <- Ib / Ev <- Iv
+  TYPE_I2E,  // Eb <- Ib / Ev <- Iv, Either
   TYPE_Ib2E,
   TYPE_cl2E,
   TYPE_1_E,
@@ -241,6 +241,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   }
 }
 
+// gp1's gp_idx from INSTPAT_START
 #define gp1()         \
   do {                \
     switch (gp_idx) { \
@@ -249,6 +250,14 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     };                \
   } while (0)
 
+// 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
+// 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
+// 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
+// 0F  21 /r   MOV r32,DR6/DR7       14       Move (debug register) to (register)
+// 0F  23 /r   MOV DR0 -- 3,r32      22       Move (register) to (debug register)
+// 0F  23 /r   MOV DR6/DR7,r32       16       Move (register) to (debug register)
+// 0F  24 /r   MOV r32,TR6/TR7       12       Move (test register) to (register)
+// 0F  26 /r   MOV TR6/TR7,r32       12       Move (register) to (test register)
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
@@ -271,26 +280,50 @@ again:
 
   INSTPAT("0110 0110", data_size, N, 0, is_operand_size_16 = true; goto again;);
 
+  // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
-  INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));
+
+  // 88  /r   MOV r/m8,r8
+  INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
+  // 89  /r   MOV r/m16,r16
+  // 89  /r   MOV r/m32,r32
   INSTPAT("1000 1001", mov, G2E, 0, RMw(src1));
+
+  // 8A  /r   MOV r8,r/m8
   INSTPAT("1000 1010", mov, E2G, 1, Rw(rd, w, RMr(rs, w)));
+  // 8B  /r   MOV r16,r/m16
+  // 8B  /r   MOV r32,r/m32
   INSTPAT("1000 1011", mov, E2G, 0, Rw(rd, w, RMr(rs, w)));
 
+  // A0       MOV AL,moffs8     4
   INSTPAT("1010 0000", mov, O2a, 1, Rw(R_EAX, 1, Mr(addr, 1)));
+  // A1       MOV AX,moffs16    4
   INSTPAT("1010 0001", mov, O2a, 0, Rw(R_EAX, w, Mr(addr, w)));
+
+  // A2       MOV moffs8,AL     2
   INSTPAT("1010 0010", mov, a2O, 1, Mw(addr, 1, Rr(R_EAX, 1)));
+  // A3       MOV moffs16,AX    2
+  // A3       MOV moffs32,EAX   2
   INSTPAT("1010 0011", mov, a2O, 0, Mw(addr, w, Rr(R_EAX, w)));
 
+  // B0 + rb ib  MOV reg8,imm8 , ??? here is the id of reg
   INSTPAT("1011 0???", mov, I2r, 1, Rw(rd, 1, imm));
+  // B8 + rw iw  MOV reg16,imm16
+  // B8 + rd id  MOV reg32,imm32
   INSTPAT("1011 1???", mov, I2r, 0, Rw(rd, w, imm));
 
+  // C6 ib    MOV r/m8,imm8
   INSTPAT("1100 0110", mov, I2E, 1, RMw(imm));
+  // C7 iw    MOV r/m16,imm16
+  // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
+
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
+
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
 
   INSTPAT_END();
+  // __instpat_end_:;
 
   return 0;
 }
