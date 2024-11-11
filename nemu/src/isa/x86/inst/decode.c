@@ -408,6 +408,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp5()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
+      case 0b000:                                                      \
+        printf("w = %d\n", w);                                         \
+        Mw(addr, w, Mr(addr, w) + 1);                                  \
+        break;                                                         \
       case 0b110:                                                      \
         push(w, Mr(addr, w));                                          \
         break;                                                         \
@@ -541,7 +545,7 @@ again:
   //   10001a:       68 40 00 10 00          push   $0x100040
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
   //
-  INSTPAT("0110 1010", push, SI, 0, push(w, imm));
+  INSTPAT("0110 1010", push, SI, 0, push(w, imm));  // 这个 width = 0 是试出来的
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
   INSTPAT("0011 1011", cmp, E2G, 0, cmp_r_m(rd, w, addr));
