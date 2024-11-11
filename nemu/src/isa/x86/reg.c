@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
-#include "local-include/reg.h"
+#include "../reg.h"
 
 #include <isa.h>
 #include <stdio.h>
