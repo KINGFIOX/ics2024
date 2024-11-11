@@ -445,7 +445,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
     printf("imm = %02x\n", imm);                                \
     switch (func) {                                             \
       case 0b0100:                                              \
-        s->snpc += SEXT(imm & 0xff, 2 * 8);                     \
+        je(s, imm);                                             \
         break;                                                  \
       default:                                                  \
         INV(s->pc);                                             \
