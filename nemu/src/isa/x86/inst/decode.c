@@ -437,7 +437,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_END();
 }
 
-#define jmp()                                                      \
+#define jcc()                                                      \
   do {                                                             \
     printf("%s:%d gp_idx = 0b%04b\n", __FILE__, __LINE__, gp_idx); \
     switch (gp_idx) {                                              \
@@ -501,7 +501,7 @@ again:
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
-  INSTPAT("0111 ????", jmp, J, 0, jmp());
+  INSTPAT("0111 ????", jcc, J, 0, jcc());
 
   //   100012:       c3                      ret
   INSTPAT("1100 0011", ret, N, 0, ret(s, w));
