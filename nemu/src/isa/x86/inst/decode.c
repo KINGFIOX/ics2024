@@ -467,7 +467,7 @@ again:
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
   //   10000a:       e8 05 00 00 00          call   100014 <_trm_init>
-  INSTPAT("1110 1000", call, J, 0, call(s, 0, imm));
+  INSTPAT("1110 1000", call, J, 0, call(s, w, imm));
 
   //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
