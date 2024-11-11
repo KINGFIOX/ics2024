@@ -427,11 +427,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
   //   100067:       0f 94 c2                sete   %dl
-  INSTPAT("1001 0???", xchg, a2r, 0, {
-    Rw(rd, 1, (cpu.eflags.zf != 0));
-    printf("%d %s\n", rd, reg_name(rd, 1));
-    assert(cpu.gpr[R_EDX]._8[0] == 1);
-  });
+  INSTPAT("1001 0???", xchg, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
