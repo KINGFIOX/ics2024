@@ -523,6 +523,7 @@ again:
     cpu.eflags.af = 0;
     cpu.eflags.pf = 0;
     cpu.eflags.cf = op1 < op2;
+    printf("op1 = 0x%08x op2 = 0x%08x, eflags = 0x%08x\n", op1, op2, cpu._val_eflags);
   });
 
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
