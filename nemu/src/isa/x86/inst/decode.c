@@ -291,7 +291,6 @@ enum {
   TYPE_Ew2G,
   TYPE_O2a,     // ax <- offset content of memory
   TYPE_a2O,     // offset of memory <- ax
-  TYPE_a2r,     //
   TYPE_I_E2G,   // Gv <- EvIb / Gv <- EvIv // use for imul
   TYPE_SI_E2G,  // Gv <- EvIb / Gv <- EvIv // use for imul
   TYPE_Ib_G2E,  // Ev <- GvIb // use for shld/shrd
@@ -370,8 +369,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_r:
       destr(opcode & 0b0111);
       break;
-    case TYPE_a2r:
-      break;
     case TYPE_N:
       break;
     default:
@@ -430,7 +427,11 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
-  INSTPAT("1001 0???", xchg, a2r, 0, INV(s->pc));
+  INSTPAT("1001 0???", xchg, r, 0, {
+    word_t tmp = cpu._val_eflags;
+    cpu._val_eflags = Rr(rd, w);
+    Rw(rd, w, tmp);
+  });
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
