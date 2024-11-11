@@ -105,6 +105,7 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
       printf("%s = 0x%08x\n", regsl[i], ref->gpr[i]._32);
     }
     printf("pc = 0x%08x\n", ref->pc);
+    printf("eflags = 0x%08x\n", ref->_val_eflags);
   }
 }
 
