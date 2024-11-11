@@ -322,7 +322,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       break;
     case TYPE_Eb2G:
-      decode_rm(s, rd_, addr, gp_idx, w);
+      decode_rm(s, rd_, addr, rs, w);
       break;
     case TYPE_I2r:
       destr(opcode & 0b0111);
