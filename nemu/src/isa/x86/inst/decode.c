@@ -233,14 +233,6 @@ static void decode_rm(Decode *s, int *rm_reg, word_t *rm_addr, int *reg, int wid
   }
 }
 
-#define Rr reg_read
-
-#define Rw reg_write
-
-#define Mr vaddr_read
-
-#define Mw vaddr_write
-
 #define RMr(reg, w) (reg != -1 ? Rr(reg, w) : Mr(addr, w))
 
 #define RMw(data)        \
@@ -431,12 +423,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
-  INSTPAT("1001 0???", xchg, a2r, 0, {
-    word_t tmp = cpu._val_eflags;
-    cpu._val_eflags = Rr(rd, 1);
-    Rw(rd, 1, tmp);
-    printf("rd = %d %s\n", rd, reg_name(rd, 1));
-  });
+  INSTPAT("1001 0???", xchg, a2r, 0, Rw(rd, 1, cpu.eflags.zf == 1));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
@@ -514,17 +501,7 @@ again:
   INSTPAT("0110 1010", push, SI, 1, push(w, imm));
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
-  INSTPAT("0011 1011", cmp, E2G, 0, {
-    word_t op1 = Rr(rd, w);
-    word_t op2 = vaddr_read(addr, w);
-    cpu.eflags.of = 0;
-    cpu.eflags.sf = 0;
-    cpu.eflags.zf = op1 == op2;
-    cpu.eflags.af = 0;
-    cpu.eflags.pf = 0;
-    cpu.eflags.cf = op1 < op2;
-    printf("op1 = 0x%08x op2 = 0x%08x, eflags = 0x%08x\n", op1, op2, cpu._val_eflags);
-  });
+  INSTPAT("0011 1011", cmp, E2G, 0, cmp(s, rd, w, addr));
 
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
