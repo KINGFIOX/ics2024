@@ -18,7 +18,7 @@
 #include <cpu/ifetch.h>
 #include <stdio.h>
 
-#include "local-include/reg.h"
+#include "../local-include/reg.h"
 
 // +-----------+-----------+-----------+--------+------+------+------+------------+-----------+
 // |instruction| address-  |  operand- |segment |opcode|ModR/M| SIB  |displacement| immediate |
