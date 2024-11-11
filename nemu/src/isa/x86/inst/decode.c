@@ -544,7 +544,7 @@ again:
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
 
-  INSTPAT("0100 0???", inc, r, 0, Rw(rs, w, Rr(rs, w) + 1));
+  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
 
   // 10005e:       01 f2                   add    %esi,%edx
   INSTPAT("0000 0001", gp7, E, 0, gp7());
