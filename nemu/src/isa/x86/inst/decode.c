@@ -467,6 +467,9 @@ again:
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
+  //   100012:       c3                      ret
+  INSTPAT("1100 0011", ret, N, 0, ret(s, w));
+
   //   10000a:       e8 05 00 00 00          call   100014 <_trm_init>
   INSTPAT("1110 1000", call, J, 0, call(s, w, imm));
 
