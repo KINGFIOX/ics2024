@@ -377,22 +377,23 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 }
 
 // gp1's gp_idx from INSTPAT_START
-#define gp1()                            \
-  do {                                   \
-    printf("gp_idx = 0b%03b\n", gp_idx); \
-    switch (gp_idx) {                    \
-      case 0b100:                        \
-        Rw(rd, w, Rr(rd, w) & imm);      \
-        break;                           \
-      case 0b101:                        \
-        Rw(rd, w, Rr(rd, w) - imm);      \
-        break;                           \
-      case 0b111:                        \
-        cmpb(w, addr, imm);              \
-        break;                           \
-      default:                           \
-        INV(s->pc);                      \
-    };                                   \
+#define gp1()                                                \
+  do {                                                       \
+    printf("gp_idx = 0b%03b\n", gp_idx);                     \
+    switch (gp_idx) {                                        \
+      case 0b100:                                            \
+        Rw(rd, w, Rr(rd, w) & imm);                          \
+        break;                                               \
+      case 0b101:                                            \
+        printf("%s:%d imm = %x\n", __FILE__, __LINE__, imm); \
+        Rw(rd, w, Rr(rd, w) - imm);                          \
+        break;                                               \
+      case 0b111:                                            \
+        cmpb(w, addr, imm);                                  \
+        break;                                               \
+      default:                                               \
+        INV(s->pc);                                          \
+    };                                                       \
   } while (0)
 
 #define gp5()                                                      \
