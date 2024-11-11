@@ -348,6 +348,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       *rs = R_EAX;
       *addr = x86_inst_fetch(s, 4);
       break;
+    case TYPE_I:
     case TYPE_J:
       imm();
       break;
@@ -471,6 +472,9 @@ again:
 
   //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
+
+  //   10001a:       68 40 00 10 00          push   $0x100040
+  INSTPAT("0110 1000", push, I, 0, push(w, imm));
 
   //   100017:       83 ec 14                sub    $0x14,%esp
   INSTPAT("1000 0011", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
