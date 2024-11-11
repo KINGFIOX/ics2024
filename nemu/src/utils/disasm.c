@@ -16,6 +16,7 @@
 #include <capstone/capstone.h>
 #include <common.h>
 #include <dlfcn.h>
+#include <stdio.h>
 
 static size_t (*cs_disasm_dl)(csh handle, const uint8_t *code, size_t code_size, uint64_t address, size_t count, cs_insn **insn);
 static void (*cs_free_dl)(cs_insn *insn, size_t count);
@@ -37,16 +38,14 @@ void init_disasm() {
   cs_free_dl = dlsym(dl_handle, "cs_free");
   assert(cs_free_dl);
 
-  // cs_arch arch =
-  //     MUXDEF(CONFIG_ISA_x86, CS_ARCH_X86,
-  //            MUXDEF(CONFIG_ISA_mips32, CS_ARCH_MIPS, MUXDEF(CONFIG_ISA_riscv, CS_ARCH_RISCV, MUXDEF(CONFIG_ISA_loongarch32r, CS_ARCH_LOONGARCH, -1))));
-  cs_arch arch = CS_ARCH_X86;
+  cs_arch arch =
+      MUXDEF(CONFIG_ISA_x86, CS_ARCH_X86,
+             MUXDEF(CONFIG_ISA_mips32, CS_ARCH_MIPS, MUXDEF(CONFIG_ISA_riscv, CS_ARCH_RISCV, MUXDEF(CONFIG_ISA_loongarch32r, CS_ARCH_LOONGARCH, -1))));
 
-  // cs_mode mode = MUXDEF(CONFIG_ISA_x86, CS_MODE_32,
-  //                       MUXDEF(CONFIG_ISA_mips32, CS_MODE_MIPS32,
-  //                              MUXDEF(CONFIG_ISA_riscv, MUXDEF(CONFIG_ISA64, CS_MODE_RISCV64, CS_MODE_RISCV32) | CS_MODE_RISCVC,
-  //                                     MUXDEF(CONFIG_ISA_loongarch32r, CS_MODE_LOONGARCH32, -1))));
-  cs_mode mode = CS_MODE_32;
+  cs_mode mode = MUXDEF(CONFIG_ISA_x86, CS_MODE_32,
+                        MUXDEF(CONFIG_ISA_mips32, CS_MODE_MIPS32,
+                               MUXDEF(CONFIG_ISA_riscv, MUXDEF(CONFIG_ISA64, CS_MODE_RISCV64, CS_MODE_RISCV32) | CS_MODE_RISCVC,
+                                      MUXDEF(CONFIG_ISA_loongarch32r, CS_MODE_LOONGARCH32, -1))));
 
   int ret = cs_open_dl(arch, mode, &handle);
   assert(ret == CS_ERR_OK);
@@ -63,6 +62,9 @@ void init_disasm() {
 void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
   cs_insn *insn;
   size_t count = cs_disasm_dl(handle, code, nbyte, pc, 0, &insn);
+  if (count != 1) {
+    printf("str = %s, size = %d, pc = %lx, code = %p, nbyte = %d, count = %ld\n", str, size, pc, code, nbyte, count);
+  }
   assert(count == 1);
   int ret = snprintf(str, size, "%s", insn->mnemonic);
   if (insn->op_str[0] != '\0') {

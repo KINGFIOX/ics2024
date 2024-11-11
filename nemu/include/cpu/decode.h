@@ -26,22 +26,6 @@ typedef struct Decode {
   IFDEF(CONFIG_ITRACE, char logbuf[128]);
 } Decode;
 
-// --- pattern matching mechanism ---
-__attribute__((always_inline)) static inline void pattern_decode(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
-  uint64_t __key = 0, __mask = 0, __shift = 0;
-#define macro(i)                                                                               \
-  if ((i) >= len)                                                                              \
-    goto finish;                                                                               \
-  else {                                                                                       \
-    char c = str[i];                                                                           \
-    if (c != ' ') {                                                                            \
-      Assert(c == '0' || c == '1' || c == '?', "invalid character '%c' in pattern string", c); \
-      __key = (__key << 1) | (c == '1' ? 1 : 0);                                               \
-      __mask = (__mask << 1) | (c == '?' ? 0 : 1);                                             \
-      __shift = (c == '?' ? __shift + 1 : 0);                                                  \
-    }                                                                                          \
-  }
-
 #define macro2(i) \
   macro(i);       \
   macro((i) + 1)
@@ -60,21 +44,65 @@ __attribute__((always_inline)) static inline void pattern_decode(const char *str
 #define macro64(i) \
   macro32(i);      \
   macro32((i) + 32)
+
+// --- pattern matching mechanism ---
+
+// example:
+// uint64_t key, mask, shift;
+//
+// pattern_decode("1011 0???", STRLEN("1011 0???"), &key, &mask, &shift);
+// STRLEN("1011 0???") = 9
+// pat   = 0b1011_0???
+//
+// key   = 0b1011_1
+// mask  = 0b1111_1
+// shift = 3
+
+/**
+ * @brief decode the pattern string to key, mask and shift
+ *
+ * @param str pattern string
+ * @param len length of the pattern string
+ * @param key (returned)
+ * @param mask (returned)
+ * @param shift (returned) decoded shift (count of the '?')
+ */
+__attribute__((always_inline)) static inline void pattern_decode(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
+  /* ---------- ---------- declaration begin ---------- ---------- */
+#define macro(i)                                                                               \
+  if ((i) >= len) {                                                                            \
+    *key = __key >> __shift;                                                                   \
+    *mask = __mask >> __shift;                                                                 \
+    *shift = __shift;                                                                          \
+    return;                                                                                    \
+  } else {                                                                                     \
+    char c = str[i];                                                                           \
+    if (c != ' ') {                                                                            \
+      Assert(c == '0' || c == '1' || c == '?', "invalid character '%c' in pattern string", c); \
+      __key = (__key << 1) | (c == '1' ? 1 : 0);                                               \
+      __mask = (__mask << 1) | (c == '?' ? 0 : 1);                                             \
+      __shift = (c == '?' ? __shift + 1 : 0);                                                  \
+    }                                                                                          \
+  }
+  /* ---------- ---------- declaration end ---------- ---------- */
+
+  // actually running the macro. above are just declarations.
+  uint64_t __key = 0, __mask = 0, __shift = 0;
   macro64(0);
-  panic("pattern too long");
 #undef macro
-finish:
-  *key = __key >> __shift;
-  *mask = __mask >> __shift;
-  *shift = __shift;
+
+  panic("pattern too long");
 }
 
 __attribute__((always_inline)) static inline void pattern_decode_hex(const char *str, int len, uint64_t *key, uint64_t *mask, uint64_t *shift) {
-  uint64_t __key = 0, __mask = 0, __shift = 0;
+  /* ---------- ---------- declaration begin ---------- ---------- */
 #define macro(i)                                                                                                           \
-  if ((i) >= len)                                                                                                          \
-    goto finish;                                                                                                           \
-  else {                                                                                                                   \
+  if ((i) >= len) {                                                                                                        \
+    *key = __key >> __shift;                                                                                               \
+    *mask = __mask >> __shift;                                                                                             \
+    *shift = __shift;                                                                                                      \
+    return;                                                                                                                \
+  } else {                                                                                                                 \
     char c = str[i];                                                                                                       \
     if (c != ' ') {                                                                                                        \
       Assert((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || c == '?', "invalid character '%c' in pattern string", c); \
@@ -83,14 +111,14 @@ __attribute__((always_inline)) static inline void pattern_decode_hex(const char 
       __shift = (c == '?' ? __shift + 4 : 0);                                                                              \
     }                                                                                                                      \
   }
+  /* ---------- ---------- declaration end ---------- ---------- */
 
+  // actually running the macro. above are just declarations.
+  uint64_t __key = 0, __mask = 0, __shift = 0;
   macro16(0);
-  panic("pattern too long");
 #undef macro
-finish:
-  *key = __key >> __shift;
-  *mask = __mask >> __shift;
-  *shift = __shift;
+
+  panic("pattern too long");
 }
 
 // --- pattern matching wrappers for decode ---

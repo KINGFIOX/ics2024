@@ -13,7 +13,7 @@
  * See the Mulan PSL v2 for more details.
  ***************************************************************************************/
 
-#include "local-include/reg.h"
+#include "../reg.h"
 
 #include <isa.h>
 #include <stdio.h>
@@ -21,8 +21,12 @@
 void reg_test() {
   // emulate stat before reset
   word_t sample[8];
+
   word_t pc_sample = rand();
   cpu.pc = pc_sample;
+
+  word_t eflags_sample = rand();
+  cpu._val_eflags = eflags_sample;
 
   int i;
   for (i = R_EAX; i <= R_EDI; i++) {
@@ -50,17 +54,26 @@ void reg_test() {
   assert(sample[R_EDI] == cpu.edi);
 
   assert(pc_sample == cpu.pc);
+  assert(eflags_sample == cpu._val_eflags);
+  cpu._val_eflags = 0;
 }
 
 void isa_reg_display() {
   for (int i = R_EAX; i <= R_EDI; i++) {
     printf("%s = 0x%08x\n", reg_name(i, 4), reg_l(i));
   }
+  printf("pc = 0x%08x\n", cpu.pc);
+  printf("eflags = 0x%08x\n", cpu._val_eflags);  // TODO: 可能要显示详细参数吧
+  printf("pc = 0x%08x\n", cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   *success = true;
-  if (0 == strcmp(s, "eax")) {
+  if (0 == strcmp(s, "eflags")) {
+    return cpu._val_eflags;
+  } else if (0 == strcmp(s, "pc")) {
+    return cpu.pc;
+  } else if (0 == strcmp(s, "eax")) {
     return cpu.gpr[R_EAX]._32;
   } else if (0 == strcmp(s, "ecx")) {
     return cpu.gpr[R_ECX]._32;

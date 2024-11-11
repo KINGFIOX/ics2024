@@ -1,25 +1,25 @@
 /***************************************************************************************
-* Copyright (c) 2014-2024 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
+ * Copyright (c) 2014-2024 Zihao Yu, Nanjing University
+ *
+ * NEMU is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ *
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ *
+ * See the Mulan PSL v2 for more details.
+ ***************************************************************************************/
 
-#include <dlfcn.h>
-
-#include <isa.h>
 #include <cpu/cpu.h>
-#include <memory/paddr.h>
-#include <utils.h>
 #include <difftest-def.h>
+#include <dlfcn.h>
+#include <isa.h>
+#include <memory/paddr.h>
+#include <stdio.h>
+#include <utils.h>
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
@@ -54,7 +54,7 @@ void difftest_skip_ref() {
 void difftest_skip_dut(int nr_ref, int nr_dut) {
   skip_dut_nr_inst += nr_dut;
 
-  while (nr_ref -- > 0) {
+  while (nr_ref-- > 0) {
     ref_difftest_exec(1);
   }
 }
@@ -84,7 +84,8 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
   Log("The result of every instruction will be compared with %s. "
       "This will help you a lot for debugging, but also significantly reduce the performance. "
-      "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
+      "If it is not necessary, you can turn it off in menuconfig.",
+      ref_so_file);
 
   ref_difftest_init(port);
   ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
@@ -92,10 +93,22 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 }
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
+  static const char *regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
+  // printf("ref eflags = 0x%08x\n", ref->_val_eflags);
+  // extern CPU_state cpu;
+  // printf("cpu eflags = 0x%08x\n", cpu._val_eflags);
+
   if (!isa_difftest_checkregs(ref, pc)) {
     nemu_state.state = NEMU_ABORT;
     nemu_state.halt_pc = pc;
+    printf("yours:\n");
     isa_reg_display();
+    printf("ref:\n");
+    for (int i = R_EAX; i <= R_EDI; i++) {
+      printf("%s = 0x%08x\n", regsl[i], ref->gpr[i]._32);
+    }
+    printf("pc = 0x%08x\n", ref->pc);
+    printf("eflags = 0x%08x\n", ref->_val_eflags);
   }
 }
 
@@ -109,9 +122,8 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
       checkregs(&ref_r, npc);
       return;
     }
-    skip_dut_nr_inst --;
-    if (skip_dut_nr_inst == 0)
-      panic("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD, ref_r.pc, pc);
+    skip_dut_nr_inst--;
+    if (skip_dut_nr_inst == 0) panic("can not catch up with ref.pc = " FMT_WORD " at pc = " FMT_WORD, ref_r.pc, pc);
     return;
   }
 
@@ -128,5 +140,5 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   checkregs(&ref_r, pc);
 }
 #else
-void init_difftest(char *ref_so_file, long img_size, int port) { }
+void init_difftest(char *ref_so_file, long img_size, int port) {}
 #endif

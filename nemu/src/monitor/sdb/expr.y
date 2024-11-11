@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 
-#include "expr.h"
 #include "memory/vaddr.h"
+#include "expr.h"
+
+extern word_t vaddr_read(vaddr_t addr, int len);
 
 %}
 
@@ -15,7 +17,7 @@
 %right UMINUS
 %right DEREF
 
-%token <num> TK_NUM_
+%token <num> TK_NUM_ TK_REG_
 %type <num> expression logic_or logic_and equality comparison term factor unary primary
 
 %union {
@@ -78,6 +80,7 @@ unary:
 
 primary:
     TK_NUM_ { $$ = $1; }
+    | TK_REG_ { $$ = $1; }
     | '(' expression ')' { $$ = $2; }
     ;
 
