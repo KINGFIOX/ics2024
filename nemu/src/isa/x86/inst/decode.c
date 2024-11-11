@@ -499,7 +499,7 @@ again:
   INSTPAT("1000 1101", lea, E2G, 0, Rw(rd, w, addr));
 
   //   100014:       55                      push   %ebp
-  INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
+  INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)); printf("rd = %d %s\n", rd, reg_name(rd, w)));
   //   10001a:       68 40 00 10 00          push   $0x100040
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
   //
