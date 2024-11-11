@@ -290,7 +290,7 @@ enum {
   TYPE_G2E,   // Eb <- Gb / Ev <- Gv, General
   TYPE_E2G,   // Gb <- Eb / Gv <- Ev
   TYPE_I2E,   // Eb <- Ib / Ev <- Iv, Either
-  TYPE_Ib2E,  //
+  TYPE_Ib2E,  // E <- byte
   TYPE_cl2E,  // Either <- cl(low byte of ecx)
   TYPE_1_E,
   TYPE_SI2E,  // Either <- scala index base
@@ -357,6 +357,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_J:
       imm();
+      break;
+    case TYPE_Ib2E:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      simm(1);
       break;
     case TYPE_r:
       destr(opcode & 0b0111);
@@ -478,7 +482,7 @@ again:
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
 
   //
-  INSTPAT("1000 0011", sub, I2E, 0, Rw(rd, w, Rr(rd, w) - imm));
+  INSTPAT("1000 0011", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
