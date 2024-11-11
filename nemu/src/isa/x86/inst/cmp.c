@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "inst.h"
 
 void cmp(int rd, int w, word_t addr) {
@@ -13,6 +15,7 @@ void cmp(int rd, int w, word_t addr) {
 
 void cmpb(int w, word_t addr, word_t imm) {
   word_t op1 = vaddr_read(addr, w);
+  printf("w = %d\n", w);
   word_t op2 = imm;
   cpu.eflags.of = 0;
   cpu.eflags.sf = 0;
