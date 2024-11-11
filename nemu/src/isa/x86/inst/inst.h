@@ -15,6 +15,8 @@ void cmp_r_m(int rd, int w, word_t addr);
 void cmp_r_i(int rd, int w, word_t imm);
 void cmpb(int w, word_t addr, word_t imm);
 
+void add(int rd, int w, int rs);
+
 void je(Decode* s, word_t imm);
 void jne(Decode* s, word_t imm);
 

@@ -350,7 +350,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_E:
       decode_rm(s, rd_, addr, gp_idx, w);
-      src1r(*rs);
       break;
     case TYPE_I:
     case TYPE_J:
@@ -560,7 +559,8 @@ again:
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
 
   // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", gp7, E, 0, gp7());
+  INSTPAT("0000 0001", add, E2G, 0, add(rd, w, rs));
+  // INSTPAT("0000 0001", gp7, E, 0, gp7());
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
