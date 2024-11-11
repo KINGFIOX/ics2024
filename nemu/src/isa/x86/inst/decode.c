@@ -215,7 +215,6 @@ static void push(int width, word_t data) {
 
   vaddr_t vaddr = reg_read(R_ESP, 4);
   reg_write(R_ESP, 4, vaddr - width);
-
   vaddr_write(vaddr, width, data);
 }
 
@@ -463,52 +462,12 @@ again:
   // B8 + rw iw  MOV reg16,imm16
   // B8 + rd id  MOV reg32,imm32
   INSTPAT("1011 1???", mov, I2r, 0, Rw(rd, w, imm));
-  // do {
-  //   uint64_t key, mask, shift;
-  //   pattern_decode("1011 1???", (sizeof("1011 1???") - 1), &key, &mask, &shift);
-  //   printf("key = 0b%lb, mask = 0b%lb, shift = %ld\n", key, mask, shift);
-  //   // 取出来的 opcode 相符合
-  //   if ((((uint64_t)opcode >> shift) & mask) == key) {
-  //     {
-  //       int rd = 0, rs = 0, gp_idx = 0;
-  //       word_t src1 = 0, addr = 0, imm = 0;
-  //       int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;  // 4
-  //       decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2r);
-  //       // BLOCK begin
-  //       s->dnpc = s->snpc;
-  //       reg_write(rd, w, imm);
-  //       // BLOCK end
-  //     };
-  //     goto *(__instpat_end);
-  //   }
-  // } while (0);
 
   // C6 ib    MOV r/m8,imm8
   INSTPAT("1100 0110", mov, I2E, 1, RMw(imm));
   // C7 iw    MOV r/m16,imm16
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
-  // do {
-  //   uint64_t key, mask, shift;
-  //   pattern_decode("1100 0111", (sizeof("1100 0111") - 1), &key, &mask, &shift);
-  //   if ((((uint64_t)opcode >> shift) & mask) == key) {
-  //     {
-  //       int rd = 0, rs = 0, gp_idx = 0;
-  //       word_t src1 = 0, addr = 0, imm = 0;
-  //       int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;  // 2
-  //       printf("w = %d\n", w);
-  //       decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2E);
-  //       s->dnpc = s->snpc;
-  //       do {
-  //         if (rd != -1)
-  //           reg_write(rd, w, imm);
-  //         else
-  //           vaddr_write(addr, w, imm);
-  //       } while (0);
-  //     };
-  //     goto *(__instpat_end);
-  //   }
-  // } while (0);
 
   INSTPAT("1110 1000", call, J, 0, {
     assert(4 == w);
@@ -518,7 +477,8 @@ again:
 
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
 
-  // INSTPAT("1000 0011", sub, );
+  //
+  INSTPAT("1000 0011", sub, I2E, 0, Rw(rd, w, Rr(rd, w) - imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
