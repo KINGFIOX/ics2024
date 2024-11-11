@@ -373,6 +373,11 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp1()                                \
   do {                                       \
     switch (gp_idx) {                        \
+      case 0b000:                            \
+        Rw(rd, w, Rr(rd, w) - imm);          \
+        break;                               \
+      case 0b001:                            \
+        break;                               \
       default:                               \
         printf("gp_idx = 0b%03b\n", gp_idx); \
         INV(s->pc);                          \
