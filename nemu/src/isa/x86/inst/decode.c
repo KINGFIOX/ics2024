@@ -343,6 +343,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       *rs = R_EAX;
       *addr = x86_inst_fetch(s, 4);
       break;
+    case TYPE_J:
+      *imm = x86_inst_fetch(s, w);
+      printf("TYPE_J, w = %d, imm = 0x%08x\n", w, *imm);
+      break;
     case TYPE_N:
       break;
     default:
@@ -491,7 +495,7 @@ again:
   //   }
   // } while (0);
 
-  INSTPAT("1110 1000", call, I2r, 0, Rw(rd, w, imm));
+  INSTPAT("1110 1000", call, J, 0, Rw(rd, w, imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
