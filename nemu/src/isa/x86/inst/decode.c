@@ -23,6 +23,7 @@
 #include "inst.h"
 #include "isa-def.h"
 #include "isa.h"
+#include "macro.h"
 
 // +-----------+-----------+-----------+--------+------+------+------+------------+-----------+
 // |instruction| address-  |  operand- |segment |opcode|ModR/M| SIB  |displacement| immediate |
@@ -444,6 +445,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
     printf("imm = %02x\n", imm);                                \
     switch (func) {                                             \
       case 0b0100:                                              \
+        s->snpc += SEXT(imm & 0xff, 2 * 8);                     \
         break;                                                  \
       default:                                                  \
         INV(s->pc);                                             \
