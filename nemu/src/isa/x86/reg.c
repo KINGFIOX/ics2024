@@ -63,6 +63,7 @@ void isa_reg_display() {
   }
   printf("eip = 0x%08x\n", cpu.pc);
   printf("eflags = 0x%08x\n", cpu._val_eflags);  // TODO: 可能要显示详细参数吧
+  printf("pc = 0x%08x\n", cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

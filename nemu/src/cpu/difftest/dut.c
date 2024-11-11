@@ -104,6 +104,7 @@ static void checkregs(CPU_state *ref, vaddr_t pc) {
     for (int i = R_EAX; i <= R_EDI; i++) {
       printf("%s = 0x%08x\n", regsl[i], ref->gpr[i]._32);
     }
+    printf("pc = 0x%08x\n", ref->pc);
   }
 }
 
