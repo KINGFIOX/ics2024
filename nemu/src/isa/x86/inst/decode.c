@@ -443,6 +443,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
     printf("%s:%d func = 0b%04lb\n", __FILE__, __LINE__, func); \
     switch (func) {                                             \
       case 0b0100:                                              \
+        printf("imm = %x\n", imm);                              \
         break;                                                  \
       default:                                                  \
         INV(s->pc);                                             \
