@@ -17,6 +17,7 @@ void cmpb(int w, word_t addr, word_t imm) {
   word_t op1 = vaddr_read(addr, w);
   printf("w = %d\n", w);
   printf("imm = %d\n", imm);
+  printf("op1 = %d\n", op1);
   word_t op2 = imm;
   cpu.eflags.of = 0;
   cpu.eflags.sf = 0;
