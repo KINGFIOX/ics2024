@@ -16,6 +16,8 @@
 #ifndef __ISA_H__
 #define __ISA_H__
 
+#define CONFIG_ISA_x86 1
+
 #if defined(CONFIG_ISA_mips32)
 #define ISA_QEMU_BIN "qemu-system-mipsel"
 #define ISA_QEMU_ARGS "-machine", "mipssim", "-kernel", NEMU_HOME "/resource/mips-elf/mips.dummy",
