@@ -73,7 +73,7 @@ static struct rule {
     {"\\$eax|\\$ecx|\\$edx|\\$ebx|\\$esp|\\$ebp|\\$esi|\\$edi"
      "|\\$ax|\\$cx|\\$dx|\\$bx|\\$sp|\\$bp|\\$si|\\$di|"
      "\\$al|\\$cl|\\$dl|\\$bl|\\$ah|\\$ch|\\$dh|\\$bh|"
-     "\\$eip|\\$eflags",
+     "\\$pc|\\$eflags",
      TK_REG},  // register
 
 };
