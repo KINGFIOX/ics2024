@@ -20,6 +20,7 @@
 
 #include "../reg.h"
 #include "common.h"
+#include "inst.h"
 #include "isa-def.h"
 #include "isa.h"
 
@@ -143,7 +144,7 @@ word_t reg_read(int idx, int width) {
   }
 }
 
-static void reg_write(int idx, int width, word_t data) {
+void reg_write(int idx, int width, word_t data) {
   switch (width) {
     case 4:
       reg_l(idx) = data;
@@ -208,14 +209,6 @@ static void load_addr(Decode *s, const ModR_M *m, word_t *rm_addr) {
   if (base_reg != -1) addr += reg_l(base_reg);
   if (index_reg != -1) addr += reg_l(index_reg) << scale;
   *rm_addr = addr;
-}
-
-static void push(int width, word_t data) {
-  assert(width == 1 || width == 2 || width == 4);
-
-  vaddr_t vaddr = reg_read(R_ESP, 4);
-  reg_write(R_ESP, 4, vaddr - width);
-  vaddr_write(vaddr, width, data);
 }
 
 /**
@@ -473,15 +466,13 @@ again:
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
-  INSTPAT("1110 1000", call, J, 0, {
-    assert(4 == w);
-    push(w, s->snpc);
-    s->dnpc = s->snpc + imm;
-  });
+  //   10000a:       e8 05 00 00 00          call   100014 <_trm_init>
+  INSTPAT("1110 1000", call, J, 0, call(s, 0, imm));
 
+  //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
 
-  //
+  //   100017:       83 ec 14                sub    $0x14,%esp
   INSTPAT("1000 0011", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
