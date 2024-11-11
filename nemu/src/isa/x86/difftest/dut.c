@@ -28,6 +28,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     }
   }
   ret &= ref_r->pc == cpu.pc;
+  ret &= ref_r->_val_eflags == cpu._val_eflags;
 
   return ret;
 }
