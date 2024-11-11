@@ -17,4 +17,5 @@ void cmpb(int w, word_t addr, word_t imm) {
   cpu.eflags.of = 0;
   cpu.eflags.sf = 0;
   cpu.eflags.zf = (op1 == op2);
+  assert(cpu.eflags.zf != 0);
 }
