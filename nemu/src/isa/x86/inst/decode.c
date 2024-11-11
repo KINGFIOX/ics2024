@@ -352,6 +352,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_J:
       imm();
       break;
+    case TYPE_SI:
+      simm(1);
+      break;
     case TYPE_Ib2E:
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
@@ -470,6 +473,7 @@ again:
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
   //   10001a:       68 40 00 10 00          push   $0x100040
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
+  INSTPAT("0110 1010", push, SI, 1, push(w, imm));
 
   //   100017:       83 ec 14                sub    $0x14,%esp
   // 83  /5 ib   SUB r/m16,imm8
