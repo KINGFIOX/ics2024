@@ -414,28 +414,6 @@ again:
   // 89  /r   MOV r/m16,r16
   // 89  /r   MOV r/m32,r32
   INSTPAT("1000 1001", mov, G2E, 0, RMw(src1));
-  // do {
-  //   uint64_t key, mask, shift;
-  //   pattern_decode("1000 1001", (sizeof("1000 1001") - 1), &key, &mask, &shift);
-  //   if ((((uint64_t)opcode >> shift) & mask) == key) {
-  //     {
-  //       int rd = 0, rs = 0, gp_idx = 0;
-  //       word_t src1 = 0, addr = 0, imm = 0;
-  //       int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;  // 4
-  //       decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_G2E);
-  //       // BLOCK begin
-  //       s->dnpc = s->snpc;
-  //       do {
-  //         if (rd != -1)
-  //           reg_write(rd, w, src1);
-  //         else
-  //           vaddr_write(addr, w, src1);
-  //       } while (0);
-  //       // BLOCK end
-  //     };
-  //     goto *(__instpat_end);
-  //   }
-  // } while (0);
 
   // 8A  /r   MOV r8,r/m8
   INSTPAT("1000 1010", mov, E2G, 1, Rw(rd, w, RMr(rs, w)));
