@@ -462,7 +462,7 @@ again:
   INSTPAT("1110 1000", call, J, 0, call(s, w, imm));
 
   //   100028:       8d 4c 24 04             lea    0x4(%esp),%ecx
-  INSTPAT("1000 1101", lea, SI2E, 0, Rw(rd, w, addr));
+  INSTPAT("1000 1101", lea, E2G, 0, Rw(rd, w, addr));
 
   //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
