@@ -82,6 +82,7 @@ bool check_wp(void) {
     if (wp_pool[i].valid) {
       bool success = true;
       word_t value = expr(wp_pool[i].expr, &success);
+      printf("value: %x\n", value);
       if (!success) {
         panic("it is impossible, because checking expr first before adding it to the watchpoint list");
       }
