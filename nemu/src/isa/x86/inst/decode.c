@@ -370,6 +370,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_r:
       destr(opcode & 0b0111);
       break;
+    case TYPE_a2r:
+      break;
     case TYPE_N:
       break;
     default:
