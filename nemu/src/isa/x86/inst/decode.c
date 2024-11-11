@@ -291,6 +291,7 @@ enum {
   TYPE_Ew2G,
   TYPE_O2a,     // ax <- offset content of memory
   TYPE_a2O,     // offset of memory <- ax
+  TYPE_a2r,     //
   TYPE_I_E2G,   // Gv <- EvIb / Gv <- EvIv // use for imul
   TYPE_SI_E2G,  // Gv <- EvIb / Gv <- EvIv // use for imul
   TYPE_Ib_G2E,  // Ev <- GvIb // use for shld/shrd
@@ -427,6 +428,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
+  INSTPAT("1001 0???", xchg, a2r, 0, INV(s->pc));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
@@ -442,6 +444,7 @@ again:
 
   /* INSTPAT( pattern, name, type, width, BLOCK ) */
 
+  //   100067:       0f 94 c2                sete   %dl
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
   // IMPORTANT: 66(prefix)
