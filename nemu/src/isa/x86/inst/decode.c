@@ -318,7 +318,7 @@ enum {
  * @param src1 (return)
  * @param addr (return)
  * @param rs (return)
- * @param gp_idx (return)
+ * @param gp_idx (return) index for SIB
  * @param imm (return)
  * @param w (input)
  * @param type (input)
@@ -355,6 +355,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_Ib2E:
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
+      break;
+    case TYPE_SI2E:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      imm();
       break;
     case TYPE_r:
       destr(opcode & 0b0111);
@@ -450,6 +454,9 @@ again:
 
   //   10000a:       e8 05 00 00 00          call   100014 <_trm_init>
   INSTPAT("1110 1000", call, J, 0, call(s, w, imm));
+
+  //   100028:       8d 4c 24 04             lea    0x4(%esp),%ecx
+  INSTPAT("1000 1101", lea, SI2E, 0, Rw(rd, w, reg_read(rs, w) + imm));
 
   //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
