@@ -19,6 +19,9 @@
 #include <stdio.h>
 
 #include "../reg.h"
+#include "common.h"
+#include "isa-def.h"
+#include "isa.h"
 
 // +-----------+-----------+-----------+--------+------+------+------+------------+-----------+
 // |instruction| address-  |  operand- |segment |opcode|ModR/M| SIB  |displacement| immediate |
@@ -207,6 +210,13 @@ static void load_addr(Decode *s, const ModR_M *m, word_t *rm_addr) {
   *rm_addr = addr;
 }
 
+static void push(int width, word_t data) {
+  assert(width == 1 || width == 2 || width == 4);
+  extern x86_CPU_state cpu;
+  cpu.esp -= width;
+  vaddr_write(cpu.esp, width, data);
+}
+
 /**
  * @brief
  *
@@ -262,6 +272,7 @@ static void decode_rm(Decode *s, int *rm_reg, word_t *rm_addr, int *reg, int wid
     *imm = x86_inst_fetch(s, w); \
   } while (0)
 
+/// @brief sign extend immediate
 #define simm(w)                               \
   do {                                        \
     *imm = SEXT(x86_inst_fetch(s, w), w * 8); \
@@ -344,8 +355,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       *addr = x86_inst_fetch(s, 4);
       break;
     case TYPE_J:
-      *imm = x86_inst_fetch(s, w);
-      printf("TYPE_J, w = %d, imm = 0x%08x\n", w, *imm);
+      imm();
       break;
     case TYPE_N:
       break;
@@ -495,7 +505,11 @@ again:
   //   }
   // } while (0);
 
-  INSTPAT("1110 1000", call, J, 0, Rw(rd, w, imm));
+  INSTPAT("1110 1000", call, J, 0, {
+    assert(4 == w);
+    push(w, s->snpc);
+    s->dnpc = s->snpc + imm;
+  });
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
