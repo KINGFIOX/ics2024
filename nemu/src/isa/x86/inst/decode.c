@@ -398,7 +398,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
     switch (gp_idx) {                                              \
       case 0b110:                                                  \
-        printf("rd_ = %d, addr = %x, w = %d\n", rd, addr, w);      \
+        push(w, Mr(addr, w));                                      \
         break;                                                     \
       default:                                                     \
         INV(s->pc);                                                \
