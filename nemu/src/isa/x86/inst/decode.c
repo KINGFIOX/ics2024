@@ -350,6 +350,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_E:
       decode_rm(s, rd_, addr, gp_idx, w);
+      simm(1);
+      printf("addr = 0x%08x, \n", *addr);
       break;
     case TYPE_I:
     case TYPE_J:
@@ -363,7 +365,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       simm(1);
       break;
     case TYPE_SI2E:
-      assert(w == 2 || w == 4);
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
       break;
@@ -393,19 +394,19 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     };                                   \
   } while (0)
 
-#define gp5()                            \
-  do {                                   \
-    printf("gp_idx = 0b%03b\n", gp_idx); \
-    switch (gp_idx) {                    \
-      case 0b100:                        \
-        Rw(rd, w, Rr(rd, w) & imm);      \
-        break;                           \
-      case 0b101:                        \
-        Rw(rd, w, Rr(rd, w) - imm);      \
-        break;                           \
-      default:                           \
-        INV(s->pc);                      \
-    }                                    \
+#define gp5()                                                      \
+  do {                                                             \
+    printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+    switch (gp_idx) {                                              \
+      case 0b000:                                                  \
+        push(w, vaddr_read(addr, w));                              \
+        break;                                                     \
+      case 0b101:                                                  \
+        Rw(rd, w, Rr(rd, w) - imm);                                \
+        break;                                                     \
+      default:                                                     \
+        INV(s->pc);                                                \
+    }                                                              \
   } while (0)
 
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
