@@ -437,13 +437,13 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_END();
 }
 
-#define jcc()                                                      \
-  do {                                                             \
-    printf("%s:%d gp_idx = 0b%04b\n", __FILE__, __LINE__, gp_idx); \
-    switch (gp_idx) {                                              \
-      default:                                                     \
-        INV(s->pc);                                                \
-    }                                                              \
+#define jcc()                                                   \
+  do {                                                          \
+    printf("%s:%d mask = 0b%04lb\n", __FILE__, __LINE__, mask); \
+    switch (mask) {                                             \
+      default:                                                  \
+        INV(s->pc);                                             \
+    }                                                           \
   } while (0)
 
 int isa_exec_once(Decode *s) {
