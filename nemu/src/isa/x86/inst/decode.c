@@ -370,12 +370,13 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 }
 
 // gp1's gp_idx from INSTPAT_START
-#define gp1()         \
-  do {                \
-    switch (gp_idx) { \
-      default:        \
-        INV(s->pc);   \
-    };                \
+#define gp1()                               \
+  do {                                      \
+    switch (gp_idx) {                       \
+      default:                              \
+        printf("gp_idx = 0b%3b\n", gp_idx); \
+        INV(s->pc);                         \
+    };                                      \
   } while (0)
 
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
@@ -462,12 +463,13 @@ again:
   //   10001a:       68 40 00 10 00          push   $0x100040
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
 
-  //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
-  // 83 /4 ib  AND r/m32,imm8
-  INSTPAT("1000 0011 100", and, Ib2E, 0, Rw(rd, w, Rr(rd, w) & imm));
   //   100017:       83 ec 14                sub    $0x14,%esp
   // 83  /5 ib   SUB r/m16,imm8
-  INSTPAT("1000 0011 101", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
+  INSTPAT("1000 0011", sub, SI2E, 0, gp1());
+
+  // //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
+  // // 83 /4 ib  AND r/m32,imm8
+  // INSTPAT("1000 0011", and, Ib2E, 0, Rw(rd, w, Rr(rd, w) & imm));
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
