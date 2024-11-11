@@ -386,6 +386,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b101:                        \
         Rw(rd, w, Rr(rd, w) - imm);      \
         break;                           \
+      case 0b111:                        \
+        cmpb(rd, w, addr);               \
+        break;                           \
       default:                           \
         INV(s->pc);                      \
     };                                   \
@@ -506,7 +509,7 @@ again:
   INSTPAT("0110 1010", push, SI, 1, push(w, imm));
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
-  INSTPAT("0011 1011", cmp, E2G, 0, cmp(s, rd, w, addr));
+  INSTPAT("0011 1011", cmp, E2G, 0, cmp(rd, w, addr));
 
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
