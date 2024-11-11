@@ -357,8 +357,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       simm(1);
       break;
     case TYPE_SI2E:
-      decode_rm(s, rd_, addr, gp_idx, w);
-      printf("gp_idx = %d, addr = 0x%08x %s\n", *gp_idx, *addr, reg_name(*gp_idx, 4));
+      decode_rm(s, rd_, addr, rd_, w);
+      printf("$esp = 0x%08x, addr = 0x%08x %s\n", reg_read(R_ESP, 4), *addr, reg_name(*rd_, 4));
       imm();
       break;
     case TYPE_r:
