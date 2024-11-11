@@ -472,12 +472,14 @@ again:
 
   //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
-
   //   10001a:       68 40 00 10 00          push   $0x100040
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
 
   //   100017:       83 ec 14                sub    $0x14,%esp
   INSTPAT("1000 0011", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
+
+  //   100010:       31 c0                   xor    %eax,%eax
+  INSTPAT("1100 0000", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
