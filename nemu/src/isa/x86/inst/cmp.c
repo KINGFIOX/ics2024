@@ -9,4 +9,5 @@ void cmp(Decode *s, int rd, int w, word_t addr) {
   cpu.eflags.af = 0;
   cpu.eflags.pf = 0;
   cpu.eflags.cf = op1 < op2;
+  printf("op1 = %d, op2 = %d\n", op1, op2);
 }
