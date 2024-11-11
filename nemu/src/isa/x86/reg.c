@@ -55,6 +55,7 @@ void reg_test() {
 
   assert(pc_sample == cpu.pc);
   assert(eflags_sample == cpu._val_eflags);
+  cpu._val_eflags = 0;
 }
 
 void isa_reg_display() {
