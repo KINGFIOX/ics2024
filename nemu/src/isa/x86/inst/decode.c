@@ -507,7 +507,7 @@ again:
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
-  INSTPAT("0111 ????", jcc, J, 0, jcc());
+  INSTPAT("0111 ????", jcc, J, 1, jcc());
 
   //   100012:       c3                      ret
   INSTPAT("1100 0011", ret, N, 0, ret(s, w));
