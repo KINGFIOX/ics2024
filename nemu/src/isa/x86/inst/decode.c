@@ -321,6 +321,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_a2r:
       decode_rm(s, rd_, addr, gp_idx, w);
       break;
+    case TYPE_Eb2G:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      break;
     case TYPE_I2r:
       destr(opcode & 0b0111);
       imm();  // decode mean while inst fetch
@@ -423,7 +426,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
+  //   100067:       0f 94 c2                sete   %dl
   INSTPAT("1001 0???", xchg, a2r, 0, Rw(rd, 1, cpu.eflags.zf == 1));
+  //   10006a:       0f b6 d2                movzbl %dl,%edx
+  INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
@@ -439,7 +445,6 @@ again:
 
   /* INSTPAT( pattern, name, type, width, BLOCK ) */
 
-  //   100067:       0f 94 c2                sete   %dl
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
   // IMPORTANT: 66(prefix)
