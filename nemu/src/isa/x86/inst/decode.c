@@ -437,6 +437,15 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_END();
 }
 
+#define jmp()                                                      \
+  do {                                                             \
+    printf("%s:%d gp_idx = 0b%04b\n", __FILE__, __LINE__, gp_idx); \
+    switch (gp_idx) {                                              \
+      default:                                                     \
+        INV(s->pc);                                                \
+    }                                                              \
+  } while (0)
+
 int isa_exec_once(Decode *s) {
   bool is_operand_size_16 = false;
   uint8_t opcode = 0;
@@ -491,6 +500,8 @@ again:
   // C7 iw    MOV r/m16,imm16
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
+
+  INSTPAT("0111 ????", jmp, J, 0, jmp());
 
   //   100012:       c3                      ret
   INSTPAT("1100 0011", ret, N, 0, ret(s, w));
