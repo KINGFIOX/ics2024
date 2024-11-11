@@ -16,8 +16,10 @@ void ret(Decode* s, int w) {
 }
 
 void je(Decode* s, word_t imm) {
+  printf("cpu.eflags.zf: %d\n", cpu.eflags.zf);
   if (cpu.eflags.zf != 0) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 2 * 8);
     printf("s->snpc: 0x%x, s->dnpc: 0x%x\n", s->snpc, s->dnpc);
   }
+  printf("s->snpc: 0x%x, s->dnpc: 0x%x\n", s->snpc, s->dnpc);
 }
