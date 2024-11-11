@@ -506,31 +506,7 @@ again:
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
-  // INSTPAT("0111 ????", jcc, J, 0, jcc());
-  do {
-    uint64_t key, mask, shift;
-    pattern_decode("0111 ????", (sizeof("0111 ????") - 1), &key, &mask, &shift);
-    if ((((uint64_t)opcode >> shift) & mask) == key) {
-      {
-        int rd = 0, rs = 0, gp_idx = 0;
-        word_t src1 = 0, addr = 0, imm = 0;
-        int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;
-        decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_J);
-        s->dnpc = s->snpc;
-        do {
-          uint64_t func = mask & opcode;
-          switch (func) {
-            case 0b0100:
-              je(s, imm);
-              break;
-            default:
-              invalid_inst(s->pc);
-          }
-        } while (0);
-      };
-      goto *(__instpat_end);
-    }
-  } while (0);
+  INSTPAT("0111 ????", jcc, J, 0, jcc());
 
   //   100012:       c3                      ret
   INSTPAT("1100 0011", ret, N, 0, ret(s, w));

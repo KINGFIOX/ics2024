@@ -14,7 +14,7 @@ void ret(Decode* s, int w) {
 }
 
 void je(Decode* s, word_t imm) {
-  if (cpu.eflags.zf) {
+  if (cpu.eflags.zf != 0) {
     s->dnpc += SEXT(imm & 0xff, 2 * 8);
   }
 }
