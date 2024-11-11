@@ -1,3 +1,4 @@
+#include "debug.h"
 #include "inst.h"
 #include "isa-def.h"
 #include "memory/vaddr.h"
@@ -9,6 +10,8 @@ void push(int width, word_t data) {
   vaddr -= width;
   reg_write(R_ESP, 4, vaddr);
   vaddr_write(vaddr, width, data);
+
+  Assert(vaddr_read(reg_read(R_ESP, 4), width) == data, "push error");
 }
 
 word_t pop(int width) {
