@@ -357,7 +357,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       simm(1);
       break;
     case TYPE_SI2E:
-      decode_rm(s, rs, addr, rd_, w);
+      assert(w == 2 || w == 4);
       break;
     case TYPE_r:
       destr(opcode & 0b0111);
