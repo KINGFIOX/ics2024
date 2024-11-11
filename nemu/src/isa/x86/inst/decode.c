@@ -413,6 +413,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                             \
     printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
     switch (gp_idx) {                                              \
+      case 0b000:                                                  \
+        Rw(rd, w, Rr(rd, w) + imm);                                \
+        break;                                                     \
       case 0b110:                                                  \
         Rw(rd, w, Rr(rd, w) + Rr(rs, w));                          \
         break;                                                     \
