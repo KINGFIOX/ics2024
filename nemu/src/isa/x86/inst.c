@@ -273,19 +273,19 @@ enum {
   TYPE_SI,
   TYPE_J,
   TYPE_E,
-  TYPE_I2r,  // XX <- Ib / eXX <- Iv
-  TYPE_I2a,  // AL <- Ib / eAX <- Iv
-  TYPE_G2E,  // Eb <- Gb / Ev <- Gv, General
-  TYPE_E2G,  // Gb <- Eb / Gv <- Ev
-  TYPE_I2E,  // Eb <- Ib / Ev <- Iv, Either
-  TYPE_Ib2E,
-  TYPE_cl2E,
+  TYPE_I2r,   // XX <- Ib / eXX <- Iv, Immediate
+  TYPE_I2a,   // AL <- Ib / eAX <- Iv, a means
+  TYPE_G2E,   // Eb <- Gb / Ev <- Gv, General
+  TYPE_E2G,   // Gb <- Eb / Gv <- Ev
+  TYPE_I2E,   // Eb <- Ib / Ev <- Iv, Either
+  TYPE_Ib2E,  //
+  TYPE_cl2E,  // Either <- cl(low byte of ecx)
   TYPE_1_E,
-  TYPE_SI2E,
+  TYPE_SI2E,  // Either <- scala index base
   TYPE_Eb2G,
   TYPE_Ew2G,
-  TYPE_O2a,
-  TYPE_a2O,
+  TYPE_O2a,     // ax <- offset content of memory
+  TYPE_a2O,     // offset of memory <- ax
   TYPE_I_E2G,   // Gv <- EvIb / Gv <- EvIv // use for imul
   TYPE_SI_E2G,  // Gv <- EvIb / Gv <- EvIv // use for imul
   TYPE_Ib_G2E,  // Ev <- GvIb // use for shld/shrd
@@ -324,7 +324,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       destr(opcode & 0b0111);
       imm();  // decode mean while inst fetch
       break;
-    case TYPE_G2E:
+    case TYPE_G2E:  // General to Either
       decode_rm(s, rd_, addr, rs, w);
       src1r(*rs);
       break;
@@ -336,7 +336,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       imm();
       break;
     case TYPE_O2a:
-      destr(R_EAX);
+      destr(R_EAX);  // *rd_ = R_EAX;
       *addr = x86_inst_fetch(s, 4);
       break;
     case TYPE_a2O:
@@ -387,7 +387,7 @@ again:
 
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
-  //
+  // IMPORTANT: 66(prefix)
   INSTPAT("0110 0110", data_size, N, 0, is_operand_size_16 = true; goto again;);
 
   // A0       MOV AL,moffs8
@@ -468,28 +468,30 @@ again:
   INSTPAT("1100 0110", mov, I2E, 1, RMw(imm));
   // C7 iw    MOV r/m16,imm16
   // C7 id    MOV r/m32,imm32
-  // INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
-  do {
-    uint64_t key, mask, shift;
-    pattern_decode("1100 0111", (sizeof("1100 0111") - 1), &key, &mask, &shift);
-    if ((((uint64_t)opcode >> shift) & mask) == key) {
-      {
-        int rd = 0, rs = 0, gp_idx = 0;
-        word_t src1 = 0, addr = 0, imm = 0;
-        int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;  // 2
-        printf("w = %d\n", w);
-        decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2E);
-        s->dnpc = s->snpc;
-        do {
-          if (rd != -1)
-            reg_write(rd, w, imm);
-          else
-            vaddr_write(addr, w, imm);
-        } while (0);
-      };
-      goto *(__instpat_end);
-    }
-  } while (0);
+  INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
+  // do {
+  //   uint64_t key, mask, shift;
+  //   pattern_decode("1100 0111", (sizeof("1100 0111") - 1), &key, &mask, &shift);
+  //   if ((((uint64_t)opcode >> shift) & mask) == key) {
+  //     {
+  //       int rd = 0, rs = 0, gp_idx = 0;
+  //       word_t src1 = 0, addr = 0, imm = 0;
+  //       int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;  // 2
+  //       printf("w = %d\n", w);
+  //       decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2E);
+  //       s->dnpc = s->snpc;
+  //       do {
+  //         if (rd != -1)
+  //           reg_write(rd, w, imm);
+  //         else
+  //           vaddr_write(addr, w, imm);
+  //       } while (0);
+  //     };
+  //     goto *(__instpat_end);
+  //   }
+  // } while (0);
+
+  INSTPAT("1110 1000", call, I2r, 0, Rw(rd, w, imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
