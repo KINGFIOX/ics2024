@@ -439,8 +439,9 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
 
 #define jcc()                                                   \
   do {                                                          \
-    printf("%s:%d mask = 0b%04lb\n", __FILE__, __LINE__, mask); \
-    switch (mask) {                                             \
+    uint64_t func = mask & opcode;                              \
+    printf("%s:%d func = 0b%04lb\n", __FILE__, __LINE__, func); \
+    switch (func) {                                             \
       default:                                                  \
         INV(s->pc);                                             \
     }                                                           \
