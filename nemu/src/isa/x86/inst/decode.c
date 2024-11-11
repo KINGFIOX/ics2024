@@ -441,9 +441,9 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   do {                                                          \
     uint64_t func = mask & opcode;                              \
     printf("%s:%d func = 0b%04lb\n", __FILE__, __LINE__, func); \
+    printf("imm = %x\n", imm);                                  \
     switch (func) {                                             \
       case 0b0100:                                              \
-        printf("imm = %x\n", imm);                              \
         break;                                                  \
       default:                                                  \
         INV(s->pc);                                             \
