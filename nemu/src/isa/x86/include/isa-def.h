@@ -41,7 +41,6 @@ typedef union {
     uint32_t eax /*gpr[0]*/, ecx /*gpr[1]*/, edx /*gpr[2]*/, ebx /*gpr[3]*/, esp /*gpr[4]*/, ebp /*gpr[5]*/, esi /*gpr[6]*/, edi /*gpr[7]*/;
     vaddr_t pc;
     union {
-      uint32_t eflags;
       struct {
         uint32_t cf : 1;
         uint32_t : 1;  // always 1 in eflags
@@ -69,7 +68,8 @@ typedef union {
         uint32_t : 8;
         uint32_t : 1;
         uint32_t ai : 1;
-      };
+      } eflags;
+      uint32_t _val_eflags;
     };
   };
 

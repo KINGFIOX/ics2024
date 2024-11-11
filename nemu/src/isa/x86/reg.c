@@ -26,7 +26,7 @@ void reg_test() {
   cpu.pc = pc_sample;
 
   word_t eflags_sample = rand();
-  cpu.eflags = eflags_sample;
+  cpu._val_eflags = eflags_sample;
 
   int i;
   for (i = R_EAX; i <= R_EDI; i++) {
@@ -54,7 +54,7 @@ void reg_test() {
   assert(sample[R_EDI] == cpu.edi);
 
   assert(pc_sample == cpu.pc);
-  assert(eflags_sample == cpu.eflags);
+  assert(eflags_sample == cpu._val_eflags);
 }
 
 void isa_reg_display() {
@@ -62,13 +62,13 @@ void isa_reg_display() {
     printf("%s = 0x%08x\n", reg_name(i, 4), reg_l(i));
   }
   printf("eip = 0x%08x\n", cpu.pc);
-  printf("eflags = 0x%08x\n", cpu.eflags);  // TODO: 可能要显示详细参数吧
+  printf("eflags = 0x%08x\n", cpu._val_eflags);  // TODO: 可能要显示详细参数吧
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
   *success = true;
   if (0 == strcmp(s, "eflags")) {
-    return cpu.eflags;
+    return cpu._val_eflags;
   } else if (0 == strcmp(s, "eip")) {
     return cpu.pc;
   } else if (0 == strcmp(s, "eax")) {
