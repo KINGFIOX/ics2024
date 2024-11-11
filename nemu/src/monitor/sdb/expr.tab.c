@@ -73,20 +73,12 @@
 #include <stdio.h>
 
 #include "memory/vaddr.h"
-
-extern bool yy_success;
-extern word_t yy_result;
-extern const char *yy_err_msg;
-extern int current_token;
-
-int yylex(void);
-void yyerror(const char *s);
-int yyparse(void);
+#include "expr.h"
 
 extern word_t vaddr_read(vaddr_t addr, int len);
 
 
-#line 90 "expr.tab.c"
+#line 82 "expr.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -531,9 +523,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    38,    38,    42,    43,    47,    48,    52,    53,    54,
-      58,    59,    60,    61,    62,    66,    67,    68,    72,    73,
-      74,    84,    85,    86,    90,    91,    92
+       0,    30,    30,    34,    35,    39,    40,    44,    45,    46,
+      50,    51,    52,    53,    54,    58,    59,    60,    64,    65,
+      66,    76,    77,    78,    82,    83,    84
 };
 #endif
 
@@ -1115,109 +1107,109 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* expression: logic_or  */
-#line 38 "expr.y"
+#line 30 "expr.y"
              { yy_result = (yyvsp[0].num); }
-#line 1121 "expr.tab.c"
+#line 1113 "expr.tab.c"
     break;
 
   case 3: /* logic_or: logic_and  */
-#line 42 "expr.y"
+#line 34 "expr.y"
               { (yyval.num) = (yyvsp[0].num); }
-#line 1127 "expr.tab.c"
+#line 1119 "expr.tab.c"
     break;
 
   case 4: /* logic_or: logic_or TK_OR_ logic_and  */
-#line 43 "expr.y"
+#line 35 "expr.y"
                                 { (yyval.num) = ((yyvsp[-2].num) || (yyvsp[0].num)); }
-#line 1133 "expr.tab.c"
+#line 1125 "expr.tab.c"
     break;
 
   case 5: /* logic_and: equality  */
-#line 47 "expr.y"
+#line 39 "expr.y"
              { (yyval.num) = (yyvsp[0].num); }
-#line 1139 "expr.tab.c"
+#line 1131 "expr.tab.c"
     break;
 
   case 6: /* logic_and: logic_and TK_AND_ equality  */
-#line 48 "expr.y"
+#line 40 "expr.y"
                                  { (yyval.num) = ((yyvsp[-2].num) && (yyvsp[0].num)); }
-#line 1145 "expr.tab.c"
+#line 1137 "expr.tab.c"
     break;
 
   case 8: /* equality: equality TK_NE_ comparison  */
-#line 53 "expr.y"
+#line 45 "expr.y"
                                            { (yyval.num) = ((yyvsp[-2].num) != (yyvsp[0].num)); }
-#line 1151 "expr.tab.c"
+#line 1143 "expr.tab.c"
     break;
 
   case 9: /* equality: equality TK_EQ_ comparison  */
-#line 54 "expr.y"
+#line 46 "expr.y"
                                            { (yyval.num) = ((yyvsp[-2].num) == (yyvsp[0].num)); }
-#line 1157 "expr.tab.c"
+#line 1149 "expr.tab.c"
     break;
 
   case 10: /* comparison: term  */
-#line 58 "expr.y"
+#line 50 "expr.y"
          { (yyval.num) = (yyvsp[0].num); }
-#line 1163 "expr.tab.c"
+#line 1155 "expr.tab.c"
     break;
 
   case 11: /* comparison: comparison TK_GT_ term  */
-#line 59 "expr.y"
+#line 51 "expr.y"
                                       { (yyval.num) = ((yyvsp[-2].num) > (yyvsp[0].num)); }
-#line 1169 "expr.tab.c"
+#line 1161 "expr.tab.c"
     break;
 
   case 12: /* comparison: comparison TK_GE_ term  */
-#line 60 "expr.y"
+#line 52 "expr.y"
                                        { (yyval.num) = ((yyvsp[-2].num) >= (yyvsp[0].num)); }
-#line 1175 "expr.tab.c"
+#line 1167 "expr.tab.c"
     break;
 
   case 13: /* comparison: comparison TK_LT_ term  */
-#line 61 "expr.y"
+#line 53 "expr.y"
                                       { (yyval.num) = ((yyvsp[-2].num) < (yyvsp[0].num)); }
-#line 1181 "expr.tab.c"
+#line 1173 "expr.tab.c"
     break;
 
   case 14: /* comparison: comparison TK_LE_ term  */
-#line 62 "expr.y"
+#line 54 "expr.y"
                                        { (yyval.num) = ((yyvsp[-2].num) <= (yyvsp[0].num)); }
-#line 1187 "expr.tab.c"
+#line 1179 "expr.tab.c"
     break;
 
   case 15: /* term: factor  */
-#line 66 "expr.y"
+#line 58 "expr.y"
            { (yyval.num) = (yyvsp[0].num); }
-#line 1193 "expr.tab.c"
+#line 1185 "expr.tab.c"
     break;
 
   case 16: /* term: term '-' factor  */
-#line 67 "expr.y"
+#line 59 "expr.y"
                       { (yyval.num) = ((yyvsp[-2].num) - (yyvsp[0].num)); }
-#line 1199 "expr.tab.c"
+#line 1191 "expr.tab.c"
     break;
 
   case 17: /* term: term '+' factor  */
-#line 68 "expr.y"
+#line 60 "expr.y"
                       { (yyval.num) = ((yyvsp[-2].num) + (yyvsp[0].num)); }
-#line 1205 "expr.tab.c"
+#line 1197 "expr.tab.c"
     break;
 
   case 18: /* factor: unary  */
-#line 72 "expr.y"
+#line 64 "expr.y"
           { (yyval.num) = (yyvsp[0].num); }
-#line 1211 "expr.tab.c"
+#line 1203 "expr.tab.c"
     break;
 
   case 19: /* factor: factor '*' unary  */
-#line 73 "expr.y"
+#line 65 "expr.y"
                        { (yyval.num) = ((yyvsp[-2].num) * (yyvsp[0].num)); }
-#line 1217 "expr.tab.c"
+#line 1209 "expr.tab.c"
     break;
 
   case 20: /* factor: factor '/' unary  */
-#line 74 "expr.y"
+#line 66 "expr.y"
                        {
         if ((yyvsp[0].num) == 0) {
             yyerror("divide by zero");
@@ -1225,47 +1217,47 @@ yyreduce:
             (yyval.num) = ((yyvsp[-2].num) / (yyvsp[0].num));
         }
     }
-#line 1229 "expr.tab.c"
+#line 1221 "expr.tab.c"
     break;
 
   case 21: /* unary: '-' unary  */
-#line 84 "expr.y"
+#line 76 "expr.y"
                            { (yyval.num) = -(yyvsp[0].num); }
-#line 1235 "expr.tab.c"
+#line 1227 "expr.tab.c"
     break;
 
   case 22: /* unary: '*' unary  */
-#line 85 "expr.y"
+#line 77 "expr.y"
                             { (yyval.num) = vaddr_read((yyvsp[0].num), 4); }
-#line 1241 "expr.tab.c"
+#line 1233 "expr.tab.c"
     break;
 
   case 23: /* unary: primary  */
-#line 86 "expr.y"
+#line 78 "expr.y"
               { (yyval.num) = (yyvsp[0].num); }
-#line 1247 "expr.tab.c"
+#line 1239 "expr.tab.c"
     break;
 
   case 24: /* primary: TK_NUM_  */
-#line 90 "expr.y"
+#line 82 "expr.y"
             { (yyval.num) = (yyvsp[0].num); }
-#line 1253 "expr.tab.c"
+#line 1245 "expr.tab.c"
     break;
 
   case 25: /* primary: TK_REG_  */
-#line 91 "expr.y"
+#line 83 "expr.y"
               { (yyval.num) = (yyvsp[0].num); }
-#line 1259 "expr.tab.c"
+#line 1251 "expr.tab.c"
     break;
 
   case 26: /* primary: '(' expression ')'  */
-#line 92 "expr.y"
+#line 84 "expr.y"
                          { (yyval.num) = (yyvsp[-1].num); }
-#line 1265 "expr.tab.c"
+#line 1257 "expr.tab.c"
     break;
 
 
-#line 1269 "expr.tab.c"
+#line 1261 "expr.tab.c"
 
       default: break;
     }
@@ -1458,6 +1450,6 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 95 "expr.y"
+#line 87 "expr.y"
 
 

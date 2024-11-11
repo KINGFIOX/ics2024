@@ -3,15 +3,7 @@
 #include <stdio.h>
 
 #include "memory/vaddr.h"
-
-extern bool yy_success;
-extern word_t yy_result;
-extern const char *yy_err_msg;
-extern int current_token;
-
-int yylex(void);
-void yyerror(const char *s);
-int yyparse(void);
+#include "expr.h"
 
 extern word_t vaddr_read(vaddr_t addr, int len);
 
