@@ -23,11 +23,11 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   bool ret = true;
   for (int i = R_EAX; i <= R_EDI; i++) {
     if (ref_r->gpr[i]._32 != cpu.gpr[i]._32) {
-      ret = false;
+      ret &= false;
       break;
     }
   }
-  ret = ref_r->pc == pc;
+  ret &= ref_r->pc == cpu.pc;
 
   return ret;
 }
