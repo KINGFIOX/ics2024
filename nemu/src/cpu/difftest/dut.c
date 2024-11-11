@@ -94,9 +94,9 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 
 static void checkregs(CPU_state *ref, vaddr_t pc) {
   static const char *regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
-  printf("ref eflags = 0x%08x\n", ref->_val_eflags);
-  extern CPU_state cpu;
-  printf("cpu eflags = 0x%08x\n", cpu._val_eflags);
+  // printf("ref eflags = 0x%08x\n", ref->_val_eflags);
+  // extern CPU_state cpu;
+  // printf("cpu eflags = 0x%08x\n", cpu._val_eflags);
 
   if (!isa_difftest_checkregs(ref, pc)) {
     nemu_state.state = NEMU_ABORT;
