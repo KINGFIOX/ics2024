@@ -540,6 +540,8 @@ again:
   //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
   INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
+  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
+
   // 10005e:       01 f2                   add    %esi,%edx
   INSTPAT("0000 0001", gp7, E, 0, gp7());
 
