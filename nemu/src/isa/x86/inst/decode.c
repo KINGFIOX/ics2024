@@ -433,6 +433,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_START();
   INSTPAT("1001 0???", xchg, a2r, 0, {
     word_t tmp = cpu._val_eflags;
+    printf("w = %d\n", w);
     cpu._val_eflags = Rr(rd, w);
     Rw(rd, w, tmp);
   });
