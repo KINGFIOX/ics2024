@@ -24,9 +24,9 @@ enum TokenType {
 
 };
 
-typedef struct token {
+typedef struct {
   int type;
-  word_t val;
+  char str[32];
 } Token;
 
 extern Token tokens[];
@@ -39,6 +39,6 @@ extern int current_token;
 
 int yylex(void);
 void yyerror(const char *s);
-extern int yyparse(void);
+int yyparse(void);
 
 #endif

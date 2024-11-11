@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "common.h"
 #include "expr.h"
 #include "expr.tab.h"
 
@@ -7,6 +8,26 @@ bool yy_success = true;
 word_t yy_result = 0;
 const char* yy_err_msg = NULL;
 int current_token = 0;
+
+static word_t num2val(const char* str) {
+  word_t data = 0;
+  if (0 == strncmp(str, "0x", 2)) {
+    data = strtol(str, NULL, 16);
+  } else {
+    data = atoi(str);
+  }
+  return data;
+}
+
+static word_t reg2val(const char* str) {
+  const char* reg = str + 1;  // skip the '$'
+  bool success;
+  word_t data = isa_reg_str2val(reg, &success);
+  if (!success) {
+    panic("impossible, str: %s", str);
+  }
+  return data;
+}
 
 int yylex(void) {
   Token tok = tokens[current_token];
@@ -16,8 +37,11 @@ int yylex(void) {
   }
   switch (tok.type) {
     case TK_NUM:
-      yylval.num = tok.val;
+      yylval.num = num2val(tok.str);
       return TK_NUM_;
+    case TK_REG:
+      yylval.num = reg2val(tok.str);
+      return TK_REG_;
 
     case TK_EQ:
       return TK_EQ_;

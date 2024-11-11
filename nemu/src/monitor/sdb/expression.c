@@ -98,11 +98,8 @@ void init_regex() {
   }
 }
 
-struct {
-  int type;
-  char str[32];
-} __tokens[32] __attribute__((used)) = {};
-int __nr_token __attribute__((used)) = 0;  // number of token
+Token tokens[32] __attribute__((used)) = {};
+int nr_token __attribute__((used)) = 0;  // number of token
 
 static bool make_token(char *e) {
   int position = 0;
@@ -149,9 +146,9 @@ static bool make_token(char *e) {
 
           case TK_REG:
           case TK_NUM:
-            strncpy(__tokens[__nr_token].str, substr_start, substr_len);
-            __tokens[__nr_token].type = rules[i].token_type;
-            __nr_token++;
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].type = rules[i].token_type;
+            nr_token++;
             break;
           default:
             TODO();
@@ -170,47 +167,14 @@ static bool make_token(char *e) {
   return true;
 }
 
-Token tokens[32] = {};
-int nr_token = 0;  // number of token
-
-static bool make_value(void) {
-  nr_token = __nr_token;
-  for (int i = 0; i < nr_token; i++) {
-    tokens[i].type = __tokens[i].type;
-    if (TK_NUM == __tokens[i].type) {  // number
-      if (0 == strncmp(__tokens[i].str, "0x", 2)) {
-        tokens[i].val = strtol(__tokens[i].str, NULL, 16);
-      } else {
-        tokens[i].val = atoi(__tokens[i].str);
-      }
-    } else if (TK_REG == __tokens[i].type) {  // register
-      const char *reg = __tokens[i].str + 1;  // skip the '$'
-      tokens[i].type = TK_NUM;
-      bool success;
-      tokens[i].val = isa_reg_str2val(reg, &success);
-      if (!success) {
-        panic("impossible, str: %s", __tokens[i].str);
-      }
-    }
-  }
-  return true;
-}
-
 word_t expr(char *e, bool *success) {
   assert(success != NULL);
-
-  // clear the __tokens
-  __nr_token = 0;
-  for (int i = 0; i < ARRLEN(__tokens); i++) {
-    __tokens[i].type = 0;
-    memset(__tokens[i].str, 0, 32);
-  }
 
   // clear the tokens
   nr_token = 0;
   for (int i = 0; i < ARRLEN(tokens); i++) {
     tokens[i].type = 0;
-    tokens[i].val = 0;
+    memset(tokens[i].str, 0, 32);
   }
 
   // lex the expr
@@ -219,20 +183,9 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  // check the __tokens
-  for (int i = 0; i < __nr_token; i++) {
-    Assert(__tokens[i].type != 0 && __tokens[i].type != TK_NOTYPE, "invalid token");
-  }
-
-  // canonicalize the tokens
-  if (!make_value()) {
-    *success = false;
-    return 0;
-  }
-
   // check the tokens
   for (int i = 0; i < nr_token; i++) {
-    Assert(tokens[i].type != 0 && tokens[i].type != TK_NOTYPE && tokens[i].type != TK_REG, "invalid token");
+    Assert(tokens[i].type != 0 && tokens[i].type != TK_NOTYPE, "invalid token");
   }
 
   // clear the state of bison

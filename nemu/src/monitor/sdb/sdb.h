@@ -19,6 +19,5 @@
 #include <common.h>
 
 word_t expr(char *e, bool *success);
-word_t vaddr_read(vaddr_t addr, int len);
 
 #endif

@@ -2,8 +2,18 @@
 
 #include <stdio.h>
 
-#include "expr.h"
 #include "memory/vaddr.h"
+
+extern bool yy_success;
+extern word_t yy_result;
+extern const char *yy_err_msg;
+extern int current_token;
+
+int yylex(void);
+void yyerror(const char *s);
+int yyparse(void);
+
+extern word_t vaddr_read(vaddr_t addr, int len);
 
 %}
 
@@ -15,7 +25,7 @@
 %right UMINUS
 %right DEREF
 
-%token <num> TK_NUM_
+%token <num> TK_NUM_ TK_REG_
 %type <num> expression logic_or logic_and equality comparison term factor unary primary
 
 %union {
@@ -78,6 +88,7 @@ unary:
 
 primary:
     TK_NUM_ { $$ = $1; }
+    | TK_REG_ { $$ = $1; }
     | '(' expression ')' { $$ = $2; }
     ;
 
