@@ -22,7 +22,7 @@
  *
  * @param pc (mut) next inst addr to snpc
  * @param len
- * @return uint32_t
+ * @return uint32_t (load from dram)
  */
 static inline uint32_t inst_fetch(vaddr_t *pc, int len) {
   uint32_t inst = vaddr_ifetch(*pc, len);

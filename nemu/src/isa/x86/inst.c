@@ -38,6 +38,7 @@
 // |                            66                 c7     84     99    00 e0 ff ff    01 00   |
 // +------------------------------------------------------------------------------------------+
 
+/// @brief register or memory
 typedef union {
   struct {
     uint8_t R_M : 3;
@@ -51,11 +52,12 @@ typedef union {
   uint8_t val;
 } ModR_M;
 
+/// scale index base
 typedef union {
   struct {
     uint8_t base : 3;
     uint8_t index : 3;
-    uint8_t ss : 2;
+    uint8_t ss : 2;  // scale
   };
   uint8_t val;
 } SIB;
@@ -105,7 +107,7 @@ typedef union {
  * - s->snpc (mut)
  * - s->isa.inst (mut if ITRACE)
  * @param len (input)
- * @return word_t
+ * @return word_t (load from dram)
  */
 static word_t x86_inst_fetch(Decode *s, int len) {
 #if defined(CONFIG_ITRACE) || defined(CONFIG_IQUEUE)
@@ -113,8 +115,8 @@ static word_t x86_inst_fetch(Decode *s, int len) {
   // printf("s->snpc = 0x%08x, s->pc = 0x%08x, len = %d\n", s->snpc, s->pc, len);
   word_t ret = inst_fetch(&s->snpc, len);
   word_t ret_save = ret;
-  int i;
   assert(s->snpc - s->pc < sizeof(s->isa.inst));
+  int i;
   for (i = 0; i < len; i++) {  // save the inst to s->isa.inst
     p[i] = ret & 0xff;
     ret >>= 8;
@@ -154,14 +156,21 @@ static void reg_write(int idx, int width, word_t data) {
   }
 }
 
-static void load_addr(Decode *s, ModR_M *m, word_t *rm_addr) {
+/**
+ * @brief
+ *
+ * @param s (mut)
+ * @param m
+ * @param rm_addr (return)
+ */
+static void load_addr(Decode *s, const ModR_M *m, word_t *rm_addr) {
   assert(m->mod != 3);
 
   sword_t disp = 0;
-  int disp_size = 4;
+  int disp_size = 4;  // displacement size
   int base_reg = -1, index_reg = -1, scale = 0;
 
-  if (m->R_M == R_ESP) {
+  if (m->R_M == R_ESP) {  // ss:sp
     SIB sib;
     sib.val = x86_inst_fetch(s, 1);
     base_reg = sib.base;
@@ -174,13 +183,13 @@ static void load_addr(Decode *s, ModR_M *m, word_t *rm_addr) {
     base_reg = m->R_M;
   } /* no SIB */
 
-  if (m->mod == 0) {
+  if (0 == m->mod) {
     if (base_reg == R_EBP) {
       base_reg = -1;
     } else {
       disp_size = 0;
     }
-  } else if (m->mod == 1) {
+  } else if (1 == m->mod) {
     disp_size = 1;
   }
 
@@ -191,19 +200,29 @@ static void load_addr(Decode *s, ModR_M *m, word_t *rm_addr) {
     }
   }
 
+  // addr = displace + index * scala + base
   word_t addr = disp;
   if (base_reg != -1) addr += reg_l(base_reg);
   if (index_reg != -1) addr += reg_l(index_reg) << scale;
   *rm_addr = addr;
 }
 
+/**
+ * @brief
+ *
+ * @param s (mut)
+ * @param rm_reg (return)
+ * @param rm_addr
+ * @param reg
+ * @param width
+ */
 static void decode_rm(Decode *s, int *rm_reg, word_t *rm_addr, int *reg, int width) {
   ModR_M m;
   m.val = x86_inst_fetch(s, 1);
   if (reg != NULL) *reg = m.reg;
-  if (m.mod == 3)
+  if (3 == m.mod) {
     *rm_reg = m.R_M;
-  else {
+  } else {
     load_addr(s, &m, rm_addr);
     *rm_reg = -1;
   }
