@@ -23,3 +23,8 @@ word_t pop(int width) {
   reg_write(R_ESP, 4, vaddr);
   return data;
 }
+
+void leave(void) {
+  reg_write(R_ESP, 4, reg_read(R_EBP, 4));
+  reg_write(R_EBP, 4, pop(4));
+}
