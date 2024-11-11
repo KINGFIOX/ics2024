@@ -11,7 +11,7 @@ word_t pop(int width);
 void call(Decode* s, int w, word_t imm);
 void ret(Decode* s, int w);
 void cmp(int rd, int w, word_t addr);
-void cmpb(int rd, int w, word_t addr);
+void cmpb(int w, word_t addr, word_t imm);
 
 word_t reg_read(int idx, int width);
 void reg_write(int idx, int width, word_t data);
