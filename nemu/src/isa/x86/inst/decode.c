@@ -358,7 +358,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_SI2E:
       decode_rm(s, rd_, addr, gp_idx, w);
-      printf("addr = 0x%08x\n", *addr);
+      printf("gp_idx = %d, addr = 0x%08x\n", *gp_idx, *addr);
       imm();
       break;
     case TYPE_r:
@@ -457,7 +457,7 @@ again:
   INSTPAT("1110 1000", call, J, 0, call(s, w, imm));
 
   //   100028:       8d 4c 24 04             lea    0x4(%esp),%ecx
-  INSTPAT("1000 1101", lea, SI2E, 0, printf("rd = %d, addr = 0x%08x, gp_idx = %d\n", rd, addr, gp_idx););
+  INSTPAT("1000 1101", lea, SI2E, 0, ;);
 
   //   100014:       55                      push   %ebp
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
