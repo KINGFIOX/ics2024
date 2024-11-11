@@ -212,9 +212,9 @@ static void load_addr(Decode *s, const ModR_M *m, word_t *rm_addr) {
 
 static void push(int width, word_t data) {
   assert(width == 1 || width == 2 || width == 4);
-  extern x86_CPU_state cpu;
-  cpu.esp -= width;
-  vaddr_write(cpu.esp, width, data);
+
+  vaddr_t vaddr = reg_read(R_ESP, 4);
+  vaddr_write(vaddr, width, data);
 }
 
 /**
@@ -515,6 +515,8 @@ again:
   });
 
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
+
+  // INSTPAT("1000 0011", sub, );
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
