@@ -476,7 +476,7 @@ again:
       {
         int rd = 0, rs = 0, gp_idx = 0;
         word_t src1 = 0, addr = 0, imm = 0;
-        int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;
+        int w = 0 == 0 ? (is_operand_size_16 ? 2 : 4) : 0;  // 2
         printf("w = %d\n", w);
         decode_operand(s, opcode, &rd, &src1, &addr, &rs, &gp_idx, &imm, w, TYPE_I2E);
         s->dnpc = s->snpc;
