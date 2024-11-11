@@ -19,5 +19,5 @@ void cmpb(int w, word_t addr, word_t imm) {
   cpu.eflags.of = 0;
   cpu.eflags.sf = 0;
   cpu.eflags.zf = (op1 == op2);
-  printf("op1 = %x, op2 = %x\n", op1, op2);
+  printf("op1 = %x, op2(imm) = %x\n", op1, op2);
 }

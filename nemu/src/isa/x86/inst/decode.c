@@ -393,7 +393,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         Rw(rd, w, Rr(rd, w) - imm);                          \
         break;                                               \
       case 0b111:                                            \
-        cmpb(w, addr, imm);                                  \
+        cmp(w, addr, imm);                                   \
         break;                                               \
       default:                                               \
         INV(s->pc);                                          \
