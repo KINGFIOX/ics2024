@@ -519,7 +519,7 @@ again:
     word_t op2 = vaddr_read(addr, w);
     cpu.eflags.of = 0;
     cpu.eflags.sf = 0;
-    cpu.eflags.zf = 0;
+    cpu.eflags.zf = op1 == op2;
     cpu.eflags.af = 0;
     cpu.eflags.pf = 0;
     cpu.eflags.cf = op1 < op2;
