@@ -296,6 +296,7 @@ enum {
   TYPE_Ib_G2E,  // Ev <- GvIb // use for shld/shrd
   TYPE_cl_G2E,  // Ev <- GvCL // use for shld/shrd
   TYPE_N,       // none
+  TYPE_a2r,
 };
 
 #define INSTPAT_INST(s) opcode
@@ -325,6 +326,9 @@ enum {
  */
 static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, word_t *addr, int *rs, int *gp_idx, word_t *imm, int w, int type) {
   switch (type) {
+    case TYPE_a2r:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      break;
     case TYPE_I2r:
       destr(opcode & 0b0111);
       imm();  // decode mean while inst fetch
@@ -427,7 +431,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
-  INSTPAT("1001 0???", xchg, r, 0, {
+  INSTPAT("1001 0???", xchg, a2r, 0, {
     word_t tmp = cpu._val_eflags;
     cpu._val_eflags = Rr(rd, w);
     Rw(rd, w, tmp);
