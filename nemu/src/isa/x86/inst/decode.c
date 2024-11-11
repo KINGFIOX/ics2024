@@ -400,28 +400,28 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     };                                                       \
   } while (0)
 
-#define gp5()                                                      \
-  do {                                                             \
-    printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
-    switch (gp_idx) {                                              \
-      case 0b110:                                                  \
-        push(w, Mr(addr, w));                                      \
-        break;                                                     \
-      default:                                                     \
-        INV(s->pc);                                                \
-    }                                                              \
+#define gp5()                                                          \
+  do {                                                                 \
+    switch (gp_idx) {                                                  \
+      case 0b110:                                                      \
+        push(w, Mr(addr, w));                                          \
+        break;                                                         \
+      default:                                                         \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+        INV(s->pc);                                                    \
+    }                                                                  \
   } while (0)
 
-#define gp7()                                                      \
-  do {                                                             \
-    printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
-    switch (gp_idx) {                                              \
-      case 0b110:                                                  \
-        Rw(rd, w, Rr(rd, w) + Rr(rs, w));                          \
-        break;                                                     \
-      default:                                                     \
-        INV(s->pc);                                                \
-    }                                                              \
+#define gp7()                                                          \
+  do {                                                                 \
+    switch (gp_idx) {                                                  \
+      case 0b110:                                                      \
+        Rw(rd, w, Rr(rd, w) + Rr(rs, w));                              \
+        break;                                                         \
+      default:                                                         \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+        INV(s->pc);                                                    \
+    }                                                                  \
   } while (0)
 
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
@@ -443,16 +443,17 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_END();
 }
 
-#define jcc()                      \
-  do {                             \
-    uint64_t func = mask & opcode; \
-    switch (func) {                \
-      case 0b0100:                 \
-        je(s, imm);                \
-        break;                     \
-      default:                     \
-        INV(s->pc);                \
-    }                              \
+#define jcc()                             \
+  do {                                    \
+    uint64_t func = mask & opcode;        \
+    switch (func) {                       \
+      case 0b0100:                        \
+        je(s, imm);                       \
+        break;                            \
+      default:                            \
+        printf("func = 0b%04lb\n", func); \
+        INV(s->pc);                       \
+    }                                     \
   } while (0)
 
 int isa_exec_once(Decode *s) {
@@ -473,6 +474,10 @@ again:
 
   // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
+
+  //   100017:       83 ec 14                sub    $0x14,%esp
+  //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
+  INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
   // 88  /r   MOV r/m8,r8
   INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
@@ -535,10 +540,6 @@ again:
 
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
-
-  //   100017:       83 ec 14                sub    $0x14,%esp
-  //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
-  INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
 
