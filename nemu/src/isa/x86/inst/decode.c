@@ -463,10 +463,11 @@ again:
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
 
   //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
-  INSTPAT("1000 0011", and, Ib2E, 0, Rw(rd, w, Rr(rd, w) & imm));
-
+  // 83 /4 ib  AND r/m32,imm8
+  INSTPAT("1000 0011 100", and, Ib2E, 0, Rw(rd, w, Rr(rd, w) & imm));
   //   100017:       83 ec 14                sub    $0x14,%esp
-  INSTPAT("1000 0011", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
+  // 83  /5 ib   SUB r/m16,imm8
+  INSTPAT("1000 0011 101", sub, Ib2E, 0, Rw(rd, w, Rr(rd, w) - imm));
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
