@@ -420,6 +420,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         Rw(rd, w, Rr(rd, w) + Rr(rs, w));                          \
         break;                                                     \
       default:                                                     \
+        break;                                                     \
         INV(s->pc);                                                \
     }                                                              \
   } while (0)
