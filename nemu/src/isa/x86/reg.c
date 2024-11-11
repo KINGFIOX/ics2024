@@ -71,7 +71,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   *success = true;
   if (0 == strcmp(s, "eflags")) {
     return cpu._val_eflags;
-  } else if (0 == strcmp(s, "eip")) {
+  } else if (0 == strcmp(s, "pc")) {
     return cpu.pc;
   } else if (0 == strcmp(s, "eax")) {
     return cpu.gpr[R_EAX]._32;
