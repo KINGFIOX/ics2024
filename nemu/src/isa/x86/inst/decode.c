@@ -428,7 +428,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_START();
   //   100067:       0f 94 c2                sete   %dl
   INSTPAT("1001 0???", xchg, a2r, 0, {
-    Rw(rd, 1, cpu.eflags.zf != 1);
+    Rw(rd, 1, (cpu.eflags.zf != 0));
     printf("%d %s\n", rd, reg_name(rd, 1));
     assert(cpu.gpr[R_EDX]._8[0] == 1);
   });
