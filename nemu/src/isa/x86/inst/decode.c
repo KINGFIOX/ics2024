@@ -358,6 +358,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_SI2E:
       decode_rm(s, rd_, addr, gp_idx, w);
+      printf("rd_ = %s, addr = 0x%08x, gp_idx = %s\n", reg_name(*rd_, 4), *addr, reg_name(*gp_idx, 4));
       imm();
       break;
     case TYPE_r:
