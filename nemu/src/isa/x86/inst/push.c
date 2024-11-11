@@ -14,7 +14,7 @@ word_t pop(int width) {
   assert(width == 1 || width == 2 || width == 4);
 
   vaddr_t vaddr = reg_read(R_ESP, 4);
-  reg_write(R_ESP, 4, vaddr + width);
   word_t data = vaddr_read(vaddr, width);
+  reg_write(R_ESP, 4, vaddr + width);
   return data;
 }
