@@ -348,6 +348,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       *rs = R_EAX;
       *addr = x86_inst_fetch(s, 4);
       break;
+    case TYPE_E:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      break;
     case TYPE_I:
     case TYPE_J:
       imm();
@@ -388,6 +391,21 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       default:                           \
         INV(s->pc);                      \
     };                                   \
+  } while (0)
+
+#define gp5()                            \
+  do {                                   \
+    printf("gp_idx = 0b%03b\n", gp_idx); \
+    switch (gp_idx) {                    \
+      case 0b100:                        \
+        Rw(rd, w, Rr(rd, w) & imm);      \
+        break;                           \
+      case 0b101:                        \
+        Rw(rd, w, Rr(rd, w) - imm);      \
+        break;                           \
+      default:                           \
+        INV(s->pc);                      \
+    }                                    \
   } while (0)
 
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
@@ -473,15 +491,15 @@ again:
   INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
   //   10001a:       68 40 00 10 00          push   $0x100040
   INSTPAT("0110 1000", push, I, 0, push(w, imm));
+  //
   INSTPAT("0110 1010", push, SI, 1, push(w, imm));
 
-  //   100017:       83 ec 14                sub    $0x14,%esp
-  // 83  /5 ib   SUB r/m16,imm8
-  INSTPAT("1000 0011", sub, SI2E, 0, gp1());
+  //   10002f:       ff 71 fc                push   -0x4(%ecx)
+  INSTPAT("1111 1111", gp5, SI, 1, gp5());
 
-  // //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
-  // // 83 /4 ib  AND r/m32,imm8
-  // INSTPAT("1000 0011", and, Ib2E, 0, Rw(rd, w, Rr(rd, w) & imm));
+  //   100017:       83 ec 14                sub    $0x14,%esp
+  //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
+  INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
