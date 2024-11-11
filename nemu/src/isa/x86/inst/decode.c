@@ -430,7 +430,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1001 0???", xchg, a2r, 0, {
     Rw(rd, 1, cpu.eflags.zf != 1);
     printf("%d %s\n", rd, reg_name(rd, 1));
-    printf("w = %d\n", w);
+    assert(cpu.gpr[R_EDX]._8[0] == 1);
   });
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
