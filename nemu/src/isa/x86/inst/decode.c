@@ -357,6 +357,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_J:
       imm();
       break;
+    case TYPE_r:
+      destr(opcode & 0b0111);
+      break;
     case TYPE_N:
       break;
     default:
@@ -510,6 +513,8 @@ again:
     push(w, s->snpc);
     s->dnpc = s->snpc + imm;
   });
+
+  INSTPAT("0101 0???", pushl, r, 0, push(w, Rr(rd, w)));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
