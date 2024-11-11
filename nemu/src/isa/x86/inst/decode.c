@@ -491,7 +491,7 @@ again:
   INSTPAT("0110 1010", push, SI, 1, push(w, imm));
 
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
-  INSTPAT("1111 1111", gp5, E, 1, gp5());
+  INSTPAT("1111 1111", gp5, E, 0, gp5());
 
   //   100017:       83 ec 14                sub    $0x14,%esp
   //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
