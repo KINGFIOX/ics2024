@@ -457,6 +457,23 @@ static inline void imul1(int w, word_t op1) {
   Rw(R_EDX, w, ret >> 32);
 }
 
+static inline void div1(int w, word_t divisor) {
+  assert(1 == w || 2 == w || 4 == w);
+  if (1 == w) {
+    uint64_t dividend = Rr(R_AX, 1);
+    Rw(R_AL, 1, dividend / divisor);
+    Rw(R_AH, 1, dividend % divisor);
+  } else if (2 == w) {
+    uint64_t dividend = ((uint64_t)Rr(R_DX, 2) << 32) | Rr(R_AX, 2);
+    Rw(R_AX, 2, dividend / divisor);
+    Rw(R_DX, 2, dividend % divisor);
+  } else if (4 == w) {
+    uint64_t dividend = ((uint64_t)Rr(R_EDX, 4) << 32) | Rr(R_EAX, 4);
+    Rw(R_EAX, 4, dividend / divisor);
+    Rw(R_EDX, 4, dividend % divisor);
+  }
+}
+
 #define gp3()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
@@ -472,6 +489,13 @@ static inline void imul1(int w, word_t op1) {
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
         imul1(w, Rr(rd, w));                                           \
+        break;                                                         \
+      case 0b110: /*div*/                                              \
+        if (rs == -1) {                                                \
+          div1(w, Mr(addr, w));                                        \
+        } else {                                                       \
+          div1(w, Rr(rs, w));                                          \
+        }                                                              \
         break;                                                         \
       case 0b111: /*idiv*/                                             \
         idiv(w, Rr(rd, w));                                            \
