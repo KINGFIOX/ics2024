@@ -362,6 +362,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_Ib2E:
       decode_rm(s, rd_, addr, gp_idx, w);
+      printf("Ib2E, rd = %d, addr = %x, gp_idx = %b, w = %d\n", *rd_, *addr, *gp_idx, w);
       simm(1);
       break;
     case TYPE_SI2E:
@@ -370,7 +371,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_1_E:
       decode_rm(s, rd_, addr, gp_idx, w);
-      printf("1_E, rd = %d, addr = %x, gp_idx = %b, w = %d\n", *rd_, *addr, *gp_idx, w);
       break;
     case TYPE_I2a:
       imm();
@@ -457,16 +457,16 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     }                                                                  \
   } while (0)
 
-#define gp2()                                                                          \
-  do {                                                                                 \
-    switch (gp_idx) {                                                                  \
-      case 0b101:                                                                      \
-        Rw(rd, w, shr(w, Rr(rd, w), 1));                                             \
-        break;                                                                         \
-      default:                                                                         \
-        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx);                 \
-        INV(s->pc);                                                                    \
-    }                                                                                  \
+#define gp2()                                                          \
+  do {                                                                 \
+    switch (gp_idx) {                                                  \
+      case 0b101:                                                      \
+        Rw(rd, w, shr(w, Rr(rd, w), 1));                               \
+        break;                                                         \
+      default:                                                         \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+        INV(s->pc);                                                    \
+    }                                                                  \
   } while (0)
 
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
