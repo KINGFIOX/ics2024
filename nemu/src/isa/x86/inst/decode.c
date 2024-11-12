@@ -603,7 +603,7 @@ again:
   INSTPAT("0011 1001", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
 
   //   100036:       85 db                   test   %ebx,%ebx
-  INSTPAT("1000 0101", test, G2E, 0, test(rd, w, rs));
+  INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));
 
   //   10007f:       90                      nop
   INSTPAT("1001 0000", nop, N, 0, /*nop*/);

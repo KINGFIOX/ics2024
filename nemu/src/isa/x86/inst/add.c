@@ -63,3 +63,5 @@ word_t and_(int w, word_t op1, word_t op2) {
 
   return ret;
 }
+
+void test(int w, word_t op1, word_t op2) { and_(w, op1, op2); }
