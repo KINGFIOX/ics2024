@@ -367,7 +367,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       imm();
       break;
     case TYPE_J:
-      simm(4);
+      imm();
       break;
     case TYPE_SI:
       simm(1);
@@ -747,7 +747,7 @@ again:
   INSTPAT("1100 0011", ret, N, 0, ret(s, w));
 
   //   10000a:       e8 05 00 00 00          call   100014 <_trm_init>
-  INSTPAT("1110 1000", call, J, 0, callo(s, w, imm));
+  INSTPAT("1110 1000", call, J, 4, callo(s, w, imm));
 
   //   100028:       8d 4c 24 04             lea    0x4(%esp),%ecx
   INSTPAT("1000 1101", lea, E2G, 0, Rw(rd, w, addr));
