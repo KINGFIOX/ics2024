@@ -681,17 +681,12 @@ again:
   INSTPAT("1111 0110", test, I2E, 1, gp3());
   //   100085:       f7 d8                   neg    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
-  //   1000a2:       f7 d0                   not    %eax
-  INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
 
   //   10008a:       99                      cltd
   INSTPAT("1001 1001", cltd, N, 0, cltd());
-
-  //   10008b:       f7 fe                   idiv   %esi
-  INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   10008c:       d1 ea                   shr    $1,%edx
   INSTPAT("1101 0001", shr, 1_E, 0, gp2_1_E());
