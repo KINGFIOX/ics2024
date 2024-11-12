@@ -606,6 +606,9 @@ again:
   //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
   INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
+  // 1004b3:       29 c8                   sub    %ecx,%eax
+  INSTPAT("0010 1001", sub, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w))));
+
   // 88  /r   MOV r/m8,r8
   INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
   // 89  /r   MOV r/m16,r16
