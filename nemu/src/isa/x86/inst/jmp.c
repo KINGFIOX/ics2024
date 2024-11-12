@@ -21,7 +21,7 @@ void je(Decode* s, word_t imm) {
 
 void jb(Decode* s, word_t imm) {
   if (cpu.eflags.cf != 0) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+    s->dnpc = s->dnpc + SEXT(imm & 0xff, 8);
   }
 }
 

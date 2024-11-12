@@ -492,7 +492,6 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
     uint64_t func = mask & opcode;        \
     switch (func) {                       \
       case 0b0010:                        \
-        printf("w = %d\n", w);            \
         jb(s, imm);                       \
         break;                            \
       case 0b0100:                        \
