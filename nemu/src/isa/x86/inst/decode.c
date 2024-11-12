@@ -367,6 +367,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
       break;
+    case TYPE_I2a:
+      imm();
+      break;
     case TYPE_r:
       destr(opcode & 0b0111);
       break;
@@ -593,6 +596,9 @@ again:
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
+
+  //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
+  INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
