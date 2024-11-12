@@ -28,7 +28,7 @@ word_t add(int w, word_t op1, word_t op2) {
   word_t ret = (word_t)ret_u64;
   int sign_mask = (1 << 31);
 
-  cpu.eflags.cf = (ret_u64 > UINT32_MAX);                                                              // cf
+  cpu.eflags.cf = !!(ret_u64 & UINT32_MAX);                                                            // cf
   cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
   cpu.eflags.zf = (0 == ret);                                                                          // zf
   cpu.eflags.sf = !!(ret & sign_mask);                                                                 // sf
