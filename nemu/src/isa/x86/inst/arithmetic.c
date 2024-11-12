@@ -100,8 +100,6 @@ word_t xor_(int w, word_t op1, word_t op2) {
 word_t not_(int w, word_t op1) { return xor_(w, op1, all); }
 
 word_t shr(int w, word_t op1, word_t op2) {
-  printf("shr 0x%x 0x%x\n", op1, op2);
-
   word_t ret = op1 >> op2;
 
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
@@ -111,8 +109,6 @@ word_t shr(int w, word_t op1, word_t op2) {
 
   // pf
   cpu.eflags.pf = (1 == ones(ret) % 2);
-
-  printf("shr ret 0x%x\n", ret);
 
   return ret;
 }
