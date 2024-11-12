@@ -461,7 +461,7 @@ static inline void imul1(int w, word_t op1) {
   assert(w == 4);
   uint64_t ret = (int64_t)Rr(R_EAX, w) * (int64_t)op1;
   Rw(R_EAX, w, ret & UINT32_MAX);
-  Rw(R_EDX, w, ret >> 32);
+  // Rw(R_EDX, w, ret >> 32);
 }
 
 static inline void div1(int w, word_t divisor) {
