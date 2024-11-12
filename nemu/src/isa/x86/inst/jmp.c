@@ -32,3 +32,14 @@ void jne(Decode* s, word_t imm) {
 }
 
 void jmp(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }
+
+void jle(Decode* s, word_t imm) {
+  // (sf ^ of) | zf
+  bool sf = 0 != cpu.eflags.sf;
+  bool of = 0 != cpu.eflags.of;
+  bool zf = 0 != cpu.eflags.zf;
+
+  if ((sf ^ of) | zf) {
+    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+  }
+}

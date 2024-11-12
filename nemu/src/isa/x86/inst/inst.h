@@ -25,6 +25,7 @@ void je(Decode* s, word_t imm);
 void jne(Decode* s, word_t imm);
 void jmp(Decode* s, word_t imm);
 void jb(Decode* s, word_t imm);
+void jle(Decode* s, word_t imm);
 
 word_t reg_read(int idx, int width);
 void reg_write(int idx, int width, word_t data);

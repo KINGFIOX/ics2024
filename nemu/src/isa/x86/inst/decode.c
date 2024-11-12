@@ -529,6 +529,9 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
       case 0b0101:                        \
         jne(s, imm);                      \
         break;                            \
+      case 0b1110:                        \
+        jle(s, imm);                      \
+        break;                            \
       default:                            \
         printf("func = 0b%04lb\n", func); \
         INV(s->pc);                       \
