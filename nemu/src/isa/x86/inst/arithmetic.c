@@ -83,7 +83,7 @@ word_t xor_(int w, word_t op1, word_t op2) {
   cpu.eflags.sf = (ret & sign_mask);
 
   // pf
-  cpu.eflags.pf = (ones(ret) % 2 == 1);
+  cpu.eflags.pf = (1 == ones(ret) % 2);
 
   // cf
   cpu.eflags.cf = 0;
