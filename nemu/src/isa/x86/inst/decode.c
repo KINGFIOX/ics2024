@@ -626,6 +626,9 @@ again:
   // A1       MOV AX,moffs16    4
   INSTPAT("1010 0001", mov, O2a, 0, Rw(R_EAX, w, Mr(addr, w)));
 
+  //   1004b5:       19 da                   sbb    %ebx,%edx
+  INSTPAT("0001 1001", sbb, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w))));
+
   // A2       MOV moffs8,AL     2
   INSTPAT("1010 0010", mov, a2O, 1, Mw(addr, 1, Rr(R_EAX, 1)));
   // A3       MOV moffs16,AX    2

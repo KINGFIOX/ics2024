@@ -28,25 +28,14 @@ word_t add(int w, word_t op1, word_t op2) {
   }
 
   uint64_t ret_u64 = op1 + op2;
-
   word_t ret = (word_t)ret_u64;
-
   int sign_mask = (1 << 31);
 
-  // cf
-  cpu.eflags.cf = (ret_u64 > UINT32_MAX);
-
-  // pf
-  cpu.eflags.pf = (1 == ones(ret) % 2);
-
-  // zf
-  cpu.eflags.zf = (0 == ret);
-
-  // sf
-  cpu.eflags.sf = !!(ret & sign_mask);
-
-  // of
-  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret & sign_mask));
+  cpu.eflags.cf = (ret_u64 > UINT32_MAX);                                                              // cf
+  cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
+  cpu.eflags.zf = (0 == ret);                                                                          // zf
+  cpu.eflags.sf = !!(ret & sign_mask);                                                                 // sf
+  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret & sign_mask));  // of
 
   return ret;
 }
@@ -82,12 +71,12 @@ void cmp(int w, word_t op1, word_t op2) {
 
   sub(w, op1, op2);
 
-  // if (op1 == op2) {
-  //   assert(cpu.eflags.zf);
-  // }
-  // if (op1 < op2) {
-  //   assert(cpu.eflags.cf);
-  // }
+  if (op1 == op2) {
+    assert(cpu.eflags.zf);
+  }
+  if (op1 < op2) {
+    assert(cpu.eflags.cf);
+  }
 }
 
 word_t and_(int w, word_t op1, word_t op2) {
