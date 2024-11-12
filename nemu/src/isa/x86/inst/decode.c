@@ -367,6 +367,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
       break;
+    case TYPE_1_E:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      imm();
+      break;
     case TYPE_I2a:
       imm();
       break;
@@ -445,6 +449,15 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b011:                                                      \
         Rw(rd, w, -Rr(rd, w));                                         \
         break;                                                         \
+      default:                                                         \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+        INV(s->pc);                                                    \
+    }                                                                  \
+  } while (0)
+
+#define gp2()                                                          \
+  do {                                                                 \
+    switch (gp_idx) {                                                  \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
         INV(s->pc);                                                    \
@@ -599,6 +612,9 @@ again:
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, Rr(R_EAX, w) & imm));
+
+  //   10008c:       d1 ea                   shr    $1,%edx
+  INSTPAT("1101 0001", shr, 1_E, 0, gp2());
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
