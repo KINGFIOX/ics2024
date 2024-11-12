@@ -132,6 +132,19 @@ word_t xor_(int w, word_t op1, word_t op2) {
   return ret;
 }
 
+word_t or_(int w, word_t op1, word_t op2) {
+  int sign_mask = (1 << (w * 8 - 1));
+  word_t ret = op1 | op2;
+
+  cpu.eflags.zf = (0 == ret);            // zf
+  cpu.eflags.sf = (ret & sign_mask);     // sf
+  cpu.eflags.pf = (1 == ones(ret) % 2);  // pf
+  cpu.eflags.cf = 0;                     // cf
+  cpu.eflags.of = 0;                     // of
+
+  return ret;
+}
+
 word_t not_(int w, word_t op1) { return xor_(w, op1, all); }
 
 word_t sar(int w, word_t op1, word_t op2) {
