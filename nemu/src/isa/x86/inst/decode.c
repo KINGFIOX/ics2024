@@ -588,6 +588,17 @@ static inline void div1(int w, word_t divisor) {
     }                                     \
   } while (0)
 
+static inline void movzwl(int w, int rd, int rs, vaddr_t addr) {
+  assert(w == 4);
+  word_t op1;
+  if (rs == -1) {
+    op1 = vaddr_read(addr, w);
+  } else {
+    op1 = Rr(rs, w);
+  }
+  Rw(rd, w, op1);
+}
+
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
 // 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
 // 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
@@ -608,7 +619,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   //   100043:       0f bf 84 1b 40 02 10    movswl 0x100240(%ebx,%ebx,1),%eax
   INSTPAT("1011 1111", movswl, Ew2G, 4, assert(w == 4); Rw(rs, 4, SEXT(Mr(addr, 2), 2 * 8)));
   //   10006f:       0f b7 84 1b 40 02 10    movzwl 0x100240(%ebx,%ebx,1),%eax
-  INSTPAT("1011 0111", movzwl, Ew2G, 4, assert(w == 4); Rw(rs, 4, Mr(addr, 2)));
+  INSTPAT("1011 0111", movzwl, Ew2G, 4, movzwl(w, rd, rs, addr));
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
   INSTPAT("1000 ????", jne, J, 4, jcc());
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
