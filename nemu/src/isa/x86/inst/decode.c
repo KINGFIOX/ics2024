@@ -414,8 +414,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000:                                                      \
-        printf("w = %d\n", w);                                         \
-        Mw(addr, w, Mr(addr, w) + 1);                                  \
+        Mw(addr, w, add(w, Mr(addr, w), 1));                           \
         break;                                                         \
       case 0b110:                                                      \
         push(w, Mr(addr, w));                                          \
@@ -426,19 +425,16 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     }                                                                  \
   } while (0)
 
-#define gp7()                                                             \
-  do {                                                                    \
-    switch (gp_idx) {                                                     \
-      case 0b110:                                                         \
-        printf("w = %d\n", w);                                            \
-        printf("rd = %d, rs = %d\n", rd, rs);                             \
-        printf("Rr(rd, w) = %x, Rr(rs, w) = %x\n", Rr(rd, w), Rr(rs, w)); \
-        Rw(rd, w, Rr(rd, w) + Rr(rs, w));                                 \
-        break;                                                            \
-      default:                                                            \
-        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx);    \
-        INV(s->pc);                                                       \
-    }                                                                     \
+#define gp7()                                                          \
+  do {                                                                 \
+    switch (gp_idx) {                                                  \
+      case 0b110:                                                      \
+        Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w)));                       \
+        break;                                                         \
+      default:                                                         \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+        INV(s->pc);                                                    \
+    }                                                                  \
   } while (0)
 
 #define gp3()                                                          \
