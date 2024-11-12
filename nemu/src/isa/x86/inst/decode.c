@@ -332,7 +332,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       break;
     case TYPE_Eb2G:
-      decode_rm(s, rd_, addr, rs, w);
+      decode_rm(s, rd_, addr, rs, 1);
+      break;
+    case TYPE_Ew2G:
+      decode_rm(s, rd_, addr, rs, 2);
       break;
     case TYPE_I2r:
       destr(opcode & 0b0111);
@@ -611,6 +614,8 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(rd, w), Rr(rs, w))));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
+  // //   100043:       0f bf 84 1b 40 02 10    movswl 0x100240(%ebx,%ebx,1),%eax
+  // INSTPAT("1011 1111", movswl, Ew2G, 4, movsw);
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
   INSTPAT("1000 ????", jne, J, 4, jcc());
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
