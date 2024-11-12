@@ -154,7 +154,7 @@ word_t shr(int w, word_t op1, word_t op2) {
   return ret;
 }
 
-word_t imul(int w, word_t op1, word_t op2) {
+word_t imul2(int w, word_t op1, word_t op2) {
   assert(w == 4);
   int sign_mask = (1 << (w * 8 - 1));
 

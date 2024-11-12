@@ -304,8 +304,9 @@ enum {
     __VA_ARGS__;                                                                              \
   }
 
-static inline void idiv(int op) {
-  sword_t divisor = Rr(op, 4);
+static inline void idiv(int w, word_t op) {
+  assert(w == 4);
+  sword_t divisor = op;
   int64_t dividend = ((int64_t)Rr(R_EDX, 4) << 32) | (int64_t)Rr(R_EAX, 4);
   Rw(R_EAX, 4, dividend / divisor);
   Rw(R_EDX, 4, (word_t)(dividend % divisor));
@@ -449,6 +450,13 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     }                                                                  \
   } while (0)
 
+static inline void imul1(int w, word_t op1) {
+  assert(w == 4);
+  uint64_t ret = (uint64_t)Rr(R_EAX, w) * op1;
+  Rw(R_EAX, w, ret & UINT32_MAX);
+  Rw(R_EDX, w, ret >> 32);
+}
+
 #define gp3()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
@@ -461,9 +469,12 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b010: /*not*/                                              \
         Rw(rd, w, not_(w, Rr(rd, w)));                                 \
         break;                                                         \
-      case 0b111: /*idiv*/                                             \
+      case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
-        idiv(rd);                                                      \
+        imul1(w, Rr(rd, w));                                           \
+        break;                                                         \
+      case 0b111: /*idiv*/                                             \
+        idiv(w, Rr(rd, w));                                            \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
@@ -509,7 +520,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   //   100067:       0f 94 c2                sete   %dl
   INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   100063:       0f af c1                imul   %ecx,%eax
-  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul(w, Rr(R_EAX, w), Rr(R_ECX, w))));
+  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(R_EAX, w), Rr(R_ECX, w))));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));

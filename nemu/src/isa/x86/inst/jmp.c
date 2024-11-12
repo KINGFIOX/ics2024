@@ -41,10 +41,6 @@ void jle(Decode* s, word_t imm) {
 
   int cond = (sf ^ of) | zf;
 
-  printf("cond = %d\n", cond);
-  printf("sf = %d, of = %d, zf = %d\n", sf, of, zf);
-  printf("(sf ^ of) = %d, zf = %d\n", (sf ^ of), zf);
-
   if (cond) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
   }
