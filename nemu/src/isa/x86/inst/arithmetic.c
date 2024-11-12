@@ -46,6 +46,9 @@ word_t sub(int w, word_t op1, word_t op2) {
 void cmp(int w, word_t op1, word_t op2) {
   printf("op1 = 0x%x, op2 = 0x%x, w = %d\n", op1, op2, w);
   sub(w, op1, op2);
+  if (op1 == op2) {
+    assert(cpu.eflags.zf);
+  }
 }
 
 word_t and_(int w, word_t op1, word_t op2) {
