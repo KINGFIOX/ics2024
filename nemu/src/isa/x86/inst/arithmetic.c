@@ -77,10 +77,9 @@ word_t xor_(int w, word_t op1, word_t op2) {
   printf("w = %d\n", w);
   printf("op1 = 0b%08b, op2 = 0b%08b\n", op1, op2);
   word_t ret = op1 ^ op2;
-  printf("ret = 0b%08b\n", ret);
 
   // zf
-  cpu.eflags.zf = (ret == 0);
+  cpu.eflags.zf = (0 == ret);
 
   // sf
   cpu.eflags.sf = (ret & sign_mask);
@@ -97,6 +96,7 @@ word_t xor_(int w, word_t op1, word_t op2) {
   // of
   cpu.eflags.of = 0;
 
+  printf("ret = 0b%08b\n", ret);
   return ret;
 }
 
