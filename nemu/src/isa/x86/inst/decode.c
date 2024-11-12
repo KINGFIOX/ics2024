@@ -460,7 +460,7 @@ static inline void imul1(int w, word_t op1) {
 static inline void div1(int w, word_t divisor) {
   assert(1 == w || 2 == w || 4 == w);
   if (1 == w) {
-    uint64_t dividend = Rr(R_AX, 1);
+    uint64_t dividend = Rr(R_AX, 2);
     Rw(R_AL, 1, dividend / divisor);
     Rw(R_AH, 1, dividend % divisor);
   } else if (2 == w) {
