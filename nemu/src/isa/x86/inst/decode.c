@@ -402,6 +402,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         if (rd != -1) {                                                           \
           cmp(w, Rr(rd, w), imm);                                                 \
         } else {                                                                  \
+          printf("%s:%d w=%d\n", __FILE__, __LINE__, w);                          \
           cmp(w, Mr(addr, w), imm & 0xff);                                        \
         }                                                                         \
         break;                                                                    \
