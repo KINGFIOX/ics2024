@@ -101,6 +101,8 @@ word_t sub(int w, word_t op1_, word_t op2_) {
   word_t neg = -op2;
   word_t ret = add(w, op1, neg, false);
 
+  printf("ret = %x\n", ret);
+
   cpu.eflags.cf = (op1 < op2);  // NOTE: 发现不能完全复用 add
 
   return ret;
