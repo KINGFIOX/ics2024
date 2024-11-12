@@ -32,13 +32,14 @@ word_t add(int w, word_t op1_, word_t op2_) {
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
   const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
+  printf("mask: %016lx\n", mask);
 
   uint64_t ret_u64 = op1 + op2;
   bool op1_sign = !!(op1 & sign_mask);
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
 
-  cpu.eflags.cf = !!(ret_u64 > mask);                                // cf
+  cpu.eflags.cf = !!(ret_u64 & (~mask));                             // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                   // pf
   cpu.eflags.zf = !(ret_u64 & mask);                                 // zf
   cpu.eflags.sf = ret_sign;                                          // sf
