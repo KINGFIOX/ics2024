@@ -12,6 +12,7 @@ void call(Decode* s, int w, word_t imm);
 void ret(Decode* s, int w);
 
 void cmp(int w, word_t op1, word_t op2);
+void cmp_rm(int w, int rd, int rs, vaddr_t addr);
 void test(int w, word_t op1, word_t op2);
 word_t add(int w, word_t op1, word_t op2);
 word_t sub(int w, word_t op1, word_t op2);

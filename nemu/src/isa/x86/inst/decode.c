@@ -616,16 +616,7 @@ again:
   INSTPAT("0011 1101", cmp, I2a, 0, cmp(w, Rr(R_EAX, w), imm));
   //   10005c:       39 f1                   cmp    %esi,%ecx
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
-  INSTPAT("0011 1001", cmp, E2G, 0, {
-    word_t op1, op2;
-    op2 = Rr(rd, w);
-    if (rs == -1) {
-      op1 = Mr(addr, w);
-    } else {
-      op1 = Rr(rs, w);
-    }
-    cmp(w, op1, op2);
-  });
+  INSTPAT("0011 1001", cmp, E2G, 0, cmp_rm(w, rd, rs, addr));
 
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
 
