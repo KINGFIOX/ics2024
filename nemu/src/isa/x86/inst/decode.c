@@ -376,6 +376,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
       break;
+    case TYPE_cl2E:
+      decode_rm(s, rd_, addr, gp_idx, w);
+      break;
     case TYPE_SI2E:
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
@@ -536,29 +539,14 @@ static inline void div1(int w, word_t divisor) {
     }                                                                  \
   } while (0)
 
-#define gp2_1_E()                                                      \
+#define gp2()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b101:                                                      \
-        Rw(rd, w, shr(w, Rr(rd, w), 1));                               \
+        Rw(rd, w, shr(w, Rr(rd, w), op2));                             \
         break;                                                         \
       case 0b111:                                                      \
-        Rw(rd, w, sar(w, Rr(rd, w), 1));                               \
-        break;                                                         \
-      default:                                                         \
-        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
-        INV(s->pc);                                                    \
-    }                                                                  \
-  } while (0)
-
-#define gp2_Ib2E()                                                     \
-  do {                                                                 \
-    switch (gp_idx) {                                                  \
-      case 0b101: /*shr*/                                              \
-        Rw(rd, w, shr(w, Rr(rd, w), imm));                             \
-        break;                                                         \
-      case 0b111: /*sar*/                                              \
-        Rw(rd, w, sar(w, Rr(rd, w), imm));                             \
+        Rw(rd, w, sar(w, Rr(rd, w), op2));                             \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
@@ -791,9 +779,11 @@ again:
   INSTPAT("1001 1001", cltd, N, 0, cltd());
 
   //   10008c:       d1 ea                   shr    $1,%edx
-  INSTPAT("1101 0001", shr, 1_E, 0, gp2_1_E());
+  INSTPAT("1101 0001", shr, 1_E, 0, word_t op2 = 1; gp2());
   //   10004a:       c1 ea 08                shr    $0x8,%edx
-  INSTPAT("1100 0001", shr, Ib2E, 0, gp2_Ib2E());
+  INSTPAT("1100 0001", shr, Ib2E, 0, word_t op2 = imm; gp2());
+  //   1000f0:       d3 e0                   shl    %cl,%eax
+  INSTPAT("1101 0011", gp2, cl2E, 0, word_t op2 = Rr(R_CL, 1); gp2());
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
