@@ -101,19 +101,23 @@ void cmp(int w, word_t op1, word_t op2) {
 }
 
 word_t and_(int w, word_t op1, word_t op2) {
+  assert(4 == w || 2 == w || 1 == w);
   int sign_mask = (1 << (w * 8 - 1));
   word_t ret = op1 & op2;
 
-  cpu.eflags.zf = (ret == 0);            // zf
-  cpu.eflags.sf = (ret & sign_mask);     // sf
-  cpu.eflags.pf = (ones(ret) % 2 == 1);  // pf
-  cpu.eflags.cf = 0;                     // cf
-  cpu.eflags.of = 0;                     // of
+  cpu.eflags.zf = !ret;                 // zf
+  cpu.eflags.sf = !!(ret & sign_mask);  // sf
+  cpu.eflags.pf = !!(ones(ret) % 2);    // pf
+  cpu.eflags.cf = 0;                    // cf
+  cpu.eflags.of = 0;                    // of
 
   return ret;
 }
 
-void test(int w, word_t op1, word_t op2) { and_(w, op1, op2); }
+void test(int w, word_t op1, word_t op2) {
+  assert(4 == w || 2 == w || 1 == w);
+  and_(w, op1, op2);
+}
 
 word_t xor_(int w, word_t op1, word_t op2) {
   int sign_mask = (1 << (w * 8 - 1));
