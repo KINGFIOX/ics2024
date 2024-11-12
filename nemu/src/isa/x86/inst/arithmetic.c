@@ -41,7 +41,8 @@ word_t add(int w, word_t op1_, word_t op2_) {
   printf("mask: %016lx\n", mask);
   printf("ret_u64: %016lx\n", ret_u64);
 
-  cpu.eflags.cf = !!(ret_u64 & (~mask));                             // cf
+  cpu.eflags.cf = !!(ret_u64 & (~mask));  // cf
+  printf("cf = %d\n", cpu.eflags.cf);
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                   // pf
   cpu.eflags.zf = !(ret_u64 & mask);                                 // zf
   cpu.eflags.sf = ret_sign;                                          // sf
