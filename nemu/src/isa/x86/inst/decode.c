@@ -738,6 +738,8 @@ again:
   INSTPAT("0011 1011", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
   //   1000d3:       3d 39 a3 4f 41          cmp    $0x414fa339,%eax
   INSTPAT("0011 1101", cmp, I2a, 0, cmp(w, Rr(R_EAX, w), imm));
+  //   10003f:       3c 19                   cmp    $0x19,%al
+  INSTPAT("0011 1100", cmp, I2a, 1, cmp(w, Rr(R_EAX, w), imm));
   //   10005c:       39 f1                   cmp    %esi,%ecx
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
   INSTPAT("0011 1001", cmp, E2G, 0, cmp_rm(w, rd, rs, addr));
