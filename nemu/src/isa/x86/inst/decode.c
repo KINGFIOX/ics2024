@@ -485,18 +485,24 @@ static inline void div1(int w, word_t divisor) {
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000: /*test*/                                             \
+        assert(rd != -1);                                              \
         test(w, Rr(rd, w), imm);                                       \
         break;                                                         \
       case 0b011: /*neg*/                                              \
+        assert(rd != -1);                                              \
         Rw(rd, w, sub(w, 0, Rr(rd, w)));                               \
         break;                                                         \
       case 0b010: /*not*/                                              \
+        assert(rd != -1);                                              \
         Rw(rd, w, not_(w, Rr(rd, w)));                                 \
         break;                                                         \
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
-        assert(rd != -1);                                              \
-        imul1(w, Rr(rd, w));                                           \
+        if (rd != -1) {                                                \
+          imul1(w, Rr(rd, w));                                         \
+        } else {                                                       \
+          imul1(w, Mr(addr, w));                                       \
+        }                                                              \
         break;                                                         \
       case 0b110: /*div*/                                              \
         if (rs == -1) {                                                \
