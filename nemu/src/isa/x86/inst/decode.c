@@ -335,7 +335,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_E2G:
       decode_rm(s, rs, addr, rd_, w);
-      printf("E2G, rs = %d, addr = %x, rd_ = %d, w = %d\n", *rs, *addr, *rd_, w);
       break;
     case TYPE_I2E:
       decode_rm(s, rd_, addr, gp_idx, w);
@@ -627,7 +626,16 @@ again:
 
   //   10005c:       39 f1                   cmp    %esi,%ecx
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
-  INSTPAT("0011 1001", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
+  INSTPAT("0011 1001", cmp, E2G, 0, {
+    word_t op1, op2;
+    op2 = Rr(rd, w);
+    if (rs == -1) {
+      op1 = Mr(addr, w);
+    } else {
+      op1 = Rr(rs, w);
+    }
+    cmp(w, op1, op2);
+  });
 
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));
