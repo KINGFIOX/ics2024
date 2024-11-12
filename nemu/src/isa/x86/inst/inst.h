@@ -11,14 +11,16 @@ void leave(void);
 
 void call(Decode* s, int w, word_t imm);
 void ret(Decode* s, int w);
-void cmp_r_m(int rd, int w, word_t addr);
-void cmp_r_i(int rd, int w, word_t imm);
-void cmp_m_r(int rd, int w, word_t addr);
-void cmpb(int w, word_t addr, word_t imm);
+// void cmp_r_m(int rd, int w, word_t addr);
+// void cmp_r_i(int rd, int w, word_t imm);
+// void cmp_m_r(int rd, int w, word_t addr);
+// void cmpb(int w, word_t addr, word_t imm);
+void cmp(int w, word_t op1, word_t op2);
 void test(int rd, int w, int rs);
 
 word_t add(int w, word_t op1, word_t op2);
 word_t sub(int w, word_t op1, word_t op2);
+word_t and_(int w, word_t op1, word_t op2);
 
 void je(Decode* s, word_t imm);
 void jne(Decode* s, word_t imm);

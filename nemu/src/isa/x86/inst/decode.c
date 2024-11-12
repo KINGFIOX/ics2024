@@ -392,7 +392,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         Rw(rd, w, add(w, Rr(rd, w), imm));                                        \
         break;                                                                    \
       case 0b100: /*rd=rd&imm*/                                                   \
-        Rw(rd, w, Rr(rd, w) & imm);                                               \
+        Rw(rd, w, and_(w, Rr(rd, w), imm));                                       \
         break;                                                                    \
       case 0b101: /*rd=rd-imm*/                                                   \
         Rw(rd, w, sub(w, Rr(rd, w), imm));                                        \
@@ -400,9 +400,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b111: /*cmp*/                                                         \
         /*printf("addr = %x, imm = %x, rs = %d, rd = %d\n", addr, imm, rs, rd);*/ \
         if (rd != -1) {                                                           \
-          cmp_r_i(rd, w, imm);                                                    \
+          cmp(w, Rr(rd, w), imm);                                                 \
         } else {                                                                  \
-          cmpb(w, addr, imm);                                                     \
+          cmp(w, Mr(addr, w), imm & 0xff);                                        \
         }                                                                         \
         break;                                                                    \
       default:                                                                    \
@@ -582,7 +582,7 @@ again:
   INSTPAT("0101 1???", pop, r, 0, Rw(rd, w, pop(w)));
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
-  INSTPAT("0011 1011", cmp, E2G, 0, cmp_r_m(rd, w, addr));
+  INSTPAT("0011 1011", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
 
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
@@ -600,7 +600,7 @@ again:
   INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, Rr(rd, w) + Mr(addr, w)));
 
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
-  INSTPAT("0011 1001", cmp, E2G, 0, cmp_m_r(rd, w, addr));
+  INSTPAT("0011 1001", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
 
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(rd, w, rs));
