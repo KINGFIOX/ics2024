@@ -400,7 +400,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         if (rd != -1) {                                                           \
           cmp(w, Rr(rd, w), imm);                                                 \
         } else {                                                                  \
-          printf("%s:%d w=%d\n", __FILE__, __LINE__, w);                          \
           cmp(w, Mr(addr, w), imm);                                               \
         }                                                                         \
         break;                                                                    \
@@ -583,17 +582,17 @@ again:
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
 
-  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
+  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
 
   //   100090:       49                      dec    %ecx
-  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, Rr(rd, w) - 1));
+  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1)));
 
   // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, Rr(rd, w) + Rr(rs, w)));
+  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w))));
   // INSTPAT("0000 0001", gp7, E, 0, gp7());
 
   //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
-  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, Rr(rd, w) + Mr(addr, w)));
+  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w))));
 
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
   INSTPAT("0011 1001", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
