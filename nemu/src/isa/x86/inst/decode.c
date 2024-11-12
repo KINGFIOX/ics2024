@@ -491,6 +491,9 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   do {                                    \
     uint64_t func = mask & opcode;        \
     switch (func) {                       \
+      case 0b0010:                        \
+        jb(s, imm);                       \
+        break;                            \
       case 0b0100:                        \
         je(s, imm);                       \
         break;                            \
