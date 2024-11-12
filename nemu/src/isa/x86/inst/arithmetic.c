@@ -35,9 +35,9 @@ word_t add(int w, word_t op1_, word_t op2_, bool adc) {
 
   uint64_t ret_u64;
   if (adc) {
-    ret_u64 = op1 + op2;
-  } else {
     ret_u64 = op1 + op2 + !!cpu.eflags.cf;
+  } else {
+    ret_u64 = op1 + op2;
   }
   bool op1_sign = !!(op1 & sign_mask);
   bool op2_sign = !!(op2 & sign_mask);
@@ -52,39 +52,11 @@ word_t add(int w, word_t op1_, word_t op2_, bool adc) {
   return ret_u64;
 }
 
-word_t sbb(int w, word_t op1, word_t op2) {
-  // FIXME: 可能有问题
-
-  assert(4 == w || 2 == w || 1 == w);
-  if (1 == w) {
-    op1 = (int8_t)op1;
-    op2 = (int8_t)op2;
-  } else if (2 == w) {
-    op1 = (int16_t)op1;
-    op2 = (int16_t)op2;
-  } else if (4 == w) {
-    op1 = (int32_t)op1;
-    op2 = (int32_t)op2;
-  }
-
-  uint64_t ret_u64 = op1 - op2 - !!cpu.eflags.cf;
-  word_t ret = (word_t)ret_u64;
-  int sign_mask = (1 << 31);
-
-  cpu.eflags.cf = (ret_u64 > UINT32_MAX);                                                              // cf
-  cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
-  cpu.eflags.zf = (0 == ret);                                                                          // zf
-  cpu.eflags.sf = !!(ret & sign_mask);                                                                 // sf
-  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret & sign_mask));  // of
-
-  return ret;
-}
-
-word_t sub(int w, word_t op1_, word_t op2_) {
+word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   assert(4 == w || 2 == w || 1 == w);
 
-  word_t op1 = 0;
-  word_t op2 = 0;
+  uint64_t op1 = 0;
+  uint64_t op2 = 0;
   if (1 == w) {
     op1 = (uint8_t)op1_;
     op2 = (uint8_t)op2_;
@@ -96,16 +68,28 @@ word_t sub(int w, word_t op1_, word_t op2_) {
     op2 = (uint32_t)op2_;
   }
 
-  printf("op1 = %x, op2 = %x\n", op1, op2);
+  uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
+  const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
+  const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
 
-  word_t neg = -op2;
-  word_t ret = add(w, op1, neg, false);
+  uint64_t ret_u64;
+  if (sbb) {
+    ret_u64 = op1 - op2 - !!cpu.eflags.cf;
+  } else {
+    ret_u64 = op1 - op2;
+  }
+  bool op1_sign = !!(op1 & sign_mask);
+  bool op2_sign = !!(op2 & sign_mask);
+  bool ret_sign = !!(ret_u64 & sign_mask);
 
-  printf("ret = %x\n", ret);
+  cpu.eflags.cf = !!(op1 < op2);                    // cf
+  cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);  // pf
+  cpu.eflags.zf = !(ret_u64 & mask);                // zf
+  cpu.eflags.sf = ret_sign;                         // sf
+  // + minus - == - || - minus + == +
+  cpu.eflags.of = ((!op1_sign) && (op2_sign) && (ret_sign)) || ((op1_sign) && (!op2_sign) && (!ret_sign));
 
-  cpu.eflags.cf = (op1 < op2);  // NOTE: 发现不能完全复用 add
-
-  return ret;
+  return ret_u64;
 }
 
 void cmp(int w, word_t op1_, word_t op2_) {
@@ -124,7 +108,7 @@ void cmp(int w, word_t op1_, word_t op2_) {
     op2 = (uint32_t)op2_;
   }
 
-  sub(w, op1, op2);
+  sub(w, op1, op2, false);
 
   if (op1 == op2) {
     assert(cpu.eflags.zf);

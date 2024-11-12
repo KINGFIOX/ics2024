@@ -414,7 +414,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         break;                                                                    \
       case 0b101: /*rd=rd-imm*/                                                   \
         assert(rd != -1);                                                         \
-        Rw(rd, w, sub(w, Rr(rd, w), imm));                                        \
+        Rw(rd, w, sub(w, Rr(rd, w), imm, false));                                 \
         break;                                                                    \
       case 0b111: /*cmp*/                                                         \
         /*printf("addr = %x, imm = %x, rs = %d, rd = %d\n", addr, imm, rs, rd);*/ \
@@ -503,7 +503,7 @@ static inline void div1(int w, word_t divisor) {
         break;                                                         \
       case 0b011: /*neg*/                                              \
         assert(rd != -1);                                              \
-        Rw(rd, w, sub(w, 0, Rr(rd, w)));                               \
+        Rw(rd, w, sub(w, 0, Rr(rd, w), false));                        \
         break;                                                         \
       case 0b010: /*not*/                                              \
         assert(rd != -1);                                              \
@@ -675,7 +675,7 @@ again:
   INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
   // 1004b3:       29 c8                   sub    %ecx,%eax
-  INSTPAT("0010 1001", sub, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0010 1001", sub, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w), false)));
 
   // 88  /r   MOV r/m8,r8
   INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
@@ -695,7 +695,7 @@ again:
   INSTPAT("1010 0001", mov, O2a, 0, Rw(R_EAX, w, Mr(addr, w)));
 
   //   1004b5:       19 da                   sbb    %ebx,%edx
-  INSTPAT("0001 1001", sbb, G2E, 0, Rw(rd, w, sbb(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0001 1001", sbb, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w), true)));
 
   //   100066:       13 14 cd 84 03 10 00    adc    0x100384(,%ecx,8),%edx
   INSTPAT("0001 0011", adc, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), true)));
@@ -756,7 +756,7 @@ again:
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1, false)));
 
   //   100090:       49                      dec    %ecx
-  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1)));
+  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1, false)));
 
   // 10005e:       01 f2                   add    %esi,%edx
   INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false)));

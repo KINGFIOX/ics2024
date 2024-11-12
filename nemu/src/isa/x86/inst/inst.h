@@ -14,9 +14,8 @@ void ret(Decode* s, int w);
 
 void cmp(int w, word_t op1, word_t op2);
 void test(int w, word_t op1, word_t op2);
-word_t add(int w, word_t op1_, word_t op2_, bool adc);
-word_t sub(int w, word_t op1, word_t op2);
-word_t sbb(int w, word_t op1, word_t op2);
+word_t add(int w, word_t op1, word_t op2, bool adc);
+word_t sub(int w, word_t op1, word_t op2, bool sbb);
 word_t and_(int w, word_t op1, word_t op2);
 word_t xor_(int w, word_t op1, word_t op2);
 word_t shr(int w, word_t op1, word_t op2);
