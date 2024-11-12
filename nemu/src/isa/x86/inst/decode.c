@@ -398,7 +398,11 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                            \
     switch (gp_idx) {                                                             \
       case 0b000: /*rd=rd+imm*/                                                   \
-        Rw(rd, w, add(w, Rr(rd, w), imm));                                        \
+        if (rd != -1) {                                                           \
+          Rw(rd, w, add(w, Rr(rd, w), imm));                                      \
+        } else {                                                                  \
+          Mw(addr, w, add(w, Mr(addr, w), imm));                                  \
+        }                                                                         \
         break;                                                                    \
       case 0b010: /*cmp*/                                                         \
         cmp(w, Rr(rd, w), imm);                                                   \
