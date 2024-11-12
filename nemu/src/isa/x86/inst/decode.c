@@ -546,6 +546,9 @@ static inline void div1(int w, word_t divisor) {
       case 0b0101:                        \
         jne(s, imm);                      \
         break;                            \
+      case 0b1000:                        \
+        js(s, imm);                       \
+        break;                            \
       case 0b1110:                        \
         jle(s, imm);                      \
         break;                            \

@@ -38,8 +38,16 @@ void jle(Decode* s, word_t imm) {
   int sf = !!cpu.eflags.sf;
   int of = !!cpu.eflags.of;
   int zf = !!cpu.eflags.zf;
-
   int cond = (sf ^ of) | zf;
+
+  if (cond) {
+    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+  }
+}
+
+void js(Decode* s, word_t imm) {
+  int sf = !!cpu.eflags.sf;
+  int cond = sf;
 
   if (cond) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
