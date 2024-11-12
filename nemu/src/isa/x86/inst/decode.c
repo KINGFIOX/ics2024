@@ -621,6 +621,7 @@ again:
   INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   100010:       31 c0                   xor    %eax,%eax
+  // INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
   do {
     uint64_t key, mask, shift;
     pattern_decode("0011 0001", (sizeof("0011 0001") - 1), &key, &mask, &shift);
@@ -633,6 +634,7 @@ again:
         s->dnpc = s->snpc;
         word_t ret = xor_(w, reg_read(rd, w), reg_read(rs, w));
         reg_write(rd, w, ret);
+        assert(Rr(rd, w) == ret);
       };
       goto *(__instpat_end);
     }
