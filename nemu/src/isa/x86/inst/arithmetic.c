@@ -28,7 +28,7 @@ word_t add(int w, word_t op1_, word_t op2_) {
 
   uint64_t ret_u64 = op1 + op2;
   const int sign_mask = (1 << 31);
-  const uint64_t mask = (uint32_t)~0;
+  const uint64_t mask = (uint32_t)((1 << (w * 8)) - 1);
 
   cpu.eflags.cf = !!(ret_u64 & mask);                                                                      // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                                                         // pf
