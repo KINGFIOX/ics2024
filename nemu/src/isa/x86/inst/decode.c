@@ -446,6 +446,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     switch (gp_idx) {                                                  \
       case 0b000: /*test*/                                             \
         imm = x86_inst_fetch(s, w);                                    \
+        s->dnpc += w;                                                  \
         test(w, Rr(rd, w), imm);                                       \
         break;                                                         \
       case 0b011: /*neg*/                                              \
