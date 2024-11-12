@@ -4,6 +4,8 @@
 
 static const word_t sign_mask = 1 << (sizeof(word_t) * 8 - 1);
 
+static const word_t all = -1;
+
 static inline int ones(word_t ret) {
   int ones = 0;
   for (int i = 0; i < 8; i++) {
@@ -91,6 +93,8 @@ word_t xor_(int w, word_t op1, word_t op2) {
 
   return ret;
 }
+
+word_t not_(int w, word_t op1) { return xor_(w, op1, all); }
 
 word_t shr(int w, word_t op1, word_t op2) {
   word_t ret = op1 >> op2;
