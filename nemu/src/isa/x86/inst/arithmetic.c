@@ -72,7 +72,9 @@ word_t and_(int w, word_t op1, word_t op2) {
 void test(int w, word_t op1, word_t op2) { and_(w, op1, op2); }
 
 word_t xor_(int w, word_t op1, word_t op2) {
+  printf("op1 = 0b%08b, op2 = 0b%08b\n", op1, op2);
   word_t ret = op1 ^ op2;
+  printf("ret = 0b%08b\n", ret);
 
   // zf
   cpu.eflags.zf = (ret == 0);
