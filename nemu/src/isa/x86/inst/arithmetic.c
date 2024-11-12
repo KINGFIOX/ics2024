@@ -32,7 +32,7 @@ word_t add(int w, word_t op1_, word_t op2_) {
 
   cpu.eflags.cf = !!(ret_u64 & mask);                                                                      // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                                                         // pf
-  cpu.eflags.zf = (0 == (ret_u64 & mask));                                                                 // zf
+  cpu.eflags.zf = !(ret_u64 & mask);                                                                       // zf
   cpu.eflags.sf = !!(ret_u64 & sign_mask);                                                                 // sf
   cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret_u64 & sign_mask));  // of
 
