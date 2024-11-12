@@ -27,17 +27,16 @@ word_t add(int w, word_t op1_, word_t op2_) {
   }
 
   uint64_t ret_u64 = op1 + op2;
-  word_t ret = (word_t)ret_u64;
-  int sign_mask = (1 << 31);
-  uint64_t mask = (uint32_t)~0;
+  const int sign_mask = (1 << 31);
+  const uint64_t mask = (uint32_t)~0;
 
-  cpu.eflags.cf = !!(ret_u64 & mask);                                                                  // cf
-  cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
-  cpu.eflags.zf = (0 == ret);                                                                          // zf
-  cpu.eflags.sf = !!(ret & sign_mask);                                                                 // sf
-  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret & sign_mask));  // of
+  cpu.eflags.cf = !!(ret_u64 & mask);                                                                      // cf
+  cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                                                         // pf
+  cpu.eflags.zf = (0 == (ret_u64 & mask));                                                                 // zf
+  cpu.eflags.sf = !!(ret_u64 & sign_mask);                                                                 // sf
+  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret_u64 & sign_mask));  // of
 
-  return ret;
+  return ret_u64;
 }
 
 word_t sbb(int w, word_t op1, word_t op2) {
