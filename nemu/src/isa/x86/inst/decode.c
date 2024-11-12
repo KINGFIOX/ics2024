@@ -462,7 +462,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         Rw(rd, w, not_(w, Rr(rd, w)));                                 \
         break;                                                         \
       case 0b111: /*idiv*/                                             \
-        idiv(rs);                                                      \
+        idiv(rd);                                                      \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
