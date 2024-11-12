@@ -11,17 +11,19 @@ static inline int ones(word_t ret) {
   return ones;
 }
 
-word_t add(int w, word_t op1, word_t op2) {
+word_t add(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
+  uint64_t op1 = 0;
+  uint64_t op2 = 0;
   if (1 == w) {
-    op1 = (uint8_t)op1;
-    op2 = (uint8_t)op2;
+    op1 = (uint8_t)op1_;
+    op2 = (uint8_t)op2_;
   } else if (2 == w) {
-    op1 = (uint16_t)op1;
-    op2 = (uint16_t)op2;
+    op1 = (uint16_t)op1_;
+    op2 = (uint16_t)op2_;
   } else if (4 == w) {
-    op1 = (uint32_t)op1;
-    op2 = (uint32_t)op2;
+    op1 = (uint32_t)op1_;
+    op2 = (uint32_t)op2_;
   }
 
   uint64_t ret_u64 = op1 + op2;
