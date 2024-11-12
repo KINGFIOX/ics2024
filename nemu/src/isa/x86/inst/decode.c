@@ -612,18 +612,8 @@ again:
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
   INSTPAT("0011 1011", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
-
-  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
-
-  //   100090:       49                      dec    %ecx
-  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1)));
-
-  // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w))));
-
-  //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
-  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w))));
-
+  //   1000d3:       3d 39 a3 4f 41          cmp    $0x414fa339,%eax
+  INSTPAT("0011 1101", cmp, I2a, 0, cmp(w, Rr(R_EAX, w), imm));
   //   10005c:       39 f1                   cmp    %esi,%ecx
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
   INSTPAT("0011 1001", cmp, E2G, 0, {
@@ -636,6 +626,17 @@ again:
     }
     cmp(w, op1, op2);
   });
+
+  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
+
+  //   100090:       49                      dec    %ecx
+  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1)));
+
+  // 10005e:       01 f2                   add    %esi,%edx
+  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w))));
+
+  //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
+  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w))));
 
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));
