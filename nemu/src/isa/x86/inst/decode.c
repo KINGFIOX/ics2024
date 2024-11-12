@@ -621,7 +621,7 @@ again:
   INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   100010:       31 c0                   xor    %eax,%eax
-  INSTPAT("0011 0001", xor, G2E, 0, printf("rd(%d) = 0x%08x, rs(%d) = 0x%08x\n", rd, Rr(rd, w), rs, Rr(rs, w)), Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
