@@ -591,12 +591,12 @@ static inline void div1(int w, word_t divisor) {
 static inline void movzwl(int w, int rd, int rs, vaddr_t addr) {
   assert(w == 4);
   word_t op1;
-  if (rs == -1) {
+  if (rd == -1) {
     op1 = vaddr_read(addr, w);
   } else {
-    op1 = Rr(rs, w);
+    op1 = Rr(rd, w);
   }
-  Rw(rd, w, op1);
+  Rw(rs, w, op1);
 }
 
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
