@@ -405,12 +405,15 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         }                                                                         \
         break;                                                                    \
       case 0b010: /*cmp*/                                                         \
+        assert(rd != -1);                                                         \
         cmp(w, Rr(rd, w), imm);                                                   \
         break;                                                                    \
       case 0b100: /*rd=rd&imm*/                                                   \
+        assert(rd != -1);                                                         \
         Rw(rd, w, and_(w, Rr(rd, w), imm));                                       \
         break;                                                                    \
       case 0b101: /*rd=rd-imm*/                                                   \
+        assert(rd != -1);                                                         \
         Rw(rd, w, sub(w, Rr(rd, w), imm));                                        \
         break;                                                                    \
       case 0b111: /*cmp*/                                                         \
