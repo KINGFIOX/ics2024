@@ -608,7 +608,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   //   100067:       0f 94 c2                sete   %dl
   INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   100063:       0f af c1                imul   %ecx,%eax
-  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(R_EAX, w), Rr(R_ECX, w))));
+  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(rd, w), Rr(rs, w))));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
