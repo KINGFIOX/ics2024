@@ -630,6 +630,8 @@ again:
 
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));
+  //   10004c:       f6 c3 03                test   $0x3,%bl
+  INSTPAT("1111 0110", test, E, 1, gp3());
 
   //   10007f:       90                      nop
   INSTPAT("1001 0000", nop, N, 0, /*nop*/);
