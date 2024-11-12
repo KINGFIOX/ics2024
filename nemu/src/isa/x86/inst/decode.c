@@ -444,6 +444,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp3()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
+      case 0b000: /*test*/                                             \
+        test(w, Rr(rd, w), imm);                                       \
+        break;                                                         \
       case 0b011: /*neg*/                                              \
         Rw(rd, w, sub(w, 0, Rr(rd, w)));                               \
         break;                                                         \
