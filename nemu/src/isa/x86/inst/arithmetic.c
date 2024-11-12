@@ -21,7 +21,6 @@ word_t add(int w, word_t op1, word_t op2) {
   cpu.eflags.cf = ((uint64_t)ret < (uint64_t)(op1 + op2));
 
   // pf
-
   cpu.eflags.pf = (ones(ret) % 2 == 1);
 
   // af
@@ -55,6 +54,9 @@ word_t and_(int w, word_t op1, word_t op2) {
   // pf
   cpu.eflags.pf = (ones(ret) % 2 == 1);
 
+  // af
+  cpu.eflags.af = 0;
+
   // cf
   cpu.eflags.cf = 0;
 
@@ -65,3 +67,41 @@ word_t and_(int w, word_t op1, word_t op2) {
 }
 
 void test(int w, word_t op1, word_t op2) { and_(w, op1, op2); }
+
+word_t xor_(int w, word_t op1, word_t op2) {
+  word_t ret = op1 ^ op2;
+
+  // zf
+  cpu.eflags.zf = (ret == 0);
+
+  // sf
+  cpu.eflags.sf = (ret & sign_mask);
+
+  // pf
+  cpu.eflags.pf = (ones(ret) % 2 == 1);
+
+  // cf
+  cpu.eflags.cf = 0;
+
+  // af
+  cpu.eflags.af = 0;
+
+  // of
+  cpu.eflags.of = 0;
+
+  return ret;
+}
+
+word_t shr(int w, word_t op1, word_t op2) {
+  word_t ret = op1 >> op2;
+
+  // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
+
+  // zf
+  cpu.eflags.zf = (ret == 0);
+
+  // pf
+  cpu.eflags.pf = (ones(ret) % 2 == 1);
+
+  return ret;
+}

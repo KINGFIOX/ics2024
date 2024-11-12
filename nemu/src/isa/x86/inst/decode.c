@@ -439,7 +439,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp3()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
-      case 0b011:                                                      \
+      case 0b011: /*neg*/                                              \
         Rw(rd, w, sub(w, 0, Rr(rd, w)));                               \
         break;                                                         \
       default:                                                         \
@@ -452,7 +452,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b101:                                                      \
-        Rw(rd, w, Rr(rd, w) >> 1);                                     \
+        Rw(rd, w, shr(w, Rr(rd, w), 1));                               \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
@@ -607,10 +607,10 @@ again:
   INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   100010:       31 c0                   xor    %eax,%eax
-  INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
+  INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
-  INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, Rr(R_EAX, w) & imm));
+  INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
 
   //   10008c:       d1 ea                   shr    $1,%edx
   INSTPAT("1101 0001", shr, 1_E, 0, gp2());
