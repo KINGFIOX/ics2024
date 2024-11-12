@@ -590,6 +590,9 @@ again:
 
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
 
+  //   100090:       49                      dec    %ecx
+  INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, Rr(rd, w)));
+
   // 10005e:       01 f2                   add    %esi,%edx
   INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, Rr(rd, w) + Rr(rs, w)));
   // INSTPAT("0000 0001", gp7, E, 0, gp7());
