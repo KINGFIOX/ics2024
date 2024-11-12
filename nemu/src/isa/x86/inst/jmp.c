@@ -35,11 +35,11 @@ void jmp(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }
 
 void jle(Decode* s, word_t imm) {
   // (sf ^ of) | zf
-  bool sf = !!cpu.eflags.sf;
-  bool of = !!cpu.eflags.of;
-  bool zf = !!cpu.eflags.zf;
+  int sf = !!cpu.eflags.sf;
+  int of = !!cpu.eflags.of;
+  int zf = !!cpu.eflags.zf;
 
-  bool cond = (sf ^ of) | zf;
+  int cond = (sf ^ of) | zf;
 
   printf("cond = %d\n", cond);
   printf("sf = %d, of = %d, zf = %d\n", sf, of, zf);
