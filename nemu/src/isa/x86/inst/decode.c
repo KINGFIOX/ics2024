@@ -16,6 +16,7 @@
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include <cpu/ifetch.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "../reg.h"
@@ -303,6 +304,13 @@ enum {
     __VA_ARGS__;                                                                              \
   }
 
+static inline void idiv(int op) {
+  sword_t divisor = Rr(op, 4);
+  int64_t dividend = ((int64_t)Rr(R_EDX, 4) << 32) | (int64_t)Rr(R_EAX, 4);
+  Rw(R_EAX, 4, dividend / divisor);
+  Rw(R_EDX, 4, (word_t)(dividend % divisor));
+}
+
 /**
  * @brief
  *
@@ -452,6 +460,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         break;                                                         \
       case 0b010: /*not*/                                              \
         Rw(rd, w, not_(w, Rr(rd, w)));                                 \
+        break;                                                         \
+      case 0b111: /*idiv*/                                             \
+        idiv(rs);                                                      \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
