@@ -92,7 +92,11 @@ word_t sub(int w, word_t op1_, word_t op2_) {
   }
 
   word_t neg = -op2;
-  return add(w, op1, neg);
+  word_t ret = add(w, op1, neg);
+
+  cpu.eflags.cf = (op1 < op2);
+
+  return ret;
 }
 
 void cmp(int w, word_t op1_, word_t op2_) {
