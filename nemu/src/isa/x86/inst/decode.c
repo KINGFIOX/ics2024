@@ -445,6 +445,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000: /*test*/                                             \
+        imm = x86_inst_fetch(s, w);                                    \
         test(w, Rr(rd, w), imm);                                       \
         break;                                                         \
       case 0b011: /*neg*/                                              \
@@ -613,9 +614,6 @@ again:
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
   INSTPAT("0011 1011", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
 
-  //   10002f:       ff 71 fc                push   -0x4(%ecx)
-  INSTPAT("1111 1111", gp5, E, 0, gp5());
-
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
 
   //   100090:       49                      dec    %ecx
@@ -632,13 +630,17 @@ again:
 
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));
-  //   10004c:       f6 c3 03                test   $0x3,%bl
-  INSTPAT("1111 0110", test, E, 1, gp3());
 
   //   10007f:       90                      nop
   INSTPAT("1001 0000", nop, N, 0, /*nop*/);
 
+  //   10002f:       ff 71 fc                push   -0x4(%ecx)
+  INSTPAT("1111 1111", gp5, E, 0, gp5());
+  //   10004c:       f6 c3 03                test   $0x3,%bl
+  INSTPAT("1111 0110", test, E, 1, gp3());
   //   100085:       f7 d8                   neg    %eax
+  INSTPAT("1111 0111", gp3, E, 0, gp3());
+  //   1000a2:       f7 d0                   not    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
@@ -653,9 +655,6 @@ again:
 
   //   100093:       eb d3                   jmp    100068 <rc_crc32+0x40>
   INSTPAT("1110 1011", jmp, J, 1, jmp(s, imm));
-
-  //   1000a2:       f7 d0                   not    %eax
-  INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
 
