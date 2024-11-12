@@ -509,27 +509,6 @@ static inline void imul1(int w, word_t op1) {
     }                                                                  \
   } while (0)
 
-// 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
-// 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
-// 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
-// 0F  21 /r   MOV r32,DR6/DR7       14       Move (debug register) to (register)
-// 0F  23 /r   MOV DR0 -- 3,r32      22       Move (register) to (debug register)
-// 0F  23 /r   MOV DR6/DR7,r32       16       Move (register) to (debug register)
-// 0F  24 /r   MOV r32,TR6/TR7       12       Move (test register) to (register)
-// 0F  26 /r   MOV TR6/TR7,r32       12       Move (register) to (test register)
-void _2byte_esc(Decode *s, bool is_operand_size_16) {
-  uint8_t opcode = x86_inst_fetch(s, 1);
-  INSTPAT_START();
-  //   100067:       0f 94 c2                sete   %dl
-  INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
-  //   100063:       0f af c1                imul   %ecx,%eax
-  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(R_EAX, w), Rr(R_ECX, w))));
-  //   10006a:       0f b6 d2                movzbl %dl,%edx
-  INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
-  INSTPAT("???? ????", inv, N, 0, INV(s->pc));
-  INSTPAT_END();
-}
-
 #define jcc()                             \
   do {                                    \
     uint64_t func = mask & opcode;        \
@@ -551,6 +530,29 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
         INV(s->pc);                       \
     }                                     \
   } while (0)
+
+// 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
+// 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
+// 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
+// 0F  21 /r   MOV r32,DR6/DR7       14       Move (debug register) to (register)
+// 0F  23 /r   MOV DR0 -- 3,r32      22       Move (register) to (debug register)
+// 0F  23 /r   MOV DR6/DR7,r32       16       Move (register) to (debug register)
+// 0F  24 /r   MOV r32,TR6/TR7       12       Move (test register) to (register)
+// 0F  26 /r   MOV TR6/TR7,r32       12       Move (register) to (test register)
+void _2byte_esc(Decode *s, bool is_operand_size_16) {
+  uint8_t opcode = x86_inst_fetch(s, 1);
+  INSTPAT_START();
+  //   100067:       0f 94 c2                sete   %dl
+  INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
+  //   100063:       0f af c1                imul   %ecx,%eax
+  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(R_EAX, w), Rr(R_ECX, w))));
+  //   10006a:       0f b6 d2                movzbl %dl,%edx
+  INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
+  //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
+  INSTPAT("1000 ????", jne, J, 4, jcc());
+  INSTPAT("???? ????", inv, N, 0, INV(s->pc));
+  INSTPAT_END();
+}
 
 static inline void cmp_rm(int w, int rd, int rs, vaddr_t addr) {
   word_t op1, op2;
