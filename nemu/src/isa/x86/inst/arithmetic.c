@@ -38,11 +38,7 @@ word_t add(int w, word_t op1_, word_t op2_) {
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
 
-  printf("mask: %016lx\n", mask);
-  printf("ret_u64: %016lx\n", ret_u64);
-
-  cpu.eflags.cf = !!(ret_u64 & (~mask));  // cf
-  printf("cf = %d\n", cpu.eflags.cf);
+  cpu.eflags.cf = !!(ret_u64 & (~mask));                             // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                   // pf
   cpu.eflags.zf = !(ret_u64 & mask);                                 // zf
   cpu.eflags.sf = ret_sign;                                          // sf
@@ -92,7 +88,7 @@ word_t sub(int w, word_t op1_, word_t op2_) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
-  printf("w = %d, op1: %x, op2: %x\n", w, op1, op2);
+
   word_t neg = -op2;
   return add(w, op1, neg);
 }

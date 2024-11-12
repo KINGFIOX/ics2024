@@ -63,6 +63,8 @@ void jbe(Decode* s, word_t imm) {
   int zf = !!cpu.eflags.zf;
   int cond = !!(cf | zf);
 
+  printf("cf = %d, zf = %d, cond = %d\n", cf, zf, cond);
+
   if (cond) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
   }
