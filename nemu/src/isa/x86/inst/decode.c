@@ -460,8 +460,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b101:                                                      \
-        printf("edx = %x\n", Rr(rd, w));                               \
-        Rw(rd, w, shr(w, Rr(rd, w), 1));                               \
+        Rw(rd, w, shr(w, Rr(rd, w), imm));                             \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
