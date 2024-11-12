@@ -39,7 +39,11 @@ void jle(Decode* s, word_t imm) {
   bool of = 0 != cpu.eflags.of;
   bool zf = 0 != cpu.eflags.zf;
 
-  if ((sf ^ of) | zf) {
+  bool cond = (sf ^ of) | zf;
+
+  printf("cond = %d\n", cond);
+
+  if (cond) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
   }
 }
