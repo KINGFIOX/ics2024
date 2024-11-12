@@ -53,3 +53,13 @@ void js(Decode* s, word_t imm) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
   }
 }
+
+void jge(Decode* s, word_t imm) {
+  int sf = !!cpu.eflags.sf;
+  int of = !!cpu.eflags.of;
+  int cond = sf ^ of;
+
+  if (cond) {
+    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+  }
+}
