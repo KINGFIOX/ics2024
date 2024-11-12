@@ -105,10 +105,10 @@ word_t shr(int w, word_t op1, word_t op2) {
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
 
   // zf
-  cpu.eflags.zf = (ret == 0);
+  cpu.eflags.zf = (0 == ret);
 
   // pf
-  cpu.eflags.pf = (ones(ret) % 2 == 1);
+  cpu.eflags.pf = (1 == ones(ret) % 2);
 
   return ret;
 }
