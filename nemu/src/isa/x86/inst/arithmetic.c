@@ -28,17 +28,21 @@ word_t add(int w, word_t op1_, word_t op2_) {
     op2 = (uint32_t)op2_;
   }
 
-  uint64_t ret_u64 = op1 + op2;
-  uint64_t w_u64 = w;
+  uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的数字类型感到难绷了
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
   const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
-  printf("w = %d, mask: %016lx, sign_mask: %016lx\n", w, mask, sign_mask);
+  // printf("w = %d, mask: %016lx, sign_mask: %016lx\n", w, mask, sign_mask);
 
-  cpu.eflags.cf = !!(ret_u64 & mask);                                                                      // cf
-  cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                                                         // pf
-  cpu.eflags.zf = !(ret_u64 & mask);                                                                       // zf
-  cpu.eflags.sf = !!(ret_u64 & sign_mask);                                                                 // sf
-  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret_u64 & sign_mask));  // of
+  uint64_t ret_u64 = op1 + op2;
+  bool op1_sign = !!(op1 & sign_mask);
+  bool op2_sign = !!(op2 & sign_mask);
+  bool ret_sign = !!(ret_u64 & sign_mask);
+
+  cpu.eflags.cf = !!(ret_u64 & mask);                                // cf
+  cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);                   // pf
+  cpu.eflags.zf = !(ret_u64 & mask);                                 // zf
+  cpu.eflags.sf = ret_sign;                                          // sf
+  cpu.eflags.of = (op1_sign == op2_sign) && (op1_sign != ret_sign);  // of
 
   return ret_u64;
 }
