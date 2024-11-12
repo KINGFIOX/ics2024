@@ -107,6 +107,7 @@ void cmp(int w, word_t op1_, word_t op2_) {
     op2 = (uint32_t)op2_;
   }
 
+  printf("op1: %x, op2: %x\n", op1, op2);
   sub(w, op1, op2);
 
   if (op1 == op2) {
