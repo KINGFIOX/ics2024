@@ -6,7 +6,8 @@
 void callo(Decode* s, int w, word_t imm) {
   assert(4 == w);
   push(w, s->snpc);
-  s->dnpc = s->dnpc + imm;
+  s->dnpc = s->snpc + imm;
+  printf("dnpc = %x, snpc = %x, imm = %x\n", s->dnpc, s->snpc, imm);
 }
 
 // offset
