@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "common.h"
 #include "cpu/decode.h"
 #include "inst.h"
@@ -26,3 +24,5 @@ void jne(Decode* s, word_t imm) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
   }
 }
+
+void jmp(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }

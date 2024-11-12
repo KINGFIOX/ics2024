@@ -3,7 +3,6 @@
 
 #include "common.h"
 #include "cpu/decode.h"
-#include "memory/vaddr.h"
 
 void push(int width, word_t data);
 word_t pop(int width);

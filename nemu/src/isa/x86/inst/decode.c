@@ -617,6 +617,9 @@ again:
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
+  //   100093:       eb d3                   jmp    100068 <rc_crc32+0x40>
+  INSTPAT("1110 1011", jmp, J, 1, );
+
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
 
   INSTPAT_END();

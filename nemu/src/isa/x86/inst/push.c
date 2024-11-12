@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "debug.h"
 #include "inst.h"
 #include "isa-def.h"
