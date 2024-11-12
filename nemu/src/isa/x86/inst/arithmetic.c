@@ -94,7 +94,7 @@ word_t sub(int w, word_t op1_, word_t op2_) {
   word_t neg = -op2;
   word_t ret = add(w, op1, neg);
 
-  cpu.eflags.cf = (op1 < op2);
+  cpu.eflags.cf = (op1 < op2);  // NOTE: 发现不能完全复用 add
 
   return ret;
 }
@@ -114,6 +114,8 @@ void cmp(int w, word_t op1_, word_t op2_) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
+
+  printf("op1: %x, op2: %x\n", op1, op2);
 
   sub(w, op1, op2);
 
