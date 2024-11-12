@@ -6,7 +6,7 @@
 #include "memory/vaddr.h"
 
 void push(int width, word_t data) {
-  printf("width = %d, data = %x\n", width, data);
+  // printf("width = %d, data = %x\n", width, data);
   assert(width == 1 || width == 2 || width == 4);
 
   vaddr_t vaddr = reg_read(R_ESP, 4);  // get %esp, %esp is 4 bytes
