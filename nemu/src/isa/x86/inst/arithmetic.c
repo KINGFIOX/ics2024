@@ -1,8 +1,5 @@
-#include <stdio.h>
-
 #include "common.h"
 #include "inst.h"
-#include "macro.h"
 
 static inline int ones(word_t ret) {
   int ones = 0;
@@ -28,6 +25,32 @@ word_t add(int w, word_t op1, word_t op2) {
   }
 
   uint64_t ret_u64 = op1 + op2;
+  word_t ret = (word_t)ret_u64;
+  int sign_mask = (1 << 31);
+
+  cpu.eflags.cf = (ret_u64 > UINT32_MAX);                                                              // cf
+  cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
+  cpu.eflags.zf = (0 == ret);                                                                          // zf
+  cpu.eflags.sf = !!(ret & sign_mask);                                                                 // sf
+  cpu.eflags.of = ((op1 & sign_mask) == (op2 & sign_mask) && (op1 & sign_mask) != (ret & sign_mask));  // of
+
+  return ret;
+}
+
+word_t sbb(int w, word_t op1, word_t op2) {
+  assert(4 == w || 2 == w || 1 == w);
+  if (1 == w) {
+    op1 = (int8_t)op1;
+    op2 = (int8_t)op2;
+  } else if (2 == w) {
+    op1 = (int16_t)op1;
+    op2 = (int16_t)op2;
+  } else if (4 == w) {
+    op1 = (int32_t)op1;
+    op2 = (int32_t)op2;
+  }
+
+  uint64_t ret_u64 = op1 - op2 - !!cpu.eflags.cf;
   word_t ret = (word_t)ret_u64;
   int sign_mask = (1 << 31);
 
@@ -79,23 +102,13 @@ void cmp(int w, word_t op1, word_t op2) {
 
 word_t and_(int w, word_t op1, word_t op2) {
   int sign_mask = (1 << (w * 8 - 1));
-
   word_t ret = op1 & op2;
 
-  // zf
-  cpu.eflags.zf = (ret == 0);
-
-  // sf
-  cpu.eflags.sf = (ret & sign_mask);
-
-  // pf
-  cpu.eflags.pf = (ones(ret) % 2 == 1);
-
-  // cf
-  cpu.eflags.cf = 0;
-
-  // of
-  cpu.eflags.of = 0;
+  cpu.eflags.zf = (ret == 0);            // zf
+  cpu.eflags.sf = (ret & sign_mask);     // sf
+  cpu.eflags.pf = (ones(ret) % 2 == 1);  // pf
+  cpu.eflags.cf = 0;                     // cf
+  cpu.eflags.of = 0;                     // of
 
   return ret;
 }
@@ -104,23 +117,13 @@ void test(int w, word_t op1, word_t op2) { and_(w, op1, op2); }
 
 word_t xor_(int w, word_t op1, word_t op2) {
   int sign_mask = (1 << (w * 8 - 1));
-
   word_t ret = op1 ^ op2;
 
-  // zf
-  cpu.eflags.zf = (0 == ret);
-
-  // sf
-  cpu.eflags.sf = (ret & sign_mask);
-
-  // pf
-  cpu.eflags.pf = (1 == ones(ret) % 2);
-
-  // cf
-  cpu.eflags.cf = 0;
-
-  // of
-  cpu.eflags.of = 0;
+  cpu.eflags.zf = (0 == ret);            // zf
+  cpu.eflags.sf = (ret & sign_mask);     // sf
+  cpu.eflags.pf = (1 == ones(ret) % 2);  // pf
+  cpu.eflags.cf = 0;                     // cf
+  cpu.eflags.of = 0;                     // of
 
   return ret;
 }
@@ -133,11 +136,8 @@ word_t sar(int w, word_t op1, word_t op2) {
 
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
 
-  // zf
-  cpu.eflags.zf = (0 == ret);
-
-  // pf
-  cpu.eflags.pf = (1 == ones(ret) % 2);
+  cpu.eflags.zf = (0 == ret);            // zf
+  cpu.eflags.pf = (1 == ones(ret) % 2);  // pf
 
   return ret;
 }
@@ -148,11 +148,8 @@ word_t shr(int w, word_t op1, word_t op2) {
 
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
 
-  // zf
-  cpu.eflags.zf = (0 == ret);
-
-  // pf
-  cpu.eflags.pf = (1 == ones(ret) % 2);
+  cpu.eflags.zf = (0 == ret);            // zf
+  cpu.eflags.pf = (1 == ones(ret) % 2);  // pf
 
   return ret;
 }
@@ -160,7 +157,6 @@ word_t shr(int w, word_t op1, word_t op2) {
 word_t imul2(int w, word_t op1, word_t op2) {
   assert(w == 4);
   int sign_mask = (1 << (w * 8 - 1));
-
   uint64_t ret = op1 * op2;
 
   // of, cf
@@ -172,14 +168,9 @@ word_t imul2(int w, word_t op1, word_t op2) {
     cpu.eflags.of = 0;
   }
 
-  // pf
-  cpu.eflags.pf = (1 == ones(ret) % 2);
-
-  // zf
-  cpu.eflags.zf = (0 == ret);
-
-  // sf
-  cpu.eflags.sf = (ret & sign_mask);
+  cpu.eflags.pf = (1 == ones(ret) % 2);  // pf
+  cpu.eflags.zf = (0 == ret);            // zf
+  cpu.eflags.sf = (ret & sign_mask);     // sf
 
   // af, do nothing
 
