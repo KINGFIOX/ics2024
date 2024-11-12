@@ -353,7 +353,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_I:
     case TYPE_J:
-      printf("%s:%d w = %d\n", __FILE__, __LINE__, w);
       imm();
       break;
     case TYPE_SI:
