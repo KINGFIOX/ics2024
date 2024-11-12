@@ -75,7 +75,7 @@ void cmp(int w, word_t op1, word_t op2) {
     assert(cpu.eflags.zf);
   }
   if (op1 < op2) {
-    assert(cpu.eflags.cf);
+    assert(cpu.eflags.of);
   }
 }
 
