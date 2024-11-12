@@ -18,6 +18,7 @@ word_t sub(int w, word_t op1, word_t op2);
 word_t and_(int w, word_t op1, word_t op2);
 word_t xor_(int w, word_t op1, word_t op2);
 word_t shr(int w, word_t op1, word_t op2);
+word_t sar(int w, word_t op1, word_t op2);
 word_t not_(int w, word_t op1);
 word_t imul2(int w, word_t op1, word_t op2);
 

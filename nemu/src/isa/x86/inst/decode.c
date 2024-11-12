@@ -497,8 +497,11 @@ static inline void imul1(int w, word_t op1) {
 #define gp2_Ib2E()                                                     \
   do {                                                                 \
     switch (gp_idx) {                                                  \
-      case 0b101:                                                      \
+      case 0b101: /*shr*/                                              \
         Rw(rd, w, shr(w, Rr(rd, w), imm));                             \
+        break;                                                         \
+      case 0b111: /*sar*/                                              \
+        Rw(rd, w, sar(w, Rr(rd, w), imm));                             \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
