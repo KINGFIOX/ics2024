@@ -353,6 +353,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_I:
       imm();
+      break;
     case TYPE_J:
       simm(1);
       break;
