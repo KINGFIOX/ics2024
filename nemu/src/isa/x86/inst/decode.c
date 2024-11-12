@@ -445,8 +445,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000: /*test*/                                             \
-        imm = x86_inst_fetch(s, w);                                    \
-        s->dnpc += w;                                                  \
         test(w, Rr(rd, w), imm);                                       \
         break;                                                         \
       case 0b011: /*neg*/                                              \
@@ -638,7 +636,7 @@ again:
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
   //   10004c:       f6 c3 03                test   $0x3,%bl
-  INSTPAT("1111 0110", test, E, 1, gp3());
+  INSTPAT("1111 0110", test, I2E, 1, gp3());
   //   100085:       f7 d8                   neg    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
   //   1000a2:       f7 d0                   not    %eax
