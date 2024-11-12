@@ -68,14 +68,14 @@ word_t sbb(int w, word_t op1, word_t op2) {
 word_t sub(int w, word_t op1, word_t op2) {
   assert(4 == w || 2 == w || 1 == w);
   if (1 == w) {
-    op1 = (int8_t)op1;
-    op2 = (int8_t)op2;
+    op1 = (uint8_t)op1;
+    op2 = (uint8_t)op2;
   } else if (2 == w) {
-    op1 = (int16_t)op1;
-    op2 = (int16_t)op2;
+    op1 = (uint16_t)op1;
+    op2 = (uint16_t)op2;
   } else if (4 == w) {
-    op1 = (int32_t)op1;
-    op2 = (int32_t)op2;
+    op1 = (uint32_t)op1;
+    op2 = (uint32_t)op2;
   }
   word_t neg = -op2;
   return add(w, op1, neg);
