@@ -57,7 +57,7 @@ void js(Decode* s, word_t imm) {
 void jge(Decode* s, word_t imm) {
   int sf = !!cpu.eflags.sf;
   int of = !!cpu.eflags.of;
-  int cond = sf ^ of;
+  int cond = !(sf ^ of);
 
   if (cond) {
     s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
