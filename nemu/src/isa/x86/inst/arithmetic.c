@@ -30,8 +30,8 @@ word_t add(int w, word_t op1_, word_t op2_) {
 
   uint64_t ret_u64 = op1 + op2;
   uint64_t w_u64 = w;
-  const uint64_t sign_mask = 1 << (w_u64 * 8 - 1);
-  const uint64_t mask = (1 << (w_u64 * 8)) - 1;
+  const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
+  const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
   printf("w = %d, mask: %016lx, sign_mask: %016lx\n", w, mask, sign_mask);
 
   cpu.eflags.cf = !!(ret_u64 & mask);                                                                      // cf
