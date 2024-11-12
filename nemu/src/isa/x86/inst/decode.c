@@ -436,6 +436,15 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     }                                                                     \
   } while (0)
 
+#define gp3()                                                          \
+  do {                                                                 \
+    switch (gp_idx) {                                                  \
+      default:                                                         \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
+        INV(s->pc);                                                    \
+    }                                                                  \
+  } while (0)
+
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
 // 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
 // 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
@@ -575,6 +584,9 @@ again:
 
   //   10007f:       90                      nop
   INSTPAT("1001 0000", nop, N, 0, /*nop*/);
+
+  //   100085:       f7 d8                   neg    %eax
+  INSTPAT("1111 0111", gp3, E, 0, gp3());
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
