@@ -88,7 +88,7 @@ word_t sub(int w, word_t op1_, word_t op2_) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
-  printf("op1: %x, op2: %x\n", op1, op2);
+  printf("w = %d, op1: %x, op2: %x\n", w, op1, op2);
   word_t neg = -op2;
   return add(w, op1, neg);
 }
