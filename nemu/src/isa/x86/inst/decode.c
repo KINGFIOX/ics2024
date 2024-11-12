@@ -385,7 +385,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 // gp1's gp_idx from INSTPAT_START
 #define gp1()                                                                     \
   do {                                                                            \
-    printf("gp_idx = 0b%03b\n", gp_idx);                                          \
     switch (gp_idx) {                                                             \
       case 0b000: /*rd=rd+imm*/                                                   \
         Rw(rd, w, add(w, Rr(rd, w), imm));                                        \
@@ -406,6 +405,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         }                                                                         \
         break;                                                                    \
       default:                                                                    \
+        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx);            \
         INV(s->pc);                                                               \
     };                                                                            \
   } while (0)
