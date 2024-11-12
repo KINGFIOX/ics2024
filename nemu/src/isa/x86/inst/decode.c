@@ -617,6 +617,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT_END();
 }
 
+// reg or memory
 static inline void cmp_rm(int w, int rd, int rs, vaddr_t addr) {
   word_t op1, op2;
   op2 = Rr(rd, w);
@@ -746,6 +747,8 @@ again:
   //   10005c:       39 f1                   cmp    %esi,%ecx
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
   INSTPAT("0011 1001", cmp, E2G, 0, cmp_rm(w, rd, rs, addr));
+  //   10004c:       38 d8                   cmp    %bl,%al
+  INSTPAT("0011 1000", cmp, G2E, 1, cmp(w, Rr(R_EAX, w), Rr(R_EBX, w)));
 
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
 
