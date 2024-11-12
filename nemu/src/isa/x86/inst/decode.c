@@ -641,6 +641,9 @@ again:
   //   10004a:       c1 ea 08                shr    $0x8,%edx
   INSTPAT("1100 0001", shr, Ib2E, 0, gp2_Ib2E());
 
+  //   10004d:       32 06                   xor    (%esi),%al
+  INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
+
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
   //   100093:       eb d3                   jmp    100068 <rc_crc32+0x40>
