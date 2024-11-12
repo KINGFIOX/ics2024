@@ -27,6 +27,8 @@ word_t add(int w, word_t op1, word_t op2) {
   uint64_t ret_u64 = op1 + op2;
   word_t ret = (word_t)ret_u64;
   int sign_mask = (1 << 31);
+  uint64_t mask = (uint32_t)~0;
+  printf("mask: %lx\n", mask);
 
   cpu.eflags.cf = !!(ret_u64 & UINT32_MAX);                                                            // cf
   cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
