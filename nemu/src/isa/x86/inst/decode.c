@@ -395,8 +395,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         Rw(rd, w, Rr(rd, w) & imm);                                               \
         break;                                                                    \
       case 0b101: /*rd=rd-imm*/                                                   \
-        printf("%s:%d imm = %x\n", __FILE__, __LINE__, imm);                      \
-        Rw(rd, w, Rr(rd, w) - imm);                                               \
+        Rw(rd, w, sub(w, Rr(rd, w), imm));                                        \
         break;                                                                    \
       case 0b111: /*cmp*/                                                         \
         /*printf("addr = %x, imm = %x, rs = %d, rd = %d\n", addr, imm, rs, rd);*/ \

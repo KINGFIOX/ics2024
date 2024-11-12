@@ -45,3 +45,5 @@ word_t add(int w, word_t op1, word_t op2) {
 
   return ret;
 }
+
+word_t sub(int w, word_t op1, word_t op2) { return add(w, op1, -op2); }
