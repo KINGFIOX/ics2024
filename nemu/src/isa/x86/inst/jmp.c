@@ -57,6 +57,17 @@ void jle(Decode* s, word_t imm) {
   }
 }
 
+void jbe(Decode* s, word_t imm) {
+  // cf | zf
+  int cf = !!cpu.eflags.cf;
+  int zf = !!cpu.eflags.zf;
+  int cond = cf | zf;
+
+  if (cond) {
+    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+  }
+}
+
 void js(Decode* s, word_t imm) {
   int sf = !!cpu.eflags.sf;
   int cond = sf;
