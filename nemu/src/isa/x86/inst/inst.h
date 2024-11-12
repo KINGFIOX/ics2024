@@ -12,7 +12,6 @@ void call(Decode* s, int w, word_t imm);
 void ret(Decode* s, int w);
 
 void cmp(int w, word_t op1, word_t op2);
-void cmp_rm(int w, int rd, int rs, vaddr_t addr);
 void test(int w, word_t op1, word_t op2);
 word_t add(int w, word_t op1, word_t op2);
 word_t sub(int w, word_t op1, word_t op2);
@@ -28,6 +27,9 @@ void jb(Decode* s, word_t imm);
 
 word_t reg_read(int idx, int width);
 void reg_write(int idx, int width, word_t data);
+
+#define sign_mask ((word_t)(1 << (sizeof(word_t) * 8 - 1)))
+#define all ((word_t)(-1))
 
 #define Rr reg_read
 #define Rw reg_write

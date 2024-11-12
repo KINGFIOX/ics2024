@@ -521,6 +521,27 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
     }                                     \
   } while (0)
 
+static inline void cmp_rm(int w, int rd, int rs, vaddr_t addr) {
+  word_t op1, op2;
+  op2 = Rr(rd, w);
+  if (rs == -1) {
+    op1 = vaddr_read(addr, w);
+  } else {
+    op1 = Rr(rs, w);
+  }
+  cmp(w, op1, op2);
+}
+
+static inline void cltd() {
+  word_t eax = Rr(R_EAX, 4);
+  bool sign = (eax & sign_mask) != 0;
+  if (sign) {
+    Rw(R_EDX, 4, all);
+  } else {
+    Rw(R_EDX, 4, 0);
+  }
+}
+
 int isa_exec_once(Decode *s) {
   bool is_operand_size_16 = false;
   uint8_t opcode = 0;
@@ -646,6 +667,8 @@ again:
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
+
+  INSTPAT("1001 1001", cltd, N, 0, cltd());
 
   //   10008c:       d1 ea                   shr    $1,%edx
   INSTPAT("1101 0001", shr, 1_E, 0, gp2_1_E());

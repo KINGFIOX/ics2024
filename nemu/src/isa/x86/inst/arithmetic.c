@@ -2,11 +2,6 @@
 
 #include "common.h"
 #include "inst.h"
-#include "memory/vaddr.h"
-
-static const word_t sign_mask = 1 << (sizeof(word_t) * 8 - 1);
-
-static const word_t all = -1;
 
 static inline int ones(word_t ret) {
   int ones = 0;
@@ -110,15 +105,4 @@ word_t shr(int w, word_t op1, word_t op2) {
   cpu.eflags.pf = (1 == ones(ret) % 2);
 
   return ret;
-}
-
-void cmp_rm(int w, int rd, int rs, vaddr_t addr) {
-  word_t op1, op2;
-  op2 = Rr(rd, w);
-  if (rs == -1) {
-    op1 = vaddr_read(addr, w);
-  } else {
-    op1 = Rr(rs, w);
-  }
-  cmp(w, op1, op2);
 }
