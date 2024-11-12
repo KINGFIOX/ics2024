@@ -1,4 +1,5 @@
 
+
 #include "common.h"
 #include "inst.h"
 
@@ -20,7 +21,7 @@ word_t add(int w, word_t op1, word_t op2) {
   word_t ret = op1 + op2;
 
   // cf
-  cpu.eflags.cf = ((uint64_t)ret < (uint64_t)(op1 + op2));
+  cpu.eflags.cf = ((uint64_t)(op1 + op2) > (uint64_t)(sign_mask << 1));
 
   // pf
   cpu.eflags.pf = (ones(ret) % 2 == 1);
