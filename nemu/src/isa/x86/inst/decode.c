@@ -522,6 +522,9 @@ again:
 
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
+  //   100010:       31 c0                   xor    %eax,%eax
+  INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
+
   // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
 
@@ -635,9 +638,6 @@ again:
 
   //   1000a2:       f7 d0                   not    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
-
-  //   100010:       31 c0                   xor    %eax,%eax
-  INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
 
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
 
