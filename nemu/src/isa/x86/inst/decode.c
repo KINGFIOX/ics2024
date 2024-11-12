@@ -495,6 +495,7 @@ static inline void div1(int w, word_t divisor) {
         break;                                                         \
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
+        assert(rd != -1);                                              \
         imul1(w, Rr(rd, w));                                           \
         break;                                                         \
       case 0b110: /*div*/                                              \
