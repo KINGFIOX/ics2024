@@ -598,7 +598,7 @@ again:
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
-  INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, imm));
+  INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, Rr(R_EAX, w) & imm));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
