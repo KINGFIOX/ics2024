@@ -516,6 +516,9 @@ again:
   // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
 
+  //   100070:       81 fb 00 01 00 00       cmp    $0x100,%ebx
+  INSTPAT("1000 0001", gp1, I2E, 0, gp1());
+
   //   100017:       83 ec 14                sub    $0x14,%esp
   //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
   INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
