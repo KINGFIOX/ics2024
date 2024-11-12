@@ -14,23 +14,22 @@ static inline int ones(word_t ret) {
 word_t add(int w, word_t op1, word_t op2) {
   assert(4 == w || 2 == w || 1 == w);
   if (1 == w) {
-    op1 = (int8_t)op1;
-    op2 = (int8_t)op2;
+    op1 = (uint8_t)op1;
+    op2 = (uint8_t)op2;
   } else if (2 == w) {
-    op1 = (int16_t)op1;
-    op2 = (int16_t)op2;
+    op1 = (uint16_t)op1;
+    op2 = (uint16_t)op2;
   } else if (4 == w) {
-    op1 = (int32_t)op1;
-    op2 = (int32_t)op2;
+    op1 = (uint32_t)op1;
+    op2 = (uint32_t)op2;
   }
 
   uint64_t ret_u64 = op1 + op2;
   word_t ret = (word_t)ret_u64;
   int sign_mask = (1 << 31);
   uint64_t mask = (uint32_t)~0;
-  printf("mask: %016lx\n", mask);
 
-  cpu.eflags.cf = !!(ret_u64 & UINT32_MAX);                                                            // cf
+  cpu.eflags.cf = !!(ret_u64 & mask);                                                                  // cf
   cpu.eflags.pf = (1 == ones(ret) % 2);                                                                // pf
   cpu.eflags.zf = (0 == ret);                                                                          // zf
   cpu.eflags.sf = !!(ret & sign_mask);                                                                 // sf
