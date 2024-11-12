@@ -592,9 +592,9 @@ static inline void movzwl(int w, int rd, int rs, vaddr_t addr) {
   assert(w == 4);
   word_t op1;
   if (rd == -1) {
-    op1 = vaddr_read(addr, w);
+    op1 = vaddr_read(addr, 2);
   } else {
-    op1 = Rr(rd, w);
+    op1 = Rr(rd, 2);
   }
   Rw(rs, w, op1);
 }
