@@ -388,17 +388,17 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                            \
     printf("gp_idx = 0b%03b\n", gp_idx);                                          \
     switch (gp_idx) {                                                             \
-      case 0b000:                                                                 \
-        Rw(rd, w, Rr(rd, w) + imm);                                               \
+      case 0b000: /*rd=rd+imm*/                                                   \
+        Rw(rd, w, add(w, Rr(rd, w), imm));                                        \
         break;                                                                    \
-      case 0b100:                                                                 \
+      case 0b100: /*rd=rd&imm*/                                                   \
         Rw(rd, w, Rr(rd, w) & imm);                                               \
         break;                                                                    \
-      case 0b101:                                                                 \
+      case 0b101: /*rd=rd-imm*/                                                   \
         printf("%s:%d imm = %x\n", __FILE__, __LINE__, imm);                      \
         Rw(rd, w, Rr(rd, w) - imm);                                               \
         break;                                                                    \
-      case 0b111:                                                                 \
+      case 0b111: /*cmp*/                                                         \
         /*printf("addr = %x, imm = %x, rs = %d, rd = %d\n", addr, imm, rs, rd);*/ \
         if (rd != -1) {                                                           \
           cmp_r_i(rd, w, imm);                                                    \

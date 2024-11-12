@@ -17,7 +17,7 @@ void cmp_m_r(int rd, int w, word_t addr);
 void cmpb(int w, word_t addr, word_t imm);
 void test(int rd, int w, int rs);
 
-void add(int rd, int w, int rs);
+word_t add(int w, word_t op1, word_t op2);
 
 void je(Decode* s, word_t imm);
 void jne(Decode* s, word_t imm);
