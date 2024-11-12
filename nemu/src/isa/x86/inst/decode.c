@@ -628,6 +628,8 @@ again:
 
   //   10008c:       d1 ea                   shr    $1,%edx
   INSTPAT("1101 0001", shr, 1_E, 0, gp2());
+  //   10004a:       c1 ea 08                shr    $0x8,%edx
+  INSTPAT("1100 0001", shr, Ib2E, 0, gp2());
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
