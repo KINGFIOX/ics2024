@@ -436,8 +436,11 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b000:                                                      \
         Mw(addr, w, add(w, Mr(addr, w), 1));                           \
         break;                                                         \
-      case 0b010:                                                      \
+      case 0b010: /*call*/                                             \
         calla(s, w, Mr(addr, w));                                      \
+        break;                                                         \
+      case 0b100: /*jmp*/                                              \
+        jmpa(s, Mr(addr, w));                                          \
         break;                                                         \
       case 0b110:                                                      \
         push(w, Mr(addr, w));                                          \
@@ -774,7 +777,7 @@ again:
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
   //   100093:       eb d3                   jmp    100068 <rc_crc32+0x40>
-  INSTPAT("1110 1011", jmp, J, 1, jmp(s, imm));
+  INSTPAT("1110 1011", jmp, J, 1, jmpo(s, imm));
 
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
 

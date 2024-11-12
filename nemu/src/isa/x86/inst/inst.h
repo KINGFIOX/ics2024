@@ -27,7 +27,8 @@ word_t or_(int w, word_t op1, word_t op2);
 
 void je(Decode* s, word_t imm);
 void jne(Decode* s, word_t imm);
-void jmp(Decode* s, word_t imm);
+void jmpo(Decode* s, word_t imm);
+void jmpa(Decode* s, word_t imm);
 void jb(Decode* s, word_t imm);
 void jle(Decode* s, word_t imm);
 void js(Decode* s, word_t imm);

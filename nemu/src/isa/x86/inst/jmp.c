@@ -39,7 +39,11 @@ void jne(Decode* s, word_t imm) {
   }
 }
 
-void jmp(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }
+// offset
+void jmpo(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }
+
+// absolute
+void jmpa(Decode* s, word_t imm) { s->dnpc = imm; }
 
 void jle(Decode* s, word_t imm) {
   // (sf ^ of) | zf
