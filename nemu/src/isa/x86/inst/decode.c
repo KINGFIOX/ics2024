@@ -399,9 +399,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     switch (gp_idx) {                                                             \
       case 0b000: /*rd=rd+imm*/                                                   \
         if (rd != -1) {                                                           \
-          Rw(rd, w, add(w, Rr(rd, w), imm));                                      \
+          Rw(rd, w, add(w, Rr(rd, w), imm, false));                               \
         } else {                                                                  \
-          Mw(addr, w, add(w, Mr(addr, w), imm));                                  \
+          Mw(addr, w, add(w, Mr(addr, w), imm, false));                           \
         }                                                                         \
         break;                                                                    \
       case 0b010: /*cmp*/                                                         \
@@ -434,7 +434,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000:                                                      \
-        Mw(addr, w, add(w, Mr(addr, w), 1));                           \
+        Mw(addr, w, add(w, Mr(addr, w), 1, false));                    \
         break;                                                         \
       case 0b010: /*call*/                                             \
         calla(s, w, Mr(addr, w));                                      \
@@ -455,7 +455,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b110:                                                      \
-        Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w)));                       \
+        Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false));                \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
@@ -697,6 +697,9 @@ again:
   //   1004b5:       19 da                   sbb    %ebx,%edx
   INSTPAT("0001 1001", sbb, G2E, 0, Rw(rd, w, sbb(w, Rr(rd, w), Rr(rs, w))));
 
+  //   100066:       13 14 cd 84 03 10 00    adc    0x100384(,%ecx,8),%edx
+  INSTPAT("0001 0011", adc, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), true)));
+
   // A2       MOV moffs8,AL     2
   INSTPAT("1010 0010", mov, a2O, 1, Mw(addr, 1, Rr(R_EAX, 1)));
   // A3       MOV moffs16,AX    2
@@ -750,16 +753,16 @@ again:
   //   10004c:       38 d8                   cmp    %bl,%al
   INSTPAT("0011 1000", cmp, G2E, 1, cmp(w, Rr(rd, w), Rr(rs, w)));
 
-  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1)));
+  INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1, false)));
 
   //   100090:       49                      dec    %ecx
   INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1)));
 
   // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false)));
 
   //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
-  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w))));
+  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), false)));
 
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));

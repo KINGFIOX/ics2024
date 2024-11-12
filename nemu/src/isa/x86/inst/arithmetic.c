@@ -14,7 +14,7 @@ static inline int ones(word_t ret) {
   return ones;
 }
 
-word_t add(int w, word_t op1_, word_t op2_) {
+word_t add(int w, word_t op1_, word_t op2_, bool adc) {
   assert(4 == w || 2 == w || 1 == w);
   uint64_t op1 = 0;
   uint64_t op2 = 0;
@@ -33,7 +33,12 @@ word_t add(int w, word_t op1_, word_t op2_) {
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
   const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
 
-  uint64_t ret_u64 = op1 + op2;
+  uint64_t ret_u64;
+  if (adc) {
+    ret_u64 = op1 + op2;
+  } else {
+    ret_u64 = op1 + op2 + !!cpu.eflags.cf;
+  }
   bool op1_sign = !!(op1 & sign_mask);
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
@@ -48,6 +53,8 @@ word_t add(int w, word_t op1_, word_t op2_) {
 }
 
 word_t sbb(int w, word_t op1, word_t op2) {
+  // FIXME: 可能有问题
+
   assert(4 == w || 2 == w || 1 == w);
   if (1 == w) {
     op1 = (int8_t)op1;
@@ -90,7 +97,7 @@ word_t sub(int w, word_t op1_, word_t op2_) {
   }
 
   word_t neg = -op2;
-  word_t ret = add(w, op1, neg);
+  word_t ret = add(w, op1, neg, false);
 
   cpu.eflags.cf = (op1 < op2);  // NOTE: 发现不能完全复用 add
 
