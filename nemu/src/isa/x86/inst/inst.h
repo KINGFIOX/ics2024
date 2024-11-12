@@ -8,7 +8,8 @@ void push(int width, word_t data);
 word_t pop(int width);
 void leave(void);
 
-void call(Decode* s, int w, word_t imm);
+void callo(Decode* s, int w, word_t imm);
+void calla(Decode* s, int w, word_t imm);
 void ret(Decode* s, int w);
 
 void cmp(int w, word_t op1, word_t op2);

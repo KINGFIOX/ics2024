@@ -2,10 +2,18 @@
 #include "cpu/decode.h"
 #include "inst.h"
 
-void call(Decode* s, int w, word_t imm) {
+// offset
+void callo(Decode* s, int w, word_t imm) {
   assert(4 == w);
   push(w, s->snpc);
   s->dnpc = s->snpc + imm;
+}
+
+// offset
+void calla(Decode* s, int w, word_t imm) {
+  assert(4 == w);
+  push(w, s->snpc);
+  s->dnpc = imm;
 }
 
 void ret(Decode* s, int w) {
