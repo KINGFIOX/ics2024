@@ -478,7 +478,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
   //   100067:       0f 94 c2                sete   %dl
-  INSTPAT("1001 0???", xchg, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
+  INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, Rw(rd, 4, Rr(rs, 1)));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
@@ -512,10 +512,10 @@ again:
 
   /* INSTPAT( pattern, name, type, width, BLOCK ) */
 
-  INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
-
   // IMPORTANT: 66(prefix)
   INSTPAT("0110 0110", data_size, N, 0, is_operand_size_16 = true; goto again;);
+
+  INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
   // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
