@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "inst.h"
+#include "macro.h"
 
 static inline int ones(word_t ret) {
   int ones = 0;
@@ -44,7 +45,19 @@ word_t sub(int w, word_t op1, word_t op2) {
 }
 
 void cmp(int w, word_t op1, word_t op2) {
-  printf("op1 = 0x%x, op2 = 0x%x, w = %d\n", op1, op2, w);
+  assert(4 == w || 2 == w || 1 == w);
+
+  if (1 == w) {
+    op1 = (int8_t)op1;
+    op2 = (int8_t)op2;
+  } else if (2 == w) {
+    op1 = (int16_t)op1;
+    op2 = (int16_t)op2;
+  } else if (4 == w) {
+    op1 = (int32_t)op1;
+    op2 = (int32_t)op2;
+  }
+
   sub(w, op1, op2);
   if (op1 == op2) {
     assert(cpu.eflags.zf);
