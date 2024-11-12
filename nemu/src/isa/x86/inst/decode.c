@@ -391,6 +391,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b000: /*rd=rd+imm*/                                                   \
         Rw(rd, w, add(w, Rr(rd, w), imm));                                        \
         break;                                                                    \
+      case 0b010: /*cmp*/                                                         \
+        cmp(w, Rr(rd, w), imm);                                                   \
+        break;                                                                    \
       case 0b100: /*rd=rd&imm*/                                                   \
         Rw(rd, w, and_(w, Rr(rd, w), imm));                                       \
         break;                                                                    \
