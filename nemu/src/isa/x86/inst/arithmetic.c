@@ -1,5 +1,3 @@
-
-
 #include "common.h"
 #include "inst.h"
 
@@ -105,4 +103,32 @@ word_t shr(int w, word_t op1, word_t op2) {
   cpu.eflags.pf = (1 == ones(ret) % 2);
 
   return ret;
+}
+
+word_t imul(int w, word_t op1, word_t op2) {
+  assert(w == 4);
+
+  uint64_t ret = op1 * op2;
+
+  // of, cf
+  if (ret > UINT32_MAX) {
+    cpu.eflags.cf = 1;
+    cpu.eflags.of = 1;
+  } else {
+    cpu.eflags.cf = 0;
+    cpu.eflags.of = 0;
+  }
+
+  // pf
+  cpu.eflags.pf = (1 == ones(ret) % 2);
+
+  // zf
+  cpu.eflags.zf = (0 == ret);
+
+  // sf
+  cpu.eflags.sf = (ret & sign_mask);
+
+  // af, do nothing
+
+  return (word_t)ret;
 }
