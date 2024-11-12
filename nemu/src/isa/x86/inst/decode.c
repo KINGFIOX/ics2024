@@ -570,6 +570,9 @@ again:
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
   INSTPAT("0011 1001", cmp, E2G, 0, cmp_m_r(rd, w, addr));
 
+  //   100036:       85 db                   test   %ebx,%ebx
+  INSTPAT("1000 0101", test, G2E, 0, test(rd, w, rs));
+
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
 

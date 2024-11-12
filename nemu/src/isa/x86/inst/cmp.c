@@ -43,3 +43,9 @@ void cmpb(int w, word_t addr, word_t imm) {
   cpu.eflags.zf = (op1 == op2);
   printf("op1 = %x, op2(imm) = %x\n", op1, op2);
 }
+
+void test(int rd, int w, int rs) {
+  word_t op1 = Rr(rd, w);
+  word_t op2 = Rr(rs, w);
+  cpu.eflags.zf = (op1 & op2) == 0;
+}
