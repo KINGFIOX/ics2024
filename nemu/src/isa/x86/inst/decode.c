@@ -439,6 +439,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp3()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
+      case 0b011:                                                      \
+        Rw(rd, w, -Rr(rd, w));                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
         INV(s->pc);                                                    \
