@@ -38,7 +38,10 @@ word_t add(int w, word_t op1, word_t op2) {
   return ret;
 }
 
-word_t sub(int w, word_t op1, word_t op2) { return add(w, op1, -op2); }
+word_t sub(int w, word_t op1, word_t op2) {
+  word_t neg = -(int64_t)op2;
+  return add(w, op1, neg);
+}
 
 void cmp(int w, word_t op1, word_t op2) {
   printf("op1 = 0x%x, op2 = 0x%x, w = %d\n", op1, op2, w);
