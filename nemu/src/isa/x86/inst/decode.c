@@ -459,7 +459,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 
 static inline void imul1(int w, word_t op1) {
   assert(w == 4);
-  uint64_t ret = (uint64_t)Rr(R_EAX, w) * op1;
+  uint64_t ret = (int64_t)Rr(R_EAX, w) * (int64_t)op1;
   Rw(R_EAX, w, ret & UINT32_MAX);
   Rw(R_EDX, w, ret >> 32);
 }
