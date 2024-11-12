@@ -352,8 +352,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       break;
     case TYPE_I:
-    case TYPE_J:
       imm();
+    case TYPE_J:
+      simm(1);
       break;
     case TYPE_SI:
       simm(1);
