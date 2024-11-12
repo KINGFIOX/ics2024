@@ -28,10 +28,9 @@ word_t add(int w, word_t op1_, word_t op2_) {
     op2 = (uint32_t)op2_;
   }
 
-  uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的数字类型感到难绷了
+  uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
   const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
-  // printf("w = %d, mask: %016lx, sign_mask: %016lx\n", w, mask, sign_mask);
 
   uint64_t ret_u64 = op1 + op2;
   bool op1_sign = !!(op1 & sign_mask);
@@ -73,8 +72,11 @@ word_t sbb(int w, word_t op1, word_t op2) {
   return ret;
 }
 
-word_t sub(int w, word_t op1, word_t op2) {
+word_t sub(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
+
+  word_t op1 = 0;
+  word_t op2 = 0;
   if (1 == w) {
     op1 = (uint8_t)op1;
     op2 = (uint8_t)op2;
@@ -89,17 +91,20 @@ word_t sub(int w, word_t op1, word_t op2) {
   return add(w, op1, neg);
 }
 
-void cmp(int w, word_t op1, word_t op2) {
+void cmp(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
+
+  word_t op1 = 0;
+  word_t op2 = 0;
   if (1 == w) {
-    op1 = (int8_t)op1;
-    op2 = (int8_t)op2;
+    op1 = (uint8_t)op1_;
+    op2 = (uint8_t)op2_;
   } else if (2 == w) {
-    op1 = (int16_t)op1;
-    op2 = (int16_t)op2;
+    op1 = (uint16_t)op1_;
+    op2 = (uint16_t)op2_;
   } else if (4 == w) {
-    op1 = (int32_t)op1;
-    op2 = (int32_t)op2;
+    op1 = (uint32_t)op1_;
+    op2 = (uint32_t)op2_;
   }
 
   sub(w, op1, op2);
