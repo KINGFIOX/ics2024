@@ -30,7 +30,6 @@ void jle(Decode* s, word_t imm);
 word_t reg_read(int idx, int width);
 void reg_write(int idx, int width, word_t data);
 
-#define sign_mask ((word_t)(1 << (sizeof(word_t) * 8 - 1)))
 #define all ((word_t)(-1))
 
 #define Rr reg_read

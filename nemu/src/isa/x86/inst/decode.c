@@ -550,12 +550,14 @@ static inline void cmp_rm(int w, int rd, int rs, vaddr_t addr) {
 }
 
 static inline void cltd() {
-  word_t eax = Rr(R_EAX, 4);
+  int w = 4;
+  int sign_mask = (1 << (w * 8 - 1));
+  word_t eax = Rr(R_EAX, w);
   bool sign = (eax & sign_mask) != 0;
   if (sign) {
-    Rw(R_EDX, 4, all);
+    Rw(R_EDX, w, all);
   } else {
-    Rw(R_EDX, 4, 0);
+    Rw(R_EDX, w, 0);
   }
 }
 

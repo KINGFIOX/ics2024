@@ -46,7 +46,7 @@ typedef union {
         uint32_t : 1;  // always 1 in eflags
         uint32_t pf : 1;
         uint32_t : 1;
-        uint32_t af : 1;
+        uint32_t : 1;
         uint32_t : 1;
         uint32_t zf : 1;
         uint32_t sf : 1;
