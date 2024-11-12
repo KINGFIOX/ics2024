@@ -370,7 +370,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_1_E:
       decode_rm(s, rd_, addr, gp_idx, w);
-      imm();
+      printf("1_E, rd = %d, addr = %x, gp_idx = %b, w = %d\n", *rd_, *addr, *gp_idx, w);
       break;
     case TYPE_I2a:
       imm();
