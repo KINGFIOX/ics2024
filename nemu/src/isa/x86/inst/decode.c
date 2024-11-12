@@ -628,6 +628,9 @@ again:
   //   100093:       eb d3                   jmp    100068 <rc_crc32+0x40>
   INSTPAT("1110 1011", jmp, J, 1, jmp(s, imm));
 
+  //   1000a2:       f7 d0                   not    %eax
+  INSTPAT("1111 0111", gp3, E, 0, gp3());
+
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
 
   INSTPAT_END();
