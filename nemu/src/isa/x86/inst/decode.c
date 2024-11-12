@@ -536,6 +536,10 @@ again:
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
+  //   10004d:       32 06                   xor    (%esi),%al
+  INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
+  //   100052:       33 14 85 e0 01 10 00    xor    0x1001e0(,%eax,4),%edx
+  INSTPAT("0011 0011", xor, E2G, 0, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
 
   // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
@@ -640,12 +644,6 @@ again:
   INSTPAT("1101 0001", shr, 1_E, 0, gp2_1_E());
   //   10004a:       c1 ea 08                shr    $0x8,%edx
   INSTPAT("1100 0001", shr, Ib2E, 0, gp2_Ib2E());
-
-  //   10004d:       32 06                   xor    (%esi),%al
-  INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
-
-  //   100052:       33 14 85 e0 01 10 00    xor    0x1001e0(,%eax,4),%edx
-  INSTPAT("0011 0011", xor, E2G, 0, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
 
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
