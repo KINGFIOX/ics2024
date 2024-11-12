@@ -561,8 +561,11 @@ again:
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, Rr(rd, w) + 1));
 
   // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", add, G2E, 0, add(rd, w, rs));
+  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, Rr(rd, w) + Rr(rs, w)));
   // INSTPAT("0000 0001", gp7, E, 0, gp7());
+
+  //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
+  INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, Rr(rd, w) + Mr(addr, w)));
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, Rr(rd, w) ^ Rr(rs, w)));
