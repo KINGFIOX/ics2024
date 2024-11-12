@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 
 #include "common.h"
 #include "inst.h"
@@ -87,7 +88,8 @@ word_t sub(int w, word_t op1_, word_t op2_) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
-  word_t neg = ~op2 + 1;
+  printf("op1: %x, op2: %x\n", op1, op2);
+  word_t neg = -op2;
   return add(w, op1, neg);
 }
 
