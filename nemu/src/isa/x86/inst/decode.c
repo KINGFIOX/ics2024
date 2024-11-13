@@ -722,7 +722,7 @@ again:
   INSTPAT("0010 1011", sub, E2G, 0, Rw(rd, w, sub(w, Rr(rd, w), Mr(addr, w), false)));
 
   // 100066:       1b 14 cd 84 03 10 00    sbb    0x100384(,%ecx,8),%edx
-  INSTPAT("0010 1011", sbb, E2G, 0, Rw(rd, w, sub(w, Rr(rd, w), Mr(addr, w), true)));
+  INSTPAT("0001 1011", sbb, E2G, 0, Rw(rd, w, sub(w, Rr(rd, w), Mr(addr, w), true)));
 
   // 88  /r   MOV r/m8,r8
   INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
