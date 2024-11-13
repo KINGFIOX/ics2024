@@ -103,12 +103,12 @@ int snprintf(char *buf, size_t sz, const char *fmt, ...) {
 int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
   if (fmt == 0) panic("null fmt");
 
-  char c;
   char *s;
   size_t off = 0;
   size_t i = 0;
 
-  for (i = 0; off < sz && (c = fmt[i] & 0xff) != 0; i++) {
+  for (i = 0; off < sz && fmt[i] != '\0'; i++) {
+    char c = fmt[i];
     if (c != '%') {
       off += sputc(buf + off, c);
       continue;
