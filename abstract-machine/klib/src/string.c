@@ -21,9 +21,23 @@ int strncmp(const char *s1, const char *s2, size_t n) { panic("Not implemented")
 
 void *memset(void *s, int c, size_t n) { panic("Not implemented"); }
 
-void *memmove(void *dst, const void *src, size_t n) { panic("Not implemented"); }
+void *memmove(void *vdst, const void *vsrc, size_t n) {
+  char *dst;
+  const char *src;
 
-void *memcpy(void *out, const void *in, size_t n) { panic("Not implemented"); }
+  dst = vdst;
+  src = vsrc;
+  if (src > dst) {
+    while (n-- > 0) *dst++ = *src++;
+  } else {
+    dst += n;
+    src += n;
+    while (n-- > 0) *--dst = *--src;
+  }
+  return vdst;
+}
+
+void *memcpy(void *dst, const void *src, size_t n) { return memmove(dst, src, n); }
 
 int memcmp(const void *s1, const void *s2, size_t n) { panic("Not implemented"); }
 
