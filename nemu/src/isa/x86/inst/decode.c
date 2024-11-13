@@ -435,42 +435,39 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         }                                                                         \
         break;                                                                    \
       default:                                                                    \
-        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx);            \
-        INV(s->pc);                                                               \
+        Assert(false, "gp_idx = 0b%03b", gp_idx);                                 \
     };                                                                            \
   } while (0)
 
-#define gp5()                                                          \
-  do {                                                                 \
-    switch (gp_idx) {                                                  \
-      case 0b000:                                                      \
-        Mw(addr, w, add(w, Mr(addr, w), 1, false));                    \
-        break;                                                         \
-      case 0b010: /*call*/                                             \
-        calla(s, w, Mr(addr, w));                                      \
-        break;                                                         \
-      case 0b100: /*jmp*/                                              \
-        jmpa(s, Mr(addr, w));                                          \
-        break;                                                         \
-      case 0b110:                                                      \
-        push(w, Mr(addr, w));                                          \
-        break;                                                         \
-      default:                                                         \
-        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
-        INV(s->pc);                                                    \
-    }                                                                  \
+#define gp5()                                       \
+  do {                                              \
+    switch (gp_idx) {                               \
+      case 0b000:                                   \
+        Mw(addr, w, add(w, Mr(addr, w), 1, false)); \
+        break;                                      \
+      case 0b010: /*call*/                          \
+        calla(s, w, Mr(addr, w));                   \
+        break;                                      \
+      case 0b100: /*jmp*/                           \
+        jmpa(s, Mr(addr, w));                       \
+        break;                                      \
+      case 0b110:                                   \
+        push(w, Mr(addr, w));                       \
+        break;                                      \
+      default:                                      \
+        Assert(false, "gp_idx = 0b%03b", gp_idx);   \
+    }                                               \
   } while (0)
 
-#define gp7()                                                          \
-  do {                                                                 \
-    switch (gp_idx) {                                                  \
-      case 0b110:                                                      \
-        Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false));                \
-        break;                                                         \
-      default:                                                         \
-        printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
-        INV(s->pc);                                                    \
-    }                                                                  \
+#define gp7()                                           \
+  do {                                                  \
+    switch (gp_idx) {                                   \
+      case 0b110:                                       \
+        Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false)); \
+        break;                                          \
+      default:                                          \
+        Assert(false, "gp_idx = 0b%03b", gp_idx);       \
+    }                                                   \
   } while (0)
 
 static inline void imul1(int w, word_t op1) {
@@ -582,35 +579,34 @@ static inline void div1(int w, word_t divisor) {
     }                                                                  \
   } while (0)
 
-#define jcc()                             \
-  do {                                    \
-    uint64_t func = mask & opcode;        \
-    switch (func) {                       \
-      case 0b0010:                        \
-        jb(s, imm);                       \
-        break;                            \
-      case 0b0100:                        \
-        je(s, imm);                       \
-        break;                            \
-      case 0b0101:                        \
-        jne(s, imm);                      \
-        break;                            \
-      case 0b0110:                        \
-        jbe(s, imm);                      \
-        break;                            \
-      case 0b1000:                        \
-        js(s, imm);                       \
-        break;                            \
-      case 0b1101:                        \
-        jge(s, imm);                      \
-        break;                            \
-      case 0b1110:                        \
-        jle(s, imm);                      \
-        break;                            \
-      default:                            \
-        printf("func = 0b%04lb\n", func); \
-        INV(s->pc);                       \
-    }                                     \
+#define jcc()                              \
+  do {                                     \
+    uint64_t func = mask & opcode;         \
+    switch (func) {                        \
+      case 0b0010:                         \
+        jb(s, imm);                        \
+        break;                             \
+      case 0b0100:                         \
+        je(s, imm);                        \
+        break;                             \
+      case 0b0101:                         \
+        jne(s, imm);                       \
+        break;                             \
+      case 0b0110:                         \
+        jbe(s, imm);                       \
+        break;                             \
+      case 0b1000:                         \
+        js(s, imm);                        \
+        break;                             \
+      case 0b1101:                         \
+        jge(s, imm);                       \
+        break;                             \
+      case 0b1110:                         \
+        jle(s, imm);                       \
+        break;                             \
+      default:                             \
+        Assert(false, "func = %lx", func); \
+    }                                      \
   } while (0)
 
 static inline void movz_l(int w, int rd, int rs, vaddr_t addr, bool sign, int width) {
