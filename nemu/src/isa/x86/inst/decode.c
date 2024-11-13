@@ -367,13 +367,16 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       imm();
       break;
     case TYPE_J:
-      imm();
+      // imm();
       if (4 == w) {
-        *imm = (word_t)(int32_t)*imm;
+        // *imm = (word_t)(int32_t)*imm;
+        simm(4);
       } else if (2 == w) {
-        *imm = (word_t)(int32_t)(int16_t)*imm;
+        // *imm = (word_t)(int32_t)(int16_t)*imm;
+        simm(2);
       } else if (1 == w) {
-        *imm = (word_t)(int32_t)(int8_t)*imm;
+        // *imm = (word_t)(int32_t)(int8_t)*imm;
+        simm(1);
       }
       break;
     case TYPE_SI:
