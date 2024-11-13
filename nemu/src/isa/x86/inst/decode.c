@@ -713,6 +713,8 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   // INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   100063:       0f af c1                imul   %ecx,%eax
   INSTPAT("1010 1111", imul2, E2G, 0, imul2_rm(w, rd, rs, addr));
+  // 0f ad d0 : shrd %cl, %edx, %eax
+  INSTPAT("1010 1101", shrd, Ib_G2E, 0, printf("rd = %d, rs = %d, addr = %x, gp_idx = %d\n", rd, rs, addr, gp_idx));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, movz_l(w, rd, rs, addr, false, 1));
   //   1000b8:       0f be 05 60 02 10 00    movsbl 0x100260,%eax
@@ -723,8 +725,6 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1011 0111", movzwl, Ew2G, 4, movz_l(w, rd, rs, addr, false, 2));
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
   INSTPAT("1000 ????", jcc, J, 4, jcc(s, imm, opcode & mask));
-  // 0f ad d0 : shrd %cl, %edx, %eax
-  INSTPAT("1010 1100", shrd, Ib_G2E, 0, printf("rd = %d, rs = %d, addr = %x, gp_idx = %d\n", rd, rs, addr, gp_idx));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
