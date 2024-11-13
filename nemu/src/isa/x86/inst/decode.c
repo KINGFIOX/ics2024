@@ -540,7 +540,7 @@ static inline void div1(int w, word_t divisor) {
     Rw(R_AL, 1, dividend / divisor);
     Rw(R_AH, 1, dividend % divisor);
   } else if (2 == w) {
-    uint64_t dividend = ((uint64_t)Rr(R_DX, 2) << 32) | Rr(R_AX, 2);
+    uint64_t dividend = ((uint64_t)Rr(R_DX, 2) << 16) | Rr(R_AX, 2);
     Rw(R_AX, 2, dividend / divisor);
     Rw(R_DX, 2, dividend % divisor);
   } else if (4 == w) {
