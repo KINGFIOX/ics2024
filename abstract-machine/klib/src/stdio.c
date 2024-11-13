@@ -105,9 +105,8 @@ int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
 
   char *s;
   size_t off = 0;
-  size_t i = 0;
 
-  for (i = 0; off < sz && fmt[i] != '\0'; i++) {
+  for (size_t i = 0; off < sz && fmt[i] != '\0'; i++) {
     char c = fmt[i];
     if (c != '%') {
       off += sputc(buf + off, c);
@@ -123,8 +122,12 @@ int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
         off += sprintint(buf + off, va_arg(ap, int), 16, 1);
         break;
       case 's':
-        if ((s = va_arg(ap, char *)) == 0) s = "(null)";
-        for (; *s && off < sz; s++) off += sputc(buf + off, *s);
+        if ((s = va_arg(ap, char *)) == 0) {
+          s = "(null)";
+        }
+        for (; *s && off < sz; s++) {
+          off += sputc(buf + off, *s);
+        }
         break;
       case '%':
         off += sputc(buf + off, '%');
@@ -136,6 +139,13 @@ int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
         break;
     }
   }
+
+#if PUTCH_DEBUG
+  for (char *p = buf; p < buf + off; p++) {
+    putch(*p);
+  }
+  putch('\n');
+#endif
 
   return off;
 }
