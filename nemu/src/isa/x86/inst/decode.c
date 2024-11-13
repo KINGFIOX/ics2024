@@ -554,16 +554,12 @@ static inline void div1(int w, word_t divisor) {
     uint64_t dividend = Rr(R_AX, 2);
     Rw(R_AL, 1, dividend / divisor);
     Rw(R_AH, 1, dividend % divisor);
-  } else if (2 == w) {
-    uint64_t dividend = ((uint64_t)Rr(R_DX, 2) << 16) | Rr(R_AX, 2);
-    Rw(R_AX, 2, dividend / divisor);
-    Rw(R_DX, 2, dividend % divisor);
-  } else if (4 == w) {
-    uint64_t dividend = ((uint64_t)Rr(R_EDX, 4) << 32) | Rr(R_EAX, 4);
-    printf("edx = %x, eax = %x\n", Rr(R_EDX, 4), Rr(R_EAX, 4));
-    printf("%lx / %x = %lx ... %lx\n", dividend, divisor, dividend / divisor, dividend % divisor);
-    Rw(R_EAX, 4, dividend / divisor);
-    Rw(R_EDX, 4, dividend % divisor);
+  } else {
+    uint64_t dividend = ((uint64_t)Rr(R_EDX, w) << (w * 8)) | Rr(R_EAX, w);
+    word_t rem = dividend % divisor;
+    word_t quo = dividend / divisor;
+    Rw(R_EAX, w, quo);
+    Rw(R_EDX, w, rem);
   }
 }
 
