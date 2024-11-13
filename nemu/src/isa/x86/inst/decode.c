@@ -455,8 +455,11 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp5()                                       \
   do {                                              \
     switch (gp_idx) {                               \
-      case 0b000:                                   \
+      case 0b000: /*inc*/                           \
         Mw(addr, w, add(w, Mr(addr, w), 1, false)); \
+        break;                                      \
+      case 0b001: /*dec*/                           \
+        Mw(addr, w, sub(w, Mr(addr, w), 1, false)); \
         break;                                      \
       case 0b010: /*call*/                          \
         calla(s, w, Mr(addr, w));                   \
