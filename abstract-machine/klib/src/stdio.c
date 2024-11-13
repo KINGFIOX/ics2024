@@ -25,7 +25,7 @@ static inline int sprintint(char *s, int xx, int base, int sign) {
     x = xx;
   }
 
-  size_t i = 0;
+  int64_t i = 0;
   do {
     buf[i++] = digits[x % base];
   } while ((x /= base) != 0);
