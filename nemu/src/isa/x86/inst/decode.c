@@ -886,6 +886,9 @@ again:
   //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
   INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), false)));
 
+  // 05 62 07 00 00 : add $0x762, %eax
+  INSTPAT("0000 0101", add, I2a, 0, add_rm(w, rd, rs, addr));
+
   //   100036:       85 db                   test   %ebx,%ebx
   INSTPAT("1000 0101", test, G2E, 0, test(w, Rr(rd, w), Rr(rs, w)));
 
