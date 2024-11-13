@@ -228,9 +228,19 @@ word_t shr(int w, word_t op1, word_t op2) {
   return ret;
 }
 
-word_t imul2(int w, word_t op1, word_t op2) {
-  Assert(w == 4, "w = %d", w);
-  printf("op1 = %x, op2 = %x\n", op1, op2);
+word_t imul2(int w, word_t op1_, word_t op2_) {
+  Assert(2 == w || 4 == w, "w = %d", w);
+
+  word_t op1 = 0;
+  word_t op2 = 0;
+  if (2 == w) {
+    op1 = (uint16_t)op1_;
+    op2 = (uint16_t)op2_;
+  } else if (4 == w) {
+    op1 = (uint32_t)op1_;
+    op2 = (uint32_t)op2_;
+  }
+
   int sign_mask = (1 << (w * 8 - 1));
   uint64_t ret = op1 * op2;
 
