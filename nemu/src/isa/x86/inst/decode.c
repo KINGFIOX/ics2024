@@ -615,13 +615,25 @@ static inline void div1(int w, word_t divisor) {
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b100:                                                      \
-        Rw(rd, w, shl(w, Rr(rd, w), op2));                             \
+        if (rd != -1) {                                                \
+          Rw(rd, w, shl(w, Rr(rd, w), op2));                           \
+        } else {                                                       \
+          Mw(addr, w, shl(w, Mr(addr, w), op2));                       \
+        }                                                              \
         break;                                                         \
       case 0b101:                                                      \
-        Rw(rd, w, shr(w, Rr(rd, w), op2));                             \
+        if (rd != -1) {                                                \
+          Rw(rd, w, shr(w, Rr(rd, w), op2));                           \
+        } else {                                                       \
+          Mw(addr, w, shr(w, Mr(addr, w), op2));                       \
+        }                                                              \
         break;                                                         \
       case 0b111:                                                      \
-        Rw(rd, w, sar(w, Rr(rd, w), op2));                             \
+        if (rd != -1) {                                                \
+          Rw(rd, w, sar(w, Rr(rd, w), op2));                           \
+        } else {                                                       \
+          Mw(addr, w, sar(w, Mr(addr, w), op2));                       \
+        }                                                              \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
