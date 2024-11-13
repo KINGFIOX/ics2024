@@ -585,7 +585,7 @@ static inline void div1(int w, word_t divisor) {
         if (rd != -1) {                                                \
           Rw(rd, w, not_(w, Rr(rd, w)));                               \
         } else {                                                       \
-          Mw(rd, w, not_(w, Mr(addr, w)));                             \
+          Mw(addr, w, not_(w, Mr(addr, w)));                           \
         }                                                              \
         break;                                                         \
       case 0b100: /*test*/                                             \
