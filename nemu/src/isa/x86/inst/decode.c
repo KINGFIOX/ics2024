@@ -724,6 +724,8 @@ again:
 
   //   10016f:       ee                      out    %al,(%dx)
   INSTPAT("1110 1110", out, a2dx, 1, out_(w, Rr(R_AL, w), Rr(R_DX, 2)));
+  //   1002d6:       e9 fc fe ff ff          jmp    1001d7 <vsnprintf+0x33>
+  INSTPAT("1110 1001", jmp, J, 4, jmpo(s, imm));
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
