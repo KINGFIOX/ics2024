@@ -152,6 +152,8 @@ word_t and_(int w, word_t op1_, word_t op2_) {
 void test(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
 
+  printf("op1 = %x, op2 = %x\n", op1_, op2_);
+
   word_t op1 = 0;
   word_t op2 = 0;
   if (1 == w) {
