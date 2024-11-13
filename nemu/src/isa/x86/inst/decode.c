@@ -653,6 +653,8 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1011 0110", movzbl, Eb2G, 0, movz_l(w, rd, rs, addr, false, 1));
   //   100043:       0f bf 84 1b 40 02 10    movswl 0x100240(%ebx,%ebx,1),%eax
   INSTPAT("1011 1111", movswl, Ew2G, 4, movz_l(w, rd, rs, addr, true, 2));
+  //   1000b8:       0f be 05 60 02 10 00    movsbl 0x100260,%eax
+  INSTPAT("1011 1110", movsbl, Eb2G, 0, movz_l(w, rd, rs, addr, true, w));
   //   10006f:       0f b7 84 1b 40 02 10    movzwl 0x100240(%ebx,%ebx,1),%eax
   INSTPAT("1011 0111", movzwl, Ew2G, 4, movz_l(w, rd, rs, addr, false, 2));
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
