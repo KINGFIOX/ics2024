@@ -120,7 +120,11 @@ static int cmd_d(char *args) {
 // example: w *0x2000
 static int cmd_w(char *args) {
   // TODO:
-  if (args == NULL || strlen(args) >= WP_EXPR_LEN) {
+  if (args == NULL) {
+    printf("No expression\n");
+    return 0;
+  }
+  if (strlen(args) >= WP_EXPR_LEN) {
     printf("Expression too long\n");
     return 0;
   }
