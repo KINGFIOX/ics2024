@@ -848,7 +848,7 @@ again:
   INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
   // 1004b3:       29 c8                   sub    %ecx,%eax
-  INSTPAT("0010 1001", sub, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w), false)));
+  INSTPAT("0010 1001", sub, G2E, 0, RMw(sub(w, RMr(rd, w), Rr(rs, w), false)));
 
   // 10005f:       2b 04 cd 80 03 10 00    sub    0x100380(,%ecx,8),%eax
   INSTPAT("0010 1011", sub, E2G, 0, Rw(rd, w, sub(w, Rr(rd, w), Mr(addr, w), false)));
