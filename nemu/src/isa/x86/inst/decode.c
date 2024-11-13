@@ -422,6 +422,10 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         assert(rd != -1);                                                         \
         Rw(rd, w, sub(w, Rr(rd, w), imm, false));                                 \
         break;                                                                    \
+      case 0b110: /*rd=rd xor imm*/                                               \
+        assert(rd != -1);                                                         \
+        Rw(rd, w, xor_(w, Rr(rd, w), imm));                                       \
+        break;                                                                    \
       case 0b111: /*cmp*/                                                         \
         /*printf("addr = %x, imm = %x, rs = %d, rd = %d\n", addr, imm, rs, rd);*/ \
         if (rd != -1) {                                                           \
@@ -728,6 +732,7 @@ again:
   INSTPAT("1000 0001", gp1, I2E, 0, gp1());
   //   100017:       83 ec 14                sub    $0x14,%esp
   //   10002c:       83 e4 f0                and    $0xfffffff0,%esp
+  //   1000ab:       83 f0 01                xor    $0x1,%eax
   INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
 
   // 1004b3:       29 c8                   sub    %ecx,%eax
