@@ -60,14 +60,14 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   uint64_t op1 = 0;
   uint64_t op2 = 0;
   if (1 == w) {
-    op1 = (uint8_t)op1_;
-    op2 = (uint8_t)op2_;
+    op1 = (int8_t)op1_;
+    op2 = (int8_t)op2_;
   } else if (2 == w) {
-    op1 = (uint16_t)op1_;
-    op2 = (uint16_t)op2_;
+    op1 = (int16_t)op1_;
+    op2 = (int16_t)op2_;
   } else if (4 == w) {
-    op1 = (uint32_t)op1_;
-    op2 = (uint32_t)op2_;
+    op1 = (int32_t)op1_;
+    op2 = (int32_t)op2_;
   }
 
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
@@ -83,7 +83,9 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   bool op1_sign = !!(op1 & sign_mask);
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
-  printf(" ret_u64 = 0x%08lx, ret_sign = %d, w = %d\n", ret_u64, ret_sign, w);
+  printf("ret_u64 = 0x%08lx, ret_sign = %d, w = %d\n", ret_u64, ret_sign, w);
+  printf("op1 = 0x%08lx, op1_sign = %d\n", op1, op1_sign);
+  printf("");
 
   cpu.eflags.cf = !!(op1 < op2);                    // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);  // pf
