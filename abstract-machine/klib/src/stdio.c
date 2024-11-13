@@ -40,7 +40,7 @@ int printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
 
-  panic("Not implemented");
+  // panic("Not implemented");
 
   return -1;
 }
