@@ -800,7 +800,7 @@ again:
   INSTPAT("0101 1???", pop, r, 0, Rw(rd, w, pop(w)));
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
-  INSTPAT("0011 1011", cmp, E2G, 0, cmp(w, Mr(addr, w), Rr(rd, w)));
+  INSTPAT("0011 1011", cmp, E2G, 0, cmp(w, Rr(rd, w), Mr(addr, w)));
   //   1000d3:       3d 39 a3 4f 41          cmp    $0x414fa339,%eax
   INSTPAT("0011 1101", cmp, I2a, 0, cmp(w, Rr(R_EAX, w), imm));
   //   10003f:       3c 19                   cmp    $0x19,%al
