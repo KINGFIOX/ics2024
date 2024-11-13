@@ -33,6 +33,9 @@ void jcc(Decode* s, word_t imm, uint8_t subcode) {
     case 0b0010:  // jb
       cond = cf;
       break;
+    case 0b0011:  // jae
+      cond = !cf;
+      break;
     case 0b0100:  // je
       cond = zf;
       break;
