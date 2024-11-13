@@ -272,6 +272,7 @@ enum {
   TYPE_SI,
   TYPE_J,
   TYPE_E,
+  TYPE_a2dx,
   TYPE_I2r,   // XX <- Ib / eXX <- Iv, Immediate
   TYPE_I2a,   // AL <- Ib / eAX <- Iv, a means
   TYPE_G2E,   // Eb <- Gb / Ev <- Gv, General
@@ -330,6 +331,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   switch (type) {
     case TYPE_a2r:
       decode_rm(s, rd_, addr, gp_idx, w);
+      break;
+    case TYPE_a2dx:
       break;
     case TYPE_Eb2G:
       decode_rm(s, rd_, addr, rs, 1);
@@ -687,6 +690,12 @@ static inline void cltd() {
   }
 }
 
+static inline void out_(int w, word_t data, word_t port) {
+  assert(w == 1);
+  extern void pio_write(ioaddr_t addr, int len, uint32_t data);
+  pio_write(port, w, data);
+}
+
 int isa_exec_once(Decode *s) {
   bool is_operand_size_16 = false;
   uint8_t opcode = 0;
@@ -702,6 +711,9 @@ again:
   INSTPAT("0110 0110", data_size, N, 0, is_operand_size_16 = true; goto again;);
 
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
+
+  //   10016f:       ee                      out    %al,(%dx)
+  INSTPAT("1110 1110", out, a2dx, 1, out_(w, Rr(R_AL, w), Rr(R_DX, 2)));
 
   //   100010:       31 c0                   xor    %eax,%eax
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
