@@ -568,20 +568,32 @@ static inline void div1(int w, word_t divisor) {
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000: /*test*/                                             \
-        assert(rd != -1);                                              \
-        test(w, Rr(rd, w), imm);                                       \
+        if (rd != -1) {                                                \
+          test(w, Rr(rd, w), imm);                                     \
+        } else {                                                       \
+          test(w, Mr(addr, w), imm);                                   \
+        }                                                              \
         break;                                                         \
       case 0b011: /*neg*/                                              \
-        assert(rd != -1);                                              \
-        Rw(rd, w, sub(w, 0, Rr(rd, w), false));                        \
+        if (rd != -1) {                                                \
+          Rw(rd, w, sub(w, 0, Rr(rd, w), false));                      \
+        } else {                                                       \
+          Mw(addr, w, sub(w, 0, Mr(addr, w), false));                  \
+        }                                                              \
         break;                                                         \
       case 0b010: /*not*/                                              \
-        assert(rd != -1);                                              \
-        Rw(rd, w, not_(w, Rr(rd, w)));                                 \
+        if (rd != -1) {                                                \
+          Rw(rd, w, not_(w, Rr(rd, w)));                               \
+        } else {                                                       \
+          Mw(rd, w, not_(w, Mr(addr, w)));                             \
+        }                                                              \
         break;                                                         \
       case 0b100: /*test*/                                             \
-        assert(rd != -1);                                              \
-        mul1(w, Rr(rd, w));                                            \
+        if (rd != -1) {                                                \
+          mul1(w, Rr(rd, w));                                          \
+        } else {                                                       \
+          mul1(w, Mr(addr, w));                                        \
+        }                                                              \
         break;                                                         \
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
