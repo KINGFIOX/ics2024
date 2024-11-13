@@ -24,27 +24,34 @@ void ret(Decode* s, int w) {
 
 void jcc(Decode* s, word_t imm, uint8_t subcode) {
   bool cond;
+  bool cf = !!cpu.eflags.cf;
+  bool zf = !!cpu.eflags.zf;
+  bool sf = !!cpu.eflags.sf;
+  bool of = !!cpu.eflags.of;
   switch (subcode) {
     case 0b0010:  // jb
-      cond = cpu.eflags.cf != 0;
+      cond = cf;
       break;
     case 0b0100:  // je
-      cond = cpu.eflags.zf != 0;
+      cond = zf;
       break;
     case 0b0101:  // jne
-      cond = cpu.eflags.zf == 0;
+      cond = !zf;
       break;
     case 0b0110:  // jbe
-      cond = !!(!!cpu.eflags.cf | !!cpu.eflags.zf);
+      cond = cf | zf;
       break;
     case 0b1000:  // js
-      cond = !!cpu.eflags.sf;
+      cond = sf;
+      break;
+    case 0b1100:  // jge
+      cond = !(sf ^ of);
       break;
     case 0b1101:  // jge
-      cond = !(!!cpu.eflags.sf ^ !!cpu.eflags.of);
+      cond = !(sf ^ of);
       break;
     case 0b1110:  // jle
-      cond = (!!cpu.eflags.sf ^ !!cpu.eflags.of) | !!cpu.eflags.zf;
+      cond = (sf ^ of) | zf;
       break;
     default:
       false;
