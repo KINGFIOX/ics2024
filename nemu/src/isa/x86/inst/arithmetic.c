@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "common.h"
 #include "inst.h"
 
@@ -133,8 +131,6 @@ word_t and_(int w, word_t op1_, word_t op2_) {
     op2 = (uint32_t)op2_;
   }
 
-  printf("op1 = %x, op2 = %x\n", op1, op2);
-
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
   word_t ret = op1 & op2;
@@ -151,8 +147,6 @@ word_t and_(int w, word_t op1_, word_t op2_) {
 
 void test(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
-
-  printf("op1 = %x, op2 = %x\n", op1_, op2_);
 
   word_t op1 = 0;
   word_t op2 = 0;
