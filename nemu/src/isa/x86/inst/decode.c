@@ -504,17 +504,27 @@ static inline void imul1(int w, word_t op1) {
   }
 }
 
-static inline void mul1(int w, word_t op1) {
-  assert(w == 4);
+static inline void mul1(int w, word_t op1_) {
+  assert(4 == w || 2 == w);
+  uint64_t sign_mask = (1ULL << (w * 8 - 1));
+  uint64_t op2 = 0;
+  uint64_t op1 = 0;
+  uint64_t ret = 0;
   if (4 == w) {
-    uint64_t op2_ = Rr(R_EAX, w);
-    uint64_t op1_ = op1;
-    uint64_t ret = op2_ * op1_;
+    op2 = Rr(R_EAX, w);
+    op1 = op1_;
+    ret = op2 * op1;
     Rw(R_EAX, w, ret & UINT32_MAX);
     Rw(R_EDX, w, ret >> 32);
-    cpu.eflags.sf = (ret < 0);
-    cpu.eflags.zf = !ret;
+  } else if (2 == w) {
+    op2 = Rr(R_AX, w);
+    op1 = op1_ & UINT16_MAX;
+    ret = op2 * op1;
+    Rw(R_AX, w, ret & UINT16_MAX);
+    Rw(R_DX, w, ret >> 16);
   }
+  cpu.eflags.sf = !!(ret & sign_mask);
+  cpu.eflags.zf = !ret;
 }
 
 static inline void div1(int w, word_t divisor) {
