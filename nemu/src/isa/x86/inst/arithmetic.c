@@ -94,7 +94,7 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
 void cmp(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
 
-  __auto_type tmp = 0;
+  int tmp = 0;
   printf("tmp: %d\n", tmp);
 
   word_t op1 = 0;
