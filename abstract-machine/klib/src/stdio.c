@@ -66,7 +66,7 @@ int sprintf(char *out, const char *fmt, ...) {
   char *hello = "hello\n";
 
   for (int i = 0; i < sizeof(hello); i++) {
-    printf("%c", hello[i]);
+    putch(hello[i]);
   }
 
   va_list ap;
