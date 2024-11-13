@@ -608,8 +608,8 @@ static inline void div1(int w, word_t divisor) {
         if (rd == -1) {                                                \
           div1(w, Mr(addr, w));                                        \
         } else {                                                       \
-          printf("rs = %d", rs);                                       \
-          div1(w, Rr(rs, w));                                          \
+          printf("rd = %d\n", rd);                                     \
+          div1(w, Rr(rd, w));                                          \
         }                                                              \
         break;                                                         \
       case 0b111: /*idiv*/                                             \
