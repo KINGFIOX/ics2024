@@ -649,6 +649,14 @@ static inline void setcc(uint8_t opcode, int rd) {
   }
 }
 
+static inline void imul2_rm(int w, int rd, int rs, vaddr_t addr) {
+  if (rs != -1) {
+    Rw(rd, w, imul2(w, Rr(rd, w), Rr(rs, w)));
+  } else {
+    Rw(rd, w, imul2(w, Rr(rd, w), Mr(addr, w)));
+  }
+}
+
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
 // 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
 // 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
@@ -664,7 +672,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1001 ????", setcc, E, 1, setcc(opcode, rd));
   // INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   100063:       0f af c1                imul   %ecx,%eax
-  INSTPAT("1010 1111", imul2, E2G, 0, assert(rd != -1); assert(rs != -1); Rw(rd, w, imul2(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("1010 1111", imul2, E2G, 0, imul2_rm(w, rd, rs, addr));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, movz_l(w, rd, rs, addr, false, 1));
   //   100043:       0f bf 84 1b 40 02 10    movswl 0x100240(%ebx,%ebx,1),%eax
