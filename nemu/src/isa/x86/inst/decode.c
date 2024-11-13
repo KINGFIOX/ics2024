@@ -629,12 +629,7 @@ static inline void div1(int w, word_t divisor) {
 static inline void movz_l(int w, int rd, int rs, vaddr_t addr, bool sign, int width) {
   assert(w == 4);
   assert(width == 1 || width == 2 || width == 4);
-  word_t op1;
-  if (rd == -1) {
-    op1 = vaddr_read(addr, width);
-  } else {
-    op1 = Rr(rd, width);
-  }
+  word_t op1 = RMr(rd, width);
   if (sign) {
     if (width == 1) {
       Rw(rs, w, SEXT(op1, 1 * 8));
@@ -659,14 +654,6 @@ static inline void setcc(uint8_t opcode, int rd) {
       break;
     default:
       assert(false && "invalid subcode");
-  }
-}
-
-static inline void imul2_rm(int w, int rd, int rs, vaddr_t addr) {
-  if (rs != -1) {
-    Rw(rd, w, imul2(w, Rr(rd, w), Rr(rs, w)));
-  } else {
-    Rw(rd, w, imul2(w, Rr(rd, w), Mr(addr, w)));
   }
 }
 
@@ -708,7 +695,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1001 ????", setcc, E, 1, setcc(opcode, rd));
   // INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   100063:       0f af c1                imul   %ecx,%eax
-  INSTPAT("1010 1111", imul2, E2G, 0, imul2_rm(w, rd, rs, addr));
+  INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(rd, w), RMr(rs, w))));
   // 0f ad d0 : shrd %cl, %edx, %eax
   INSTPAT("1010 1101", shrd, cl_G2E, 0, shrd(w, rd, rs, addr));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
@@ -723,18 +710,6 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1000 ????", jcc, J, 4, jcc(s, imm, opcode & mask));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
-}
-
-// reg or memory
-static inline void cmp_rm(int w, int rd, int rs, vaddr_t addr) {
-  word_t op1, op2;
-  op2 = Rr(rd, w);
-  if (rs == -1) {
-    op1 = vaddr_read(addr, w);
-  } else {
-    op1 = Rr(rs, w);
-  }
-  cmp(w, op1, op2);
 }
 
 static inline void cltd() {
@@ -753,16 +728,6 @@ static inline void out_(int w, word_t data, word_t port) {
   assert(w == 1);
   extern void pio_write(ioaddr_t addr, int len, uint32_t data);
   pio_write(port, w, data);
-}
-
-static inline void test_rm(int w, int rd, int rs, vaddr_t addr) {
-  assert(w == 1);
-
-  if (rd == -1) {
-    test(w, Rr(rs, w), Mr(addr, w));
-  } else {
-    test(w, Rr(rs, w), Rr(rd, w));
-  }
 }
 
 static inline void add_rm(int w, int rd, int rs, vaddr_t addr) {
@@ -829,7 +794,7 @@ again:
 
   // 100040:       84 04 11                test   %al,(%ecx,%edx,1)
   //   100298:       84 c0                   test   %al,%al
-  INSTPAT("1000 0100", test, G2E, 1, test_rm(w, rd, rs, addr));
+  INSTPAT("1000 0100", test, G2E, 1, test(w, Rr(rs, w), RMr(rd, w)));
 
   // 88  /r   MOV r/m8,r8
   INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
@@ -905,7 +870,7 @@ again:
   INSTPAT("0011 1100", cmp, I2a, 1, cmp(w, Rr(R_EAX, w), imm));
   //   10005c:       39 f1                   cmp    %esi,%ecx
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
-  INSTPAT("0011 1001", cmp, E2G, 0, cmp_rm(w, rd, rs, addr));
+  INSTPAT("0011 1001", cmp, E2G, 0, cmp(w, RMr(rs, w), Rr(rd, w)));
   //   10004c:       38 d8                   cmp    %bl,%al
   INSTPAT("0011 1000", cmp, G2E, 1, cmp(w, Rr(rd, w), Rr(rs, w)));
 
