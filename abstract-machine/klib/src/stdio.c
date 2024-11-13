@@ -63,11 +63,13 @@ int vsprintf(char *buf, const char *fmt, va_list ap) { return vsnprintf(buf, SIZ
 int sprintf(char *out, const char *fmt, ...) {
   if (fmt == 0) panic("null fmt");
 
-  char *hello = "hello\n";
+  char *hello = "hello";
 
-  for (int i = 0; i < sizeof(hello); i++) {
+  // debug
+  for (int i = 0; i < sizeof(hello) && hello[i] != '\0'; i++) {
     putch(hello[i]);
   }
+  putch('\n');
 
   va_list ap;
   va_start(ap, fmt);
