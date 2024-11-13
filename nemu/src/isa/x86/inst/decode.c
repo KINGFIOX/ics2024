@@ -631,6 +631,20 @@ static inline void movz_l(int w, int rd, int rs, vaddr_t addr, bool sign, int wi
   }
 }
 
+static inline void setcc(uint8_t opcode, int rd) {
+  uint8_t subcode = opcode & 0xf;
+  switch (subcode) {
+    case 0x5:  // setne
+      Rw(rd, 1, (!cpu.eflags.zf));
+      break;
+    case 0x4:  // sete
+      Rw(rd, 1, (cpu.eflags.zf));
+      break;
+    default:
+      assert(false && "invalid subcode");
+  }
+}
+
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
 // 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
 // 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
@@ -643,7 +657,8 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
   //   100067:       0f 94 c2                sete   %dl
-  INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
+  INSTPAT("1001 ????", setcc, E, 1, setcc(opcode, rd));
+  // INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
   //   100063:       0f af c1                imul   %ecx,%eax
   INSTPAT("1010 1111", imul2, E2G, 0, Rw(rd, w, imul2(w, Rr(rd, w), Rr(rs, w))));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
