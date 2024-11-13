@@ -115,22 +115,52 @@ void cmp(int w, word_t op1_, word_t op2_) {
   //
 }
 
-word_t and_(int w, word_t op1, word_t op2) {
+word_t and_(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
-  int sign_mask = (1 << (w * 8 - 1));
+
+  word_t op1 = 0;
+  word_t op2 = 0;
+  if (1 == w) {
+    op1 = (uint8_t)op1_;
+    op2 = (uint8_t)op2_;
+  } else if (2 == w) {
+    op1 = (uint16_t)op1_;
+    op2 = (uint16_t)op2_;
+  } else if (4 == w) {
+    op1 = (uint32_t)op1_;
+    op2 = (uint32_t)op2_;
+  }
+
+  uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
+  const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
   word_t ret = op1 & op2;
 
-  cpu.eflags.zf = !ret;                 // zf
-  cpu.eflags.sf = !!(ret & sign_mask);  // sf
-  cpu.eflags.pf = !!(ones(ret) % 2);    // pf
-  cpu.eflags.cf = 0;                    // cf
-  cpu.eflags.of = 0;                    // of
+  cpu.eflags.zf = !ret;                    // zf
+  cpu.eflags.sf = !!(ret & sign_mask);     // sf
+  cpu.eflags.pf = (1 == (ones(ret) % 2));  // pf
+
+  cpu.eflags.cf = 0;  // cf
+  cpu.eflags.of = 0;  // of
 
   return ret;
 }
 
-void test(int w, word_t op1, word_t op2) {
+void test(int w, word_t op1_, word_t op2_) {
   assert(4 == w || 2 == w || 1 == w);
+
+  word_t op1 = 0;
+  word_t op2 = 0;
+  if (1 == w) {
+    op1 = (uint8_t)op1_;
+    op2 = (uint8_t)op2_;
+  } else if (2 == w) {
+    op1 = (uint16_t)op1_;
+    op2 = (uint16_t)op2_;
+  } else if (4 == w) {
+    op1 = (uint32_t)op1_;
+    op2 = (uint32_t)op2_;
+  }
+
   and_(w, op1, op2);
 }
 
