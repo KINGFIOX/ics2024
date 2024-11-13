@@ -545,6 +545,7 @@ static inline void div1(int w, word_t divisor) {
     Rw(R_DX, 2, dividend % divisor);
   } else if (4 == w) {
     uint64_t dividend = ((uint64_t)Rr(R_EDX, 4) << 32) | Rr(R_EAX, 4);
+    printf("%lx / %x = %lx ... %lx\n", dividend, divisor, dividend / divisor, dividend % divisor);
     Rw(R_EAX, 4, dividend / divisor);
     Rw(R_EDX, 4, dividend % divisor);
   }
