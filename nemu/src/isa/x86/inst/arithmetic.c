@@ -1,6 +1,3 @@
-#include <stdint.h>
-#include <stdio.h>
-
 #include "common.h"
 #include "inst.h"
 
@@ -69,8 +66,6 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
-  printf("---------- ---------- sub ---------- ----------\n");
-  printf("op1 = 0x%016lx, op2 = 0x%016lx\n", op1, op2);
 
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
@@ -85,8 +80,6 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   bool op1_sign = !!(op1 & sign_mask);
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
-  printf("ret_u64 = 0x%08lx, ret_sign = %d, w = %d\n", ret_u64, ret_sign, w);
-  printf("sign_mask = 0x%08lx, mask = 0x%08lx\n", sign_mask, mask);
 
   cpu.eflags.cf = !!(op1 < op2);                    // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);  // pf
@@ -113,9 +106,6 @@ void cmp(int w, word_t op1_, word_t op2_) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
-
-  printf("---------- ---------- cmp ---------- ----------\n");
-  printf("op1 = 0x%08x, op2 = 0x%08x\n", op1, op2);
 
   sub(w, op1, op2, false);
 
