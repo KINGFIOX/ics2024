@@ -369,11 +369,11 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     case TYPE_J:
       imm();
       if (4 == w) {
-        *imm = SEXT(*imm, 4 * 8);
+        *imm = (word_t)(int32_t)*imm;
       } else if (2 == w) {
-        *imm = SEXT(*imm, 2 * 8);
+        *imm = (word_t)(int32_t)(int16_t)*imm;
       } else if (1 == w) {
-        *imm = SEXT(*imm, 1 * 8);
+        *imm = (word_t)(int32_t)(int8_t)*imm;
       }
       break;
     case TYPE_SI:
