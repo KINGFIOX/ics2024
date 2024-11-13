@@ -69,8 +69,8 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
     op1 = (uint32_t)op1_;
     op2 = (uint32_t)op2_;
   }
-  printf("---------- ---------- ---------- ----------\n");
-  printf("op1 = 0x%08lx, op2 = 0x%08lx\n", op1, op2);
+  printf("---------- ---------- sub ---------- ----------\n");
+  printf("op1 = 0x%016lx, op2 = 0x%016lx\n", op1, op2);
 
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
   const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
