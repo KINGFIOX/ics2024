@@ -886,6 +886,7 @@ again:
 
   //   10008a:       99                      cltd
   INSTPAT("1001 1001", cltd, N, 0, cltd());
+  INSTPAT("1001 1000", cwtl, N, 0, assert(w == 2); Rw(R_EDX, w, SEXT(Rr(R_EAX, w), 2 * 8)));
 
   //   10008c:       d1 ea                   shr    $1,%edx
   INSTPAT("1101 0001", shr, 1_E, 0, word_t op2 = 1; gp2());
