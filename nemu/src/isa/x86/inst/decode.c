@@ -467,27 +467,27 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     };                                                                            \
   } while (0)
 
-#define gp5()                                       \
-  do {                                              \
-    switch (gp_idx) {                               \
-      case 0b000: /*inc*/                           \
-        Mw(addr, w, add(w, Mr(addr, w), 1, false)); \
-        break;                                      \
-      case 0b001: /*dec*/                           \
-        Mw(addr, w, sub(w, Mr(addr, w), 1, false)); \
-        break;                                      \
-      case 0b010: /*call*/                          \
-        calla(s, w, RMr(rd, w));                    \
-        break;                                      \
-      case 0b100: /*jmp*/                           \
-        jmpa(s, RMr(rd, w));                        \
-        break;                                      \
-      case 0b110:                                   \
-        push(w, Mr(addr, w));                       \
-        break;                                      \
-      default:                                      \
-        Assert(false, "gp_idx = 0b%03b", gp_idx);   \
-    }                                               \
+#define gp5()                                      \
+  do {                                             \
+    switch (gp_idx) {                              \
+      case 0b000: /*inc*/                          \
+        Mw(addr, w, add(w, RMr(rd, w), 1, false)); \
+        break;                                     \
+      case 0b001: /*dec*/                          \
+        Mw(addr, w, sub(w, RMr(rd, w), 1, false)); \
+        break;                                     \
+      case 0b010: /*call*/                         \
+        calla(s, w, RMr(rd, w));                   \
+        break;                                     \
+      case 0b100: /*jmp*/                          \
+        jmpa(s, RMr(rd, w));                       \
+        break;                                     \
+      case 0b110:                                  \
+        push(w, RMr(rd, w));                       \
+        break;                                     \
+      default:                                     \
+        Assert(false, "gp_idx = 0b%03b", gp_idx);  \
+    }                                              \
   } while (0)
 
 #define gp7()                                           \
