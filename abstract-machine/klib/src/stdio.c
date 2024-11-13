@@ -7,6 +7,8 @@
 
 #define BUF_SIZE (4096)
 
+#define PUTCH_DEBUG 1
+
 static inline int sputc(char *s, char c) {
   *s = c;
   return 1;
@@ -30,10 +32,21 @@ static inline int sprintint(char *s, int xx, int base, int sign) {
     buf[i++] = digits[x % base];
   } while ((x /= base) != 0);
 
-  if (sign) buf[i++] = '-';
+  if (sign) {
+    buf[i++] = '-';
+  }
 
   size_t n = 0;
-  while (--i >= 0) n += sputc(s + n, buf[i]);
+  while (--i >= 0) {
+    n += sputc(s + n, buf[i]);
+  }
+
+#if PUTCH_DEBUG
+  for (char *p = s; p < s + n; p++) {
+    putch(*p);
+  }
+#endif
+
   return n;
 }
 
@@ -62,14 +75,6 @@ int vsprintf(char *buf, const char *fmt, va_list ap) { return vsnprintf(buf, SIZ
 
 int sprintf(char *out, const char *fmt, ...) {
   if (fmt == 0) panic("null fmt");
-
-  char *hello = "hello";
-
-  // debug
-  for (int i = 0; i < sizeof(hello) && hello[i] != '\0'; i++) {
-    putch(hello[i]);
-  }
-  putch('\n');
 
   va_list ap;
   va_start(ap, fmt);
