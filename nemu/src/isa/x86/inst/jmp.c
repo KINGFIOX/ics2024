@@ -54,7 +54,7 @@ void jcc(Decode* s, word_t imm, uint8_t subcode) {
       cond = (sf ^ of) | zf;
       break;
     case 0b1111:  // jg
-      cond = !((sf ^ of) || zf);
+      cond = !((sf ^ of) | zf);
       break;
     default:
       false;
