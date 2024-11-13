@@ -589,36 +589,6 @@ static inline void div1(int w, word_t divisor) {
     }                                                                  \
   } while (0)
 
-#define jcc()                              \
-  do {                                     \
-    uint64_t func = mask & opcode;         \
-    switch (func) {                        \
-      case 0b0010:                         \
-        jb(s, imm);                        \
-        break;                             \
-      case 0b0100:                         \
-        je(s, imm);                        \
-        break;                             \
-      case 0b0101:                         \
-        jne(s, imm);                       \
-        break;                             \
-      case 0b0110:                         \
-        jbe(s, imm);                       \
-        break;                             \
-      case 0b1000:                         \
-        js(s, imm);                        \
-        break;                             \
-      case 0b1101:                         \
-        jge(s, imm);                       \
-        break;                             \
-      case 0b1110:                         \
-        jle(s, imm);                       \
-        break;                             \
-      default:                             \
-        Assert(false, "func = %lx", func); \
-    }                                      \
-  } while (0)
-
 static inline void movz_l(int w, int rd, int rs, vaddr_t addr, bool sign, int width) {
   assert(w == 4);
   assert(width == 1 || width == 2 || width == 4);
@@ -686,7 +656,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   //   10006f:       0f b7 84 1b 40 02 10    movzwl 0x100240(%ebx,%ebx,1),%eax
   INSTPAT("1011 0111", movzwl, Ew2G, 4, movz_l(w, rd, rs, addr, false, 2));
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
-  INSTPAT("1000 ????", jne, J, 4, jcc());
+  INSTPAT("1000 ????", jcc, J, 4, jcc(s, imm, opcode & mask));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
@@ -807,7 +777,7 @@ again:
   // C7 id    MOV r/m32,imm32
   INSTPAT("1100 0111", mov, I2E, 0, RMw(imm));
 
-  INSTPAT("0111 ????", jcc, J, 1, jcc());  // 这个 width=1 是试出来的
+  INSTPAT("0111 ????", jcc, J, 1, jcc(s, imm, opcode & mask));
 
   INSTPAT("1100 1001", leave, N, 0, leave());
 

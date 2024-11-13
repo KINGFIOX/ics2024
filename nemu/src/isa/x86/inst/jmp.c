@@ -1,5 +1,6 @@
 #include "common.h"
 #include "cpu/decode.h"
+#include "debug.h"
 #include "inst.h"
 
 // offset
@@ -23,21 +24,36 @@ void ret(Decode* s, int w) {
   s->dnpc = pop(w);
 }
 
-void je(Decode* s, word_t imm) {
-  if (cpu.eflags.zf != 0) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+void jcc(Decode* s, word_t imm, uint8_t subcode) {
+  bool cond;
+  switch (subcode) {
+    case 0b0010:  // jb
+      cond = cpu.eflags.cf != 0;
+      break;
+    case 0b0100:  // je
+      cond = cpu.eflags.zf != 0;
+      break;
+    case 0b0101:  // jne
+      cond = cpu.eflags.zf == 0;
+      break;
+    case 0b0110:  // jbe
+      cond = !!(!!cpu.eflags.cf | !!cpu.eflags.zf);
+      break;
+    case 0b1000:  // js
+      cond = !!cpu.eflags.sf;
+      break;
+    case 0b1101:  // jge
+      cond = !(!!cpu.eflags.sf ^ !!cpu.eflags.of);
+      break;
+    case 0b1110:  // jle
+      cond = (!!cpu.eflags.sf ^ !!cpu.eflags.of) | !!cpu.eflags.zf;
+      break;
+    default:
+      false;
+      Assert(false, "subcode = %d", subcode);
   }
-}
-
-void jb(Decode* s, word_t imm) {
-  if (cpu.eflags.cf != 0) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
-  }
-}
-
-void jne(Decode* s, word_t imm) {
-  if (cpu.eflags.zf == 0) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
+  if (cond) {
+    s->dnpc = s->snpc + imm;
   }
 }
 
@@ -46,45 +62,3 @@ void jmpo(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }
 
 // absolute
 void jmpa(Decode* s, word_t imm) { s->dnpc = imm; }
-
-void jle(Decode* s, word_t imm) {
-  // (sf ^ of) | zf
-  int sf = !!cpu.eflags.sf;
-  int of = !!cpu.eflags.of;
-  int zf = !!cpu.eflags.zf;
-  int cond = (sf ^ of) | zf;
-
-  if (cond) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
-  }
-}
-
-void jbe(Decode* s, word_t imm) {
-  // cf | zf
-  int cf = !!cpu.eflags.cf;
-  int zf = !!cpu.eflags.zf;
-  int cond = !!(cf | zf);
-
-  if (cond) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
-  }
-}
-
-void js(Decode* s, word_t imm) {
-  int sf = !!cpu.eflags.sf;
-  int cond = sf;
-
-  if (cond) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
-  }
-}
-
-void jge(Decode* s, word_t imm) {
-  int sf = !!cpu.eflags.sf;
-  int of = !!cpu.eflags.of;
-  int cond = !(sf ^ of);
-
-  if (cond) {
-    s->dnpc = s->snpc + SEXT(imm & 0xff, 8);
-  }
-}

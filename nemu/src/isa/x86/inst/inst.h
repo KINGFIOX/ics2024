@@ -25,15 +25,9 @@ word_t not_(int w, word_t op1);
 word_t imul2(int w, word_t op1, word_t op2);
 word_t or_(int w, word_t op1, word_t op2);
 
-void je(Decode* s, word_t imm);
-void jne(Decode* s, word_t imm);
+void jcc(Decode* s, word_t imm, uint8_t subcode);
 void jmpo(Decode* s, word_t imm);
 void jmpa(Decode* s, word_t imm);
-void jbe(Decode* s, word_t imm);
-void jb(Decode* s, word_t imm);
-void jle(Decode* s, word_t imm);
-void js(Decode* s, word_t imm);
-void jge(Decode* s, word_t imm);
 
 word_t reg_read(int idx, int width);
 void reg_write(int idx, int width, word_t data);
