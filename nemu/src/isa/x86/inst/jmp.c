@@ -48,7 +48,7 @@ void jcc(Decode* s, word_t imm, uint8_t subcode) {
       break;
     default:
       false;
-      Assert(false, "subcode = %d", subcode);
+      Assert(false, "subcode = 0b%04b", subcode);
   }
   if (cond) {
     s->dnpc = s->snpc + imm;
