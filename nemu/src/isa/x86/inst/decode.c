@@ -435,21 +435,21 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         if (rd != -1) {                                                           \
           Rw(rd, w, and_(w, Rr(rd, w), imm));                                     \
         } else {                                                                  \
-          Rw(rd, w, and_(w, Mr(addr, w), imm));                                   \
+          Mw(addr, w, and_(w, Mr(addr, w), imm));                                 \
         }                                                                         \
         break;                                                                    \
       case 0b101: /*rd=rd-imm*/                                                   \
         if (rd != -1) {                                                           \
           Rw(rd, w, sub(w, Rr(rd, w), imm, false));                               \
         } else {                                                                  \
-          Rw(rd, w, sub(w, Mr(addr, w), imm, false));                             \
+          Mw(addr, w, sub(w, Mr(addr, w), imm, false));                           \
         }                                                                         \
         break;                                                                    \
       case 0b110: /*rd=rd xor imm*/                                               \
         if (rd != -1) {                                                           \
           Rw(rd, w, xor_(w, Rr(rd, w), imm));                                     \
         } else {                                                                  \
-          Rw(rd, w, xor_(w, Mr(addr, w), imm));                                   \
+          Mw(addr, w, xor_(w, Mr(addr, w), imm));                                 \
         }                                                                         \
         break;                                                                    \
       case 0b111: /*cmp*/                                                         \
