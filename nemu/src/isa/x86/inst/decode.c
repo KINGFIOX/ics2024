@@ -569,7 +569,11 @@ static inline void div1(int w, word_t divisor) {
         }                                                              \
         break;                                                         \
       case 0b111: /*idiv*/                                             \
-        idiv(w, Rr(rd, w));                                            \
+        if (rd == -1) {                                                \
+          idiv(w, Mr(addr, w));                                        \
+        } else {                                                       \
+          idiv(w, Rr(rd, w));                                          \
+        }                                                              \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
