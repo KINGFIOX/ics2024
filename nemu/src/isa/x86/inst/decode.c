@@ -795,6 +795,8 @@ again:
 
   //   100066:       13 14 cd 84 03 10 00    adc    0x100384(,%ecx,8),%edx
   INSTPAT("0001 0011", adc, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), true)));
+  //   10005f:       11 da                   adc    %ebx,%edx
+  INSTPAT("0001 0001", adc, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), true)));
 
   // A2       MOV moffs8,AL     2
   INSTPAT("1010 0010", mov, a2O, 1, Mw(addr, 1, Rr(R_EAX, 1)));
