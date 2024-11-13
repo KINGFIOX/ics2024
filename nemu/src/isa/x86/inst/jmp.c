@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "common.h"
 #include "cpu/decode.h"
 #include "debug.h"
@@ -45,7 +47,9 @@ void jcc(Decode* s, word_t imm, uint8_t subcode) {
       cond = sf;
       break;
     case 0b1100:  // jl
+      printf("sf = %d, of = %d\n", sf, of);
       cond = sf ^ of;
+      printf("cond = %d\n", cond);
       break;
     case 0b1101:  // jge
       cond = !(sf ^ of);
