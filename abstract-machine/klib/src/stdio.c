@@ -132,6 +132,7 @@ int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
         break;
     }
   }
+  buf[off] = '\0';
 
 #if PUTCH_DEBUG
   for (char *p = buf; p < buf + off; p++) {
