@@ -14,7 +14,7 @@ static inline int sputc(char *s, char c) {
 
 static const char digits[] = "0123456789abcdef";
 
-static inline int sprintint(char *s, int xx, int base, int sign) {
+static int sprintint(char *s, int xx, int base, int sign) {
   char buf[16];
   memset(buf, 0, 16);
 
