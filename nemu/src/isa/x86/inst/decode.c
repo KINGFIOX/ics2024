@@ -962,7 +962,7 @@ again:
   //   10002f:       ff 71 fc                push   -0x4(%ecx)
   INSTPAT("1111 1111", gp5, E, 0, gp5());
   //   10004c:       f6 c3 03                test   $0x3,%bl
-  INSTPAT("1111 0110", gp3, E, 1, gp3());
+  INSTPAT("1111 0110", gp3, E, 1, imm = x86_inst_fetch(s, w); gp3());
   //   100085:       f7 d8                   neg    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
 
