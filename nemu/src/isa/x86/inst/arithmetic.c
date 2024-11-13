@@ -230,6 +230,7 @@ word_t shr(int w, word_t op1, word_t op2) {
 
 word_t imul2(int w, word_t op1, word_t op2) {
   Assert(w == 4, "w = %d", w);
+  printf("op1 = %x, op2 = %x\n", op1, op2);
   int sign_mask = (1 << (w * 8 - 1));
   uint64_t ret = op1 * op2;
 
