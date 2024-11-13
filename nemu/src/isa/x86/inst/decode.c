@@ -480,6 +480,10 @@ static inline void imul1(int w, word_t op1) {
     // never overflow
     cpu.eflags.sf = (ret < 0);
     cpu.eflags.zf = !ret;
+  } else if (2 == w) {
+    assert(false);
+  } else if (1 == w) {
+    assert(false);
   }
 }
 
@@ -514,6 +518,10 @@ static inline void div1(int w, word_t divisor) {
       case 0b010: /*not*/                                              \
         assert(rd != -1);                                              \
         Rw(rd, w, not_(w, Rr(rd, w)));                                 \
+        break;                                                         \
+      case 0b100: /*test*/                                             \
+        assert(rd != -1);                                              \
+        imul1(w, Rr(rd, w));                                           \
         break;                                                         \
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
