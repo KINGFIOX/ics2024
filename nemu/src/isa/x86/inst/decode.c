@@ -389,8 +389,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       simm(1);
       break;
-    case TYPE_Ib_G2E:
-      decode_rm(s, rd_, addr, gp_idx, w);
+    case TYPE_cl_G2E:
+      decode_rm(s, rd_, addr, rs, w);
       break;
     case TYPE_cl2E:
       decode_rm(s, rd_, addr, gp_idx, w);
@@ -717,7 +717,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   //   100063:       0f af c1                imul   %ecx,%eax
   INSTPAT("1010 1111", imul2, E2G, 0, imul2_rm(w, rd, rs, addr));
   // 0f ad d0 : shrd %cl, %edx, %eax
-  INSTPAT("1010 1101", shrd, Ib_G2E, 0, printf("rd = %d, rs = %d, addr = %x, gp_idx = %d, w = %d\n", rd, rs, addr, gp_idx, w));
+  INSTPAT("1010 1101", shrd, cl_G2E, 0, printf("rd = %d, rs = %d, addr = %x, gp_idx = %d, w = %d\n", rd, rs, addr, gp_idx, w));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, movz_l(w, rd, rs, addr, false, 1));
   //   1000b8:       0f be 05 60 02 10 00    movsbl 0x100260,%eax
