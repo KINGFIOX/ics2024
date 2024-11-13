@@ -431,6 +431,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         }                                                                         \
         break;                                                                    \
       case 0b100: /*rd=rd&imm*/                                                   \
+        printf("rd = %d, imm = %x, rs = %d, addr = %x\n", rd, imm, rs, addr);     \
         if (rd != -1) {                                                           \
           Rw(rd, w, and_(w, Rr(rd, w), imm));                                     \
         } else {                                                                  \
