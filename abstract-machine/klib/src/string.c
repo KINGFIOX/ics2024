@@ -12,7 +12,10 @@ char *strncpy(char *dst, const char *src, size_t n) { panic("Not implemented"); 
 
 char *strcat(char *dst, const char *src) { panic("Not implemented"); }
 
-int strcmp(const char *s1, const char *s2) { panic("Not implemented"); }
+int strcmp(const char *p, const char *q) {
+  while (*p && *p == *q) p++, q++;
+  return (uint8_t)*p - (uint8_t)*q;
+}
 
 int strncmp(const char *s1, const char *s2, size_t n) { panic("Not implemented"); }
 
