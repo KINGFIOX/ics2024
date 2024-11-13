@@ -391,7 +391,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_Ib_G2E:
       decode_rm(s, rd_, addr, gp_idx, w);
-      imm();
       break;
     case TYPE_cl2E:
       decode_rm(s, rd_, addr, gp_idx, w);
