@@ -83,7 +83,7 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   bool op1_sign = !!(op1 & sign_mask);
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
-  printf(" ret_u64 = 0x%08lx, ret_sign = %d\n", ret_u64, ret_sign);
+  printf(" ret_u64 = 0x%08lx, ret_sign = %d, w = %d\n", ret_u64, ret_sign, w);
 
   cpu.eflags.cf = !!(op1 < op2);                    // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);  // pf
