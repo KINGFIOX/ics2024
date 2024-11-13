@@ -59,17 +59,14 @@ int printf(const char *fmt, ...) {
 
   va_list ap;
   va_start(ap, fmt);
-
-  vsnprintf(buf, BUF_SIZE, fmt, ap);
-
+  int off = vsnprintf(buf, BUF_SIZE, fmt, ap);
   va_end(ap);
 
-  size_t i = 0;
-  for (i = 0; (i < BUF_SIZE) && (buf[i] != '\0'); i++) {
+  for (size_t i = 0; i < off; i++) {
     putch(buf[i]);
   }
 
-  return i;
+  return off;
 }
 
 int vsprintf(char *buf, const char *fmt, va_list ap) { return vsnprintf(buf, SIZE_MAX, fmt, ap); }
@@ -79,9 +76,7 @@ int sprintf(char *out, const char *fmt, ...) {
 
   va_list ap;
   va_start(ap, fmt);
-
   int off = vsnprintf(out, SIZE_MAX, fmt, ap);
-
   va_end(ap);
 
   return off;
@@ -92,9 +87,7 @@ int snprintf(char *buf, size_t sz, const char *fmt, ...) {
 
   va_list ap;
   va_start(ap, fmt);
-
   int off = vsnprintf(buf, sz, fmt, ap);
-
   va_end(ap);
 
   return off;
