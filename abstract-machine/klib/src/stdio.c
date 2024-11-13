@@ -5,31 +5,34 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-static int sputc(char *s, char c) {
+#define BUF_SIZE (4096)
+
+static inline int sputc(char *s, char c) {
   *s = c;
   return 1;
 }
 
 static const char digits[] = "0123456789abcdef";
 
-static int sprintint(char *s, int xx, int base, int sign) {
+static inline int sprintint(char *s, int xx, int base, int sign) {
   char buf[16];
-  int i, n;
+  memset(buf, 0, 16);
+
   uint32_t x;
-
-  if (sign && (sign = xx < 0))
+  if (sign && (sign = xx < 0)) {
     x = -xx;
-  else
+  } else {
     x = xx;
+  }
 
-  i = 0;
+  size_t i = 0;
   do {
     buf[i++] = digits[x % base];
   } while ((x /= base) != 0);
 
   if (sign) buf[i++] = '-';
 
-  n = 0;
+  size_t n = 0;
   while (--i >= 0) n += sputc(s + n, buf[i]);
   return n;
 }
@@ -37,7 +40,6 @@ static int sprintint(char *s, int xx, int base, int sign) {
 int printf(const char *fmt, ...) {
   if (fmt == 0) panic("null fmt");
 
-#define BUF_SIZE (1024)
   char buf[BUF_SIZE];
   memset(buf, 0, BUF_SIZE);
 
@@ -52,8 +54,6 @@ int printf(const char *fmt, ...) {
   for (i = 0; (i < BUF_SIZE) && (buf[i] != '\0'); i++) {
     putch(buf[i]);
   }
-
-#undef BUF_SIZE
 
   return i;
 }
