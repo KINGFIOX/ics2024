@@ -696,6 +696,16 @@ static inline void out_(int w, word_t data, word_t port) {
   pio_write(port, w, data);
 }
 
+static inline void test_rm(int w, int rd, int rs, vaddr_t addr) {
+  assert(w == 1);
+
+  if (rd == -1) {
+    test(w, Rr(rs, w), Mr(addr, w));
+  } else {
+    test(w, Rr(rs, w), Rr(rd, w));
+  }
+}
+
 int isa_exec_once(Decode *s) {
   bool is_operand_size_16 = false;
   uint8_t opcode = 0;
@@ -747,7 +757,8 @@ again:
   INSTPAT("0001 1011", sbb, E2G, 0, Rw(rd, w, sub(w, Rr(rd, w), Mr(addr, w), true)));
 
   // 100040:       84 04 11                test   %al,(%ecx,%edx,1)
-  INSTPAT("1000 0100", test, G2E, 1, test(w, Rr(rs, w), Mr(addr, w)));
+  //   100298:       84 c0                   test   %al,%al
+  INSTPAT("1000 0100", test, G2E, 1, test_rm(w, rd, rs, addr));
 
   // 88  /r   MOV r/m8,r8
   INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
