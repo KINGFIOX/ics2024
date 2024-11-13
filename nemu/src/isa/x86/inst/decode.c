@@ -569,55 +569,26 @@ static inline void div1(int w, word_t divisor) {
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b000: /*test*/                                             \
-        if (rd != -1) {                                                \
-          test(w, Rr(rd, w), imm);                                     \
-        } else {                                                       \
-          test(w, Mr(addr, w), imm);                                   \
-        }                                                              \
+        test(w, RMr(rd, w), imm);                                      \
         break;                                                         \
       case 0b011: /*neg*/                                              \
-        if (rd != -1) {                                                \
-          Rw(rd, w, sub(w, 0, Rr(rd, w), false));                      \
-        } else {                                                       \
-          Mw(addr, w, sub(w, 0, Mr(addr, w), false));                  \
-        }                                                              \
+        RMw(sub(w, 0, RMr(rd, w), false));                             \
         break;                                                         \
       case 0b010: /*not*/                                              \
-        if (rd != -1) {                                                \
-          Rw(rd, w, not_(w, Rr(rd, w)));                               \
-        } else {                                                       \
-          Mw(addr, w, not_(w, Mr(addr, w)));                           \
-        }                                                              \
+        RMw(not_(w, RMr(rd, w)));                                      \
         break;                                                         \
       case 0b100: /*test*/                                             \
-        if (rd != -1) {                                                \
-          mul1(w, Rr(rd, w));                                          \
-        } else {                                                       \
-          mul1(w, Mr(addr, w));                                        \
-        }                                                              \
+        mul1(w, RMr(rd, w));                                           \
         break;                                                         \
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
-        if (rd != -1) {                                                \
-          imul1(w, Rr(rd, w));                                         \
-        } else {                                                       \
-          imul1(w, Mr(addr, w));                                       \
-        }                                                              \
+        imul1(w, RMr(rd, w));                                          \
         break;                                                         \
       case 0b110: /*div*/                                              \
-        if (rd == -1) {                                                \
-          div1(w, Mr(addr, w));                                        \
-        } else {                                                       \
-          printf("rd = %d\n", rd);                                     \
-          div1(w, Rr(rd, w));                                          \
-        }                                                              \
+        div1(w, RMr(rd, w));                                           \
         break;                                                         \
       case 0b111: /*idiv*/                                             \
-        if (rd == -1) {                                                \
-          idiv(w, Mr(addr, w));                                        \
-        } else {                                                       \
-          idiv(w, Rr(rd, w));                                          \
-        }                                                              \
+        idiv(w, RMr(rd, w));                                           \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
