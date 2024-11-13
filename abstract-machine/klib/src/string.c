@@ -38,6 +38,7 @@ char *strcat(char *dst, const char *src) {
 }
 
 int strcmp(const char *p, const char *q) {
+  printf("p = %s, q = %s\n", p, q);
   while (*p && *p == *q) p++, q++;
   return (uint8_t)*p - (uint8_t)*q;
 }
