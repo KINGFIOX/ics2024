@@ -723,6 +723,8 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   INSTPAT("1011 0111", movzwl, Ew2G, 4, movz_l(w, rd, rs, addr, false, 2));
   //   100160:       0f 85 8e 01 00 00       jne    1002f4 <__udivmoddi4+0x1c0>
   INSTPAT("1000 ????", jcc, J, 4, jcc(s, imm, opcode & mask));
+  // 0f ad d0 : shrd %cl, %edx, %eax
+  INSTPAT("1010 1100", shrd, Ib_G2E, 0, printf("rd = %d, rs = %d, addr = %x, gp_idx = %d\n", rd, rs, addr, gp_idx));
   INSTPAT("???? ????", inv, N, 0, INV(s->pc));
   INSTPAT_END();
 }
