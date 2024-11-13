@@ -469,17 +469,27 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
     }                                                                  \
   } while (0)
 
-static inline void imul1(int w, word_t op1) {
+static inline void mul1(int w, word_t op1, bool sign) {
   assert(w == 4);
   if (4 == w) {
-    int64_t op2_ = (int32_t)Rr(R_EAX, w);
-    int64_t op1_ = (int32_t)op1;
-    int64_t ret = op2_ * op1_;
-    Rw(R_EAX, w, ret & UINT32_MAX);
-    Rw(R_EDX, w, ret >> 32);
+    if (sign) {
+      int64_t op2_ = (int32_t)Rr(R_EAX, w);
+      int64_t op1_ = (int32_t)op1;
+      int64_t ret = op2_ * op1_;
+      Rw(R_EAX, w, ret & UINT32_MAX);
+      Rw(R_EDX, w, ret >> 32);
+      cpu.eflags.sf = (ret < 0);
+      cpu.eflags.zf = !ret;
+    } else {
+      uint64_t op2_ = Rr(R_EAX, w);
+      uint64_t op1_ = op1;
+      uint64_t ret = op2_ * op1_;
+      Rw(R_EAX, w, ret & UINT32_MAX);
+      Rw(R_EDX, w, ret >> 32);
+      cpu.eflags.sf = (ret < 0);
+      cpu.eflags.zf = !ret;
+    }
     // never overflow
-    cpu.eflags.sf = (ret < 0);
-    cpu.eflags.zf = !ret;
   } else if (2 == w) {
     assert(false);
   } else if (1 == w) {
@@ -521,14 +531,14 @@ static inline void div1(int w, word_t divisor) {
         break;                                                         \
       case 0b100: /*test*/                                             \
         assert(rd != -1);                                              \
-        imul1(w, Rr(rd, w));                                           \
+        mul1(w, Rr(rd, w), false);                                     \
         break;                                                         \
       case 0b101: /*imul*/                                             \
         assert(w == 4);                                                \
         if (rd != -1) {                                                \
-          imul1(w, Rr(rd, w));                                         \
+          mul1(w, Rr(rd, w), true);                                    \
         } else {                                                       \
-          imul1(w, Mr(addr, w));                                       \
+          mul1(w, Mr(addr, w), true);                                  \
         }                                                              \
         break;                                                         \
       case 0b110: /*div*/                                              \
