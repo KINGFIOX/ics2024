@@ -45,6 +45,7 @@ static inline int sprintint(char *s, int xx, int base, int sign) {
   for (char *p = s; p < s + n; p++) {
     putch(*p);
   }
+  putch('\n');
 #endif
 
   return n;
