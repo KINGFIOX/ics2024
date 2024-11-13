@@ -477,7 +477,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
         Mw(addr, w, sub(w, Mr(addr, w), 1, false)); \
         break;                                      \
       case 0b010: /*call*/                          \
-        calla(s, w, Mr(addr, w));                   \
+        calla(s, w, RMr(addr, w));                  \
         break;                                      \
       case 0b100: /*jmp*/                           \
         jmpa(s, Mr(addr, w));                       \
