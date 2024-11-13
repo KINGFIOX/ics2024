@@ -67,7 +67,7 @@ void jcc(Decode* s, word_t imm, uint8_t subcode) {
 }
 
 // offset
-void jmpo(Decode* s, word_t imm) { s->dnpc = s->snpc + SEXT(imm & 0xff, 8); }
+void jmpo(Decode* s, word_t imm) { s->dnpc = s->snpc + imm; }
 
 // absolute
 void jmpa(Decode* s, word_t imm) { s->dnpc = imm; }
