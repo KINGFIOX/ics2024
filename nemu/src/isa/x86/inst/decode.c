@@ -721,6 +721,8 @@ again:
   INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
   //   100074:       09 d0                   or     %edx,%eax
   INSTPAT("0000 1001", or, G2E, 0, Rw(rd, w, or_(w, Rr(rd, w), Rr(rs, w))));
+  //   10007c:       0a 02                   or     (%edx),%al
+  INSTPAT("0000 1010", or, E2G, 1, Rw(rd, w, or_(w, Rr(rd, w), Mr(addr, w))));
   //   10004d:       32 06                   xor    (%esi),%al
   INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
   //   100052:       33 14 85 e0 01 10 00    xor    0x1001e0(,%eax,4),%edx
