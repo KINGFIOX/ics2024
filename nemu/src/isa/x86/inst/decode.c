@@ -505,7 +505,7 @@ static inline void imul1(int w, word_t op1) {
 }
 
 static inline void mul1(int w, word_t op1_) {
-  assert(4 == w || 2 == w);
+  assert(4 == w || 2 == w || 1 == w);
   uint64_t sign_mask = (1ULL << (w * 8 - 1));
   uint64_t op2 = 0;
   uint64_t op1 = 0;
@@ -522,6 +522,12 @@ static inline void mul1(int w, word_t op1_) {
     ret = op2 * op1;
     Rw(R_AX, w, ret & UINT16_MAX);
     Rw(R_DX, w, ret >> 16);
+  } else if (1 == w) {
+    op2 = Rr(R_AL, w);
+    op1 = op1_ & UINT8_MAX;
+    ret = op2 * op1;
+    Rw(R_AL, w, ret & UINT8_MAX);
+    Rw(R_AH, w, ret >> 8);
   }
   cpu.eflags.sf = !!(ret & sign_mask);
   cpu.eflags.zf = !ret;
