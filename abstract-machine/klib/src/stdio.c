@@ -42,6 +42,8 @@ int printf(const char *fmt, ...) {
 
   // panic("Not implemented");
 
+  va_end(ap);
+
   return -1;
 }
 
