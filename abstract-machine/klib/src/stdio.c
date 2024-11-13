@@ -7,14 +7,14 @@
 
 #define BUF_SIZE (4096)
 
-int sputc(char *s, char c) {
+static inline int sputc(char *s, char c) {
   *s = c;
   return 1;
 }
 
 static const char digits[] = "0123456789abcdef";
 
-int sprintint(char *s, int xx, int base, int sign) {
+static inline int sprintint(char *s, int xx, int base, int sign) {
   char buf[16];
   memset(buf, 0, 16);
 
