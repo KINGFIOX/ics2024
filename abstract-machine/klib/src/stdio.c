@@ -37,14 +37,25 @@ static int sprintint(char *s, int xx, int base, int sign) {
 int printf(const char *fmt, ...) {
   if (fmt == 0) panic("null fmt");
 
+#define BUF_SIZE (1024)
+  char buf[BUF_SIZE];
+  memset(buf, 0, BUF_SIZE);
+
   va_list ap;
   va_start(ap, fmt);
 
-  // panic("Not implemented");
+  snprintf(buf, BUF_SIZE, fmt, ap);
 
   va_end(ap);
 
-  return -1;
+  size_t i = 0;
+  for (i = 0; (i < BUF_SIZE) && (buf[i] != '\0'); i++) {
+    putch(buf[i]);
+  }
+
+#undef BUF_SIZE
+
+  return i;
 }
 
 int vsprintf(char *buf, const char *fmt, va_list ap) { return vsnprintf(buf, SIZE_MAX, fmt, ap); }
