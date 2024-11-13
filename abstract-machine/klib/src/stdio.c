@@ -92,14 +92,15 @@ int snprintf(char *buf, size_t sz, const char *fmt, ...) {
   return off;
 }
 
-int vsnprintf(char *buf, size_t sz, const char *fmt, va_list ap) {
+int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
   if (fmt == 0) panic("null fmt");
 
-  int c;
+  char c;
   char *s;
-  int off = 0;
+  size_t off = 0;
+  size_t i = 0;
 
-  for (int i = 0; off < sz && (c = fmt[i] & 0xff) != 0; i++) {
+  for (i = 0; off < sz && (c = fmt[i] & 0xff) != 0; i++) {
     if (c != '%') {
       off += sputc(buf + off, c);
       continue;
