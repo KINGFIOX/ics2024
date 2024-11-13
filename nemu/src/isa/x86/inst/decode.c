@@ -581,7 +581,7 @@ static inline void div1(int w, word_t divisor) {
         if (rs == -1) {                                                \
           div1(w, Mr(addr, w));                                        \
         } else {                                                       \
-          div1(w, Rr(rd, w));                                          \
+          div1(w, Rr(rs, w));                                          \
         }                                                              \
         break;                                                         \
       case 0b111: /*idiv*/                                             \
