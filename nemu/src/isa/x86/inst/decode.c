@@ -700,6 +700,29 @@ static inline void imul2_rm(int w, int rd, int rs, vaddr_t addr) {
   }
 }
 
+static inline void shrd(int w, int rd, int rs, vaddr_t addr) {
+  uint64_t op1, op2;
+  op1 = Rr(rs, w);
+  if (rd != -1) {
+    op2 = Rr(rd, w);
+  } else {
+    op2 = Mr(addr, w);
+  }
+  uint64_t ret = op1 << (w * 8) | op2;
+  uint64_t cl = Rr(R_CL, 1);
+  ret = ret >> cl;
+  if (rd != -1) {
+    Rw(rd, w, ret & ((1ULL << (w * 8)) - 1));
+  } else {
+    Mw(addr, w, ret & ((1ULL << (w * 8)) - 1));
+  }
+  Rw(rs, w, ret >> (w * 8));
+
+  // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
+  cpu.eflags.zf = (0 == ret);  // zf
+  // cpu.eflags.pf = (1 == ones(ret) % 2);  // pf
+}
+
 // 0F  20 /r   MOV r32,CR0/CR2/CR3   6        Move (control register) to (register)
 // 0F  22 /r   MOV CR0/CR2/CR3,r32   10/4/5   Move (register) to (control register)
 // 0F  21 /r   MOV r32,DR0 -- 3      22       Move (debug register) to (register)
@@ -717,7 +740,7 @@ void _2byte_esc(Decode *s, bool is_operand_size_16) {
   //   100063:       0f af c1                imul   %ecx,%eax
   INSTPAT("1010 1111", imul2, E2G, 0, imul2_rm(w, rd, rs, addr));
   // 0f ad d0 : shrd %cl, %edx, %eax
-  INSTPAT("1010 1101", shrd, cl_G2E, 0, printf("rd = %d, rs = %d, addr = %x, gp_idx = %d, w = %d\n", rd, rs, addr, gp_idx, w));
+  INSTPAT("1010 1101", shrd, cl_G2E, 0, shrd(w, rd, rs, addr));
   //   10006a:       0f b6 d2                movzbl %dl,%edx
   INSTPAT("1011 0110", movzbl, Eb2G, 0, movz_l(w, rd, rs, addr, false, 1));
   //   1000b8:       0f be 05 60 02 10 00    movsbl 0x100260,%eax
