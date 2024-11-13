@@ -556,8 +556,10 @@ static inline void div1(int w, word_t divisor) {
     Rw(R_AH, 1, dividend % divisor);
   } else {
     uint64_t dividend = ((uint64_t)Rr(R_EDX, w) << (w * 8)) | Rr(R_EAX, w);
+    printf("divisor = %x, dividend = %lx\n", divisor, dividend);
     word_t rem = dividend % divisor;
     word_t quo = dividend / divisor;
+    printf("rem = %x, quo = %x\n", rem, quo);
     Rw(R_EAX, w, quo);
     Rw(R_EDX, w, rem);
   }
