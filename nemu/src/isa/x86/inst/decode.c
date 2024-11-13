@@ -844,7 +844,7 @@ again:
   INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1, false)));
 
   // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", add, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false)));
+  INSTPAT("0000 0001", add, G2E, 0, assert(rs != -1); assert(rd != -1); Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false)));
 
   //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
   INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), false)));
