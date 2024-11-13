@@ -7,7 +7,7 @@
 
 #define BUF_SIZE (4096)
 
-#define PUTCH_DEBUG 1
+#define PUTCH_DEBUG 0
 
 static inline int sputc(char *s, char c) {  // NOTE: ⭐
   *s = c;

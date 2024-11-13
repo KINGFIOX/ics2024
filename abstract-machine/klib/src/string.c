@@ -12,26 +12,20 @@ size_t strlen(const char *s) {
 }
 
 char *strcpy(char *dst, const char *src) {
-  char *os;
-
-  os = dst;
+  char *os = dst;
   while ((*dst++ = *src++) != 0);
   return os;
 }
 
 char *strncpy(char *dst, const char *src, size_t n) {
-  char *os;
-
-  os = dst;
+  char *os = dst;
   while (n-- > 0 && (*dst++ = *src++) != 0);
   while (n-- > 0) *dst++ = 0;
   return os;
 }
 
 char *strcat(char *dst, const char *src) {
-  char *os;
-
-  os = dst;
+  char *os = dst;
   while (*dst) dst++;
   while ((*dst++ = *src++) != 0);
   return os;
@@ -57,11 +51,8 @@ void *memset(void *dst, int c, size_t n) {
 }
 
 void *memmove(void *vdst, const void *vsrc, size_t n) {
-  char *dst;
-  const char *src;
-
-  dst = vdst;
-  src = vsrc;
+  char *dst = vdst;
+  const char *src = vsrc;
   if (src > dst) {
     while (n-- > 0) *dst++ = *src++;
   } else {
@@ -75,10 +66,8 @@ void *memmove(void *vdst, const void *vsrc, size_t n) {
 void *memcpy(void *dst, const void *src, size_t n) { return memmove(dst, src, n); }
 
 int memcmp(const void *v1, const void *v2, size_t n) {
-  const uint8_t *s1, *s2;
-
-  s1 = v1;
-  s2 = v2;
+  const uint8_t *s1 = v1;
+  const uint8_t *s2 = v2;
   while (n-- > 0) {
     if (*s1 != *s2) return *s1 - *s2;
     s1++, s2++;
