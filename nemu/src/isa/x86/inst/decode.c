@@ -483,6 +483,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
   } while (0)
 
 static inline void imul1(int w, word_t op1) {
+  assert(0);
   assert(w == 4);
   if (4 == w) {
     int64_t op2_ = (int32_t)Rr(R_EAX, w);
