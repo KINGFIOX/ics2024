@@ -890,6 +890,9 @@ again:
   INSTPAT("1101 0001", shr, 1_E, 0, word_t op2 = 1; gp2());
   //   10004a:       c1 ea 08                shr    $0x8,%edx
   INSTPAT("1100 0001", shr, Ib2E, 0, word_t op2 = imm; gp2());
+  // c0 f8 02 sar $0xw,%al
+  INSTPAT("1100 0000", gp2, Ib2E, 1, word_t op2 = imm; gp2());
+
   //   1000f0:       d3 e0                   shl    %cl,%eax
   INSTPAT("1101 0011", gp2, cl2E, 0, word_t op2 = Rr(R_CL, 1); gp2());
 
