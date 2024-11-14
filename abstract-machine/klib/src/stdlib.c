@@ -73,6 +73,7 @@ void *malloc(size_t nbytes) {
     dummy.s.size = 0;
     dummy.s.next->s.next = NULL;
     dummy.s.next->s.size = (uint32_t)((char *)heap.end - (char *)heap.start) / sizeof(Header);
+    printf("heap.start: %x, heap.end: %x\n", heap.start, heap.end);
   }
 
   Header *prevp = &dummy;
