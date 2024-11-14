@@ -695,11 +695,15 @@ static inline void out_(int w, word_t data, word_t port) {
 }
 
 static inline void rep(int w) {
-  word_t di = Rr(R_EDI, w);
-  word_t si = Rr(R_ESI, w);
-  for (word_t i = Rr(R_ECX, w); i > 0; i--, si += w, di += w) {
-    Mw(di, w, Mr(si, w));
-  }
+  // word_t di = Rr(R_EDI, w);
+  // word_t si = Rr(R_ESI, w);
+  // for (word_t i = Rr(R_ECX, w); i > 0; i--, si += w, di += w) {
+  //   Mw(di, w, Mr(si, w));
+  // }
+  Mw(Rr(R_EDI, w), w, Mr(Rr(R_ESI, w), w));
+  Rw(R_ECX, w, Rr(R_ECX, w) - 1);
+  Rw(R_ESI, w, Rr(R_ESI, w) + w);
+  Rw(R_EDI, w, Rr(R_EDI, w) + w);
 }
 
 int isa_exec_once(Decode *s) {
@@ -865,7 +869,7 @@ again:
   //   100085:       f7 d8                   neg    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
   //   100799:       f3 a5                   rep movsl %ds:(%esi),%es:(%edi)
-  INSTPAT("1111 0011", rep, E, 0, rep(w));
+  INSTPAT("1111 0011 1010 0101", rep, E, 0, rep(w));
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
