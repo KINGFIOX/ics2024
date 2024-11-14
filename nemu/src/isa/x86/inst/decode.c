@@ -869,7 +869,7 @@ again:
   //   100085:       f7 d8                   neg    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
   //   100799:       f3 a5                   rep movsl %ds:(%esi),%es:(%edi)
-  INSTPAT("1111 0011 1010 0101", rep, E, 0, rep(w));
+  INSTPAT("1010 0101 1111 0011", rep, E, 0, rep(w));
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
