@@ -30,7 +30,7 @@ void sig_handler(int signo, siginfo_t *info, void *ucontext) {
     print_pc();
 #endif
 #ifdef CONFIG_MTRACE
-    void mtrace_dump();
+    void mtrace_dump(void);
     mtrace_dump();
 #endif
     // could not use ftrace here, because Assert in it
