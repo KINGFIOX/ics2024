@@ -83,7 +83,10 @@ void *malloc(size_t nbytes) {
     freep->s.next = NULL;
     printf("base: %x, base.s.ptr: %x, freep: %x, size: %x\n", &dummy, dummy.s.next, freep, freep->s.size);
   }
+
   Header *prevp = freep;
+  Header *p = prevp->s.next;
+  printf("p: %x\n", (char *)p + 1);
 
   for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
     printf("p: %x\n", (char *)p + 1);
