@@ -25,7 +25,7 @@ void mtrace_log(vaddr_t addr, vaddr_t pc, word_t data, bool rw) {
 
 void mtrace_dump() {
   for (int i = 0; i < MTRACE_BUF_SIZE; i++) {
-    const char* str = buf[i].type == READ ? "READ" : "WRITE";
+    const char* str = buf[i].type == READ ? "READ " : "WRITE";
     if (buf[i].pc != 0) {
       printf("0x%08x: %s 0x%08x : ", buf[i].pc, str, buf[i].addr);
       printf("%02x %02x %02x %02x\n", buf[i].addr & 0xff, (buf[i].addr >> 8) & 0xff, (buf[i].addr >> 16) & 0xff, (buf[i].addr >> 24) & 0xff);
