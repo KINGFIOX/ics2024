@@ -85,10 +85,8 @@ void *malloc(size_t nbytes) {
   }
 
   Header *prevp = freep;
-  Header *p = prevp->s.next;
-  printf("p: %x\n", (char *)p + 1);
 
-  for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
+  for (Header *p = freep; p != NULL; prevp = p, p = p->s.next) {
     printf("p: %x\n", (char *)p + 1);
     if (p->s.size >= nunits) {
       if (p->s.size == nunits) {
