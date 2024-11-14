@@ -27,8 +27,8 @@ word_t add(int w, word_t op1_, word_t op2_, bool adc) {
   }
 
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
-  const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
-  const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
+  const uint64_t sign_mask = 1ULL << (w_u64 * 8 - 1);
+  const uint64_t mask = (1ULL << (w_u64 * 8)) - 1;
 
   uint64_t ret_u64;
   if (adc) {
@@ -68,8 +68,8 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   }
 
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
-  const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
-  const uint64_t mask = ((uint64_t)1 << (w_u64 * 8)) - 1;
+  const uint64_t sign_mask = 1ULL << (w_u64 * 8 - 1);
+  const uint64_t mask = (1ULL << (w_u64 * 8)) - 1;
 
   uint64_t ret_u64;
   if (sbb) {
@@ -132,7 +132,7 @@ word_t and_(int w, word_t op1_, word_t op2_) {
   }
 
   uint64_t w_u64 = w;  // NOTE: 多少是对 c 语言的字面量类型感到难绷了
-  const uint64_t sign_mask = (uint64_t)1 << (w_u64 * 8 - 1);
+  const uint64_t sign_mask = 1ULL << (w_u64 * 8 - 1);
   word_t ret = op1 & op2;
 
   cpu.eflags.zf = !ret;                    // zf

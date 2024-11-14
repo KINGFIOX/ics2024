@@ -135,6 +135,7 @@ __attribute__((always_inline)) static inline void pattern_decode_hex(const char 
 #define INSTPAT_START(name) \
   {                         \
     const void *__instpat_end = &&concat(__instpat_end_, name);
+
 #define INSTPAT_END(name)         \
   concat(__instpat_end_, name) :; \
   }

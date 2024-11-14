@@ -18,6 +18,7 @@
 
 #include <common.h>
 
+// addr is the address in host
 static inline word_t host_read(void *addr, int len) {
   switch (len) {
     case 1:
