@@ -92,7 +92,7 @@
     struct {           \
       int64_t n : len; \
     } __x = {.n = x};  \
-    (uint64_t) __x.n;  \
+    (uint64_t)__x.n;   \
   })
 
 #define ROUNDUP(a, sz) ((((uintptr_t)a) + (sz) - 1) & ~((sz) - 1))
