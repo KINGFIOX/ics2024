@@ -64,6 +64,8 @@ void load_elf(const char *elf_file) {
 }
 
 void call_stack_dump(void) {
+  Assert(elf_version(EV_CURRENT) != EV_NONE, "libelf is out of date");
+
   Assert(elf_fd, "elf_fd is NULL");
   Elf *elf = elf_begin(elf_fd, ELF_C_READ, NULL);
   Assert(elf != NULL, "failed to open elf file");
