@@ -1,7 +1,11 @@
 #include <common.h>
 #include <debug.h>
+#include <elf.h>
 #include <fcntl.h>
+#include <gelf.h>
 #include <libelf.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -62,6 +66,28 @@ void call_stack_dump(void) {
   Assert(elf_fd, "elf_fd is NULL");
   Elf *elf = elf_begin(elf_fd, ELF_C_READ, NULL);
   Assert(elf, "failed to open elf file");
+
+  Elf_Scn *scn = NULL;
+  while ((scn = elf_nextscn(elf, scn)) != NULL) {
+    GElf_Shdr shdr;
+    if (gelf_getshdr(scn, &shdr) != &shdr) {
+      continue;
+    }
+    if (shdr.sh_type == SHT_SYMTAB) {
+      Elf_Data *data = elf_getdata(scn, NULL);
+      size_t sym_count = shdr.sh_size / shdr.sh_entsize;
+
+      for (size_t i = 0; i < sym_count; ++i) {
+        GElf_Sym sym;
+        gelf_getsym(data, i, &sym);
+
+        //
+        if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC && sym.st_value == call_history[0].pc) {
+          printf("function found: %s\n", elf_strptr(elf, shdr.sh_link, sym.st_name));
+        }
+      }
+    }
+  }
 
   elf_end(elf);
 }
