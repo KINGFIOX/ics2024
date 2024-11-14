@@ -100,6 +100,7 @@ static int parse_args(int argc, char *argv[]) {
         }
 #ifdef CONFIG_FTRACE
         if (!dot && 0 == strcmp(dot + 1, "elf")) {
+          printf("optarg: %s\n", optarg);
           extern void load_elf(const char *);
           load_elf(optarg);
         }
