@@ -888,6 +888,8 @@ again:
 
   //   10008c:       d1 ea                   shr    $1,%edx
   INSTPAT("1101 0001", shr, 1_E, 0, word_t op2 = 1; gp2());
+  // d0 f8 sar $1,%al
+  INSTPAT("1101 0000", sar, 1_E, 1, word_t op2 = 1; gp2());
   //   10004a:       c1 ea 08                shr    $0x8,%edx
   INSTPAT("1100 0001", shr, Ib2E, 0, word_t op2 = imm; gp2());
   // c0 f8 02 sar $0xw,%al
