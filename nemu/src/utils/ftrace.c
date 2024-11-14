@@ -91,7 +91,7 @@ static void dump_call_history(Elf *elf) {
   for (int i = 0; i < len; i++) {
     int depth = call_history[i].depth;  // indent
     for (int j = 0; j < depth; j++) {
-      printf("\t");
+      printf(" ");
     }
     vaddr_t pc = call_history[i].pc;
     if (pc == 0) {
@@ -100,9 +100,9 @@ static void dump_call_history(Elf *elf) {
     }
     const char *name = func_name(elf, pc);
     if (call_history[i].type == CALL) {
-      printf("%s\n", name);
+      printf("call [%s@%x]\n", name, pc);
     } else {
-      printf("%s\n", name);
+      printf("ret [%s@%x]\n", name, pc);
     }
   }
 }
