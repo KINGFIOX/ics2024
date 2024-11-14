@@ -501,6 +501,7 @@ static inline void imul1(int w, word_t op1) {
 }
 
 static inline void mul1(int w, word_t op1_) {
+  assert(0);
   assert(4 == w || 2 == w || 1 == w);
   uint64_t sign_mask = (1ULL << (w * 8 - 1));
   uint64_t op2 = 0;
@@ -693,6 +694,14 @@ static inline void out_(int w, word_t data, word_t port) {
   pio_write(port, w, data);
 }
 
+static inline void rep(int w) {
+  for (; Rr(R_ECX, w) > 0; Rw(R_ECX, w, Rr(R_ECX, w) - 1)) {
+    Mw(Rr(R_EDI, w), w, Mr(Rr(R_ESI, w), w));
+    Rw(R_ESI, w, Rr(R_ESI, w) + w);
+    Rw(R_EDI, w, Rr(R_EDI, w) + w);
+  }
+}
+
 int isa_exec_once(Decode *s) {
   bool is_operand_size_16 = false;
   uint8_t opcode = 0;
@@ -855,6 +864,8 @@ again:
   INSTPAT("1111 0110", gp3, E, 1, gp3());
   //   100085:       f7 d8                   neg    %eax
   INSTPAT("1111 0111", gp3, E, 0, gp3());
+  //   100799:       f3 a5                   rep movsl %ds:(%esi),%es:(%edi)
+  INSTPAT("1111 0011", rep, N, 0, rep(w));
 
   //   100087:       25 20 83 b8 ed          and    $0xedb88320,%eax
   INSTPAT("0010 0101", and, I2a, 0, Rw(R_EAX, w, and_(w, Rr(R_EAX, w), imm)));
