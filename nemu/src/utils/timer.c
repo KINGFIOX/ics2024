@@ -27,6 +27,11 @@ static uint64_t boot_time = 0;
 static uint64_t get_time_internal() {
 #if defined(CONFIG_TARGET_AM)
   uint64_t us = io_read(AM_TIMER_UPTIME).us;
+  // uint64_t us = ({
+  //                 AM_TIMER_UPTIME_T __io_param;
+  //                 ioe_read(AM_TIMER_UPTIME, &__io_param);
+  //                 __io_param;
+  //               }).us;
 #elif defined(CONFIG_TIMER_GETTIMEOFDAY)
   struct timeval now;
   gettimeofday(&now, NULL);
