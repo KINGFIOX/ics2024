@@ -66,6 +66,9 @@ void free(void *ap) {
 }
 
 void *malloc(size_t nbytes) {
+  if (nbytes == 0) {
+    return NULL;
+  }
   const uint32_t nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;  // 向上对齐 + 1. 都是按照一个 Header 来对齐的
   printf("nbytes: %d, nunits: %d\n", nbytes, nunits);
 
