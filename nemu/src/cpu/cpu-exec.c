@@ -110,6 +110,7 @@ static void execute(uint64_t n) {
   for (; n > 0; n--) {
     bool ret __attribute__((unused));
     ret = exec_once(&s, cpu.pc);
+#ifdef CONFIG_ITRACE
     if (!ret) {
       // print
       nemu_state.state = NEMU_ABORT;
@@ -119,6 +120,7 @@ static void execute(uint64_t n) {
       iringbuf[rear].pc = cpu.pc;
       rear = (rear + 1) % ITRACE_BUF_SIZE;
     }
+#endif
     g_nr_guest_inst++;
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;

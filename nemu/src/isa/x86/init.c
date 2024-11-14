@@ -32,6 +32,10 @@ static const uint8_t img[] = {
 static void restart() {
   /* Set the initial instruction pointer. */
   cpu.pc = RESET_VECTOR;
+#ifdef CONFIG_FTRACE
+  extern void push_call_stack(vaddr_t, vaddr_t);
+  push_call_stack(0, cpu.pc);
+#endif
 }
 
 void init_isa() {
