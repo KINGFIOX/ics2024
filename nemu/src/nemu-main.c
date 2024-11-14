@@ -38,7 +38,7 @@ void sig_handler(int signo, siginfo_t *info, void *ucontext) {
 }
 
 int main(int argc, char *argv[]) {
-  // catch SIGABRT
+  /* catch SIGABRT. */
   struct sigaction sa;
   memset(&sa, 0, sizeof(sa));
   sa.sa_sigaction = &sig_handler;

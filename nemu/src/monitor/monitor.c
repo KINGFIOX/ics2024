@@ -44,6 +44,34 @@ static char *diff_so_file = NULL;
 static char *img_file = NULL;
 static int difftest_port = 1234;
 
+#ifdef CONFIG_FTRACE
+
+static char *elf_file = NULL;
+
+__attribute__((unused)) static long load_elf(void) {
+  if (elf_file == NULL) {
+    Log("No elf is given. Use the default build-in elf.");
+    return 4096;  // built-in elf size
+  }
+
+  FILE *fp = fopen(elf_file, "rb");
+  Assert(fp, "Can not open '%s'", elf_file);
+
+  fseek(fp, 0, SEEK_END);
+  long size = ftell(fp);
+
+  Log("The elf is %s, size = %ld", elf_file, size);
+
+  fseek(fp, 0, SEEK_SET);
+  int ret = fread(guest_to_host(RESET_VECTOR), size, 1, fp);
+  assert(ret == 1);
+
+  fclose(fp);
+  return size;
+}
+
+#endif
+
 static long load_img() {
   if (img_file == NULL) {
     Log("No image is given. Use the default build-in image.");
@@ -72,10 +100,6 @@ static int parse_args(int argc, char *argv[]) {
       {"port", required_argument, NULL, 'p'}, {"help", no_argument, NULL, 'h'},      {0, 0, NULL, 0},
   };
 
-  for (int i = 0; i < argc; i++) {
-    printf("%s\n", argv[i]);
-  }
-
   // shortopts:
   // l:/d:/p: 表示: required_argument
   // - 表示: 允许使用长选项
@@ -95,15 +119,14 @@ static int parse_args(int argc, char *argv[]) {
       case 'd':
         diff_so_file = optarg;
         break;
-      case 1:
+      case 1: /*img*/
         img_file = optarg;
-        printf("%s\n", optarg);
         break;
-      case 2:
-        printf("%s\n", optarg);
-        return 0;
+      case 2: /*elf*/
+        elf_file = optarg;
+        break;
       default:
-        printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
+        printf("Usage: %s [OPTION...] IMG ELF [args]\n\n", argv[0]);
         printf("\t-b,--batch              run with batch mode\n");
         printf("\t-l,--log=FILE           output log to FILE\n");
         printf("\t-d,--diff=REF_SO        run DiffTest with reference REF_SO\n");

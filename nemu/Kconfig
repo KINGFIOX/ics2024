@@ -144,6 +144,11 @@ config TRACE_END
   int "When tracing is disabled (unit: number of instructions)"
   default 10000
 
+config FTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable function tracer"
+  default y
+
 config MTRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable memory tracer"
