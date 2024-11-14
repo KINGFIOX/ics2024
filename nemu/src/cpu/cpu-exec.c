@@ -25,6 +25,13 @@
  */
 #define MAX_INST_TO_PRINT 10
 
+#ifdef CONFIG_ITRACE
+
+iringbuf_t iringbuf[ITRACE_BUF_SIZE];
+int rear = 0;
+
+#endif
+
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;  // global variable, number of guest instructions executed
 static uint64_t g_timer = 0;   // unit: us
@@ -60,15 +67,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 #ifdef CONFIG_ITRACE
 
-  static struct {
-    vaddr_t pc;
-    int len;
-  } iringbuf[MAX_INST_TO_PRINT] = {};
-  static int rear = 0;
   int len = s->snpc - pc;
   iringbuf[rear].pc = pc;
   iringbuf[rear].len = len;
-  rear = (rear + 1) % MAX_INST_TO_PRINT;
+  rear = (rear + 1) % ITRACE_BUF_SIZE;
+  // 可以注册一个 handler, 程序退出的时候, 打印 iringbuf
 
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -85,8 +88,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   memset(p, ' ', space_len);
   p += space_len;
 
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  disassemble(p, s->logbuf + sizeof(s->logbuf) - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+  bool disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+  bool ret = disassemble(p, s->logbuf + sizeof(s->logbuf) - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+  if (!ret) {
+    panic("disassemble failed");
+  }
 #endif
 }
 
