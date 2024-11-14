@@ -121,10 +121,10 @@ static int parse_args(int argc, char *argv[]) {
         break;
       case 1: /*img*/
         img_file = optarg;
-        return 0;
         break;
       case 2: /*elf*/
         elf_file = optarg;
+        return 0;
         break;
       default:
         printf("Usage: %s [OPTION...] IMG ELF [args]\n\n", argv[0]);
