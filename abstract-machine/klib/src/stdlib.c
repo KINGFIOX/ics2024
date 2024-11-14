@@ -51,68 +51,48 @@ typedef union header Header;
 
 static Header dummy;
 
-static Header *freep;  // point to the first header of free_list
-
 void free(void *ap) {
   Header *bp = (Header *)ap - 1;
+  Header *prevp = &dummy;
   Header *p;
-  for (p = freep; !(bp > p && bp < p->s.next); p = p->s.next)
-    if (p >= p->s.next && (bp > p || bp < p->s.next)) break;
-  if (bp + bp->s.size == p->s.next) {
-    bp->s.size += p->s.next->s.size;
-    bp->s.next = p->s.next->s.next;
-  } else
-    bp->s.next = p->s.next;
-  if (p + p->s.size == bp) {
-    p->s.size += bp->s.size;
-    p->s.next = bp->s.next;
-  } else {
-    p->s.next = bp;
+  for (p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {  // find the pos to insert, 每次插入链表的时候都是有序的
+    if (prevp <= bp && bp < p) {
+      break;
+    }
   }
-  freep = p;
+  if (p == NULL) {
+    // dummy
+  }
 }
 
 void *malloc(size_t nbytes) {
   const uint32_t nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;  // 向上对齐 + 1. 都是按照一个 Header 来对齐的
 
-  if (freep == NULL) {  // initialize the free_list and the dummy node
+  if (dummy.s.next == NULL) {  // initialize the free_list and the dummy node
     dummy.s.next = heap.start;
     dummy.s.size = 0;
-    freep = heap.start;
-    freep->s.size = (char *)heap.end - (char *)heap.start;
-    freep->s.next = NULL;
-    printf("base: %x, base.s.ptr: %x, freep: %x, size: %x\n", &dummy, dummy.s.next, freep, freep->s.size);
+    dummy.s.next->s.next = NULL;
+    dummy.s.next->s.size = (uint32_t)((char *)heap.end - (char *)heap.start) / sizeof(Header);
   }
 
-  Header *prevp = freep;
+  Header *prevp = &dummy;
 
-  for (Header *p = freep; p != NULL; prevp = p, p = p->s.next) {
+  for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
     printf("p: %x\n", (char *)p + 1);
     if (p->s.size >= nunits) {
+      Header *ret;
       if (p->s.size == nunits) {
-        prevp->s.next = p->s.next;
+        ret = p;
+        prevp->s.next = p->s.next;  // delete this node from free_list(linked list)
       } else {
+        ret = p + (p->s.size - nunits);
+        ret->s.size = nunits;
         p->s.size -= nunits;
-        p += p->s.size;
-        p->s.size = nunits;
       }
-      return (void *)(p + 1);
+      return (void *)(ret + 1);  // skip the header
     }
   }
-  // for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
-  //   if (p->s.size >= nunits) {
-  //     if (p->s.size == nunits) {
-  //       prevp->s.next = p->s.next;  // delete this node from free_list(linked list)
-  //     } else {
-  //       p->s.size -= nunits;
-  //       p += p->s.size;
-  //       p->s.size = nunits;
-  //     }
-  //     printf("base: %x, p: %x, freep: %x\n", dummy.s.next, (char *)p + 1, freep);
-  //     freep = prevp;
-  //     return (void *)(p + 1);
-  //   }
-  // }
+
   return NULL;
 }
 
