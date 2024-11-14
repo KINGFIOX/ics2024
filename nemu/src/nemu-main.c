@@ -23,8 +23,8 @@ int is_exit_status_bad();
 
 void sig_handler(int signo, siginfo_t *info, void *ucontext) {
   if (signo == SIGABRT) {
-#if CONFIG_ITRACE
-    void print_iringbuf();
+#ifdef CONFIG_ITRACE
+    void print_iringbuf(void);
     print_iringbuf();
     void print_pc();
     print_pc();
