@@ -99,8 +99,8 @@ static int parse_args(int argc, char *argv[]) {
         }
 #ifdef CONFIG_FTRACE
         else if (!dot && 0 == strcmp(dot, ".elf")) {
-          extern char *elf_file;
-          elf_file = optarg;
+          extern void load_elf(const char *);
+          load_elf(optarg);
         }
 #endif
         break;
