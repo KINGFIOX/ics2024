@@ -198,6 +198,11 @@ static int cmd_info(char *arg) {
     }
   } else if (0 == strcmp(arg, "r")) {
     isa_reg_display();
+#ifdef CONFIG_FTRACE
+  } else if (0 == strcmp(arg, "ftrace")) {
+    extern void call_stack_dump(void);
+    call_stack_dump();
+#endif
   } else if (0 == strcmp(arg, "w")) {
     watchpoint_display();
   } else {
