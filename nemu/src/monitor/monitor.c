@@ -95,11 +95,11 @@ static int parse_args(int argc, char *argv[]) {
       case 1: /*img*/
         dot = strrchr(optarg, '.');
         printf("dot: %s\n", dot + 1);
-        if (!dot && 0 == strcmp(dot, ".bin")) {
+        if (!dot && 0 == strcmp(dot + 1, "bin")) {
           img_file = optarg;
         }
 #ifdef CONFIG_FTRACE
-        else if (!dot && 0 == strcmp(dot, ".elf")) {
+        if (!dot && 0 == strcmp(dot + 1, "elf")) {
           extern void load_elf(const char *);
           load_elf(optarg);
         }
