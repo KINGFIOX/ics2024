@@ -57,7 +57,8 @@ static void close_elf(void) {
 void load_elf(const char *elf_file) {
   Assert(elf_file, "No elf is given. Use the default build-in elf.");
   elf_fd = open(elf_file, O_RDONLY);
-  Assert(elf_fd, "Can not open '%s'", elf_file);
+  Assert(elf_fd != -1, "Can not open '%s'", elf_file);
+
   printf("elf file opened: %s\n", elf_file);
 
   atexit(&close_elf);

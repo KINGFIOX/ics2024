@@ -94,6 +94,7 @@ static int parse_args(int argc, char *argv[]) {
         break;
       case 1: /*img*/
         dot = strrchr(optarg, '.');
+        printf("dot: %s\n", dot + 1);
         if (!dot && 0 == strcmp(dot, ".bin")) {
           img_file = optarg;
         }
