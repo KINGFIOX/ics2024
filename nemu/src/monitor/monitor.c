@@ -121,6 +121,7 @@ static int parse_args(int argc, char *argv[]) {
         break;
       case 1: /*img*/
         img_file = optarg;
+        return 0;
         break;
       case 2: /*elf*/
         elf_file = optarg;
