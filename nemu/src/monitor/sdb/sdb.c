@@ -200,8 +200,13 @@ static int cmd_info(char *arg) {
     isa_reg_display();
 #ifdef CONFIG_FTRACE
   } else if (0 == strcmp(arg, "ftrace")) {
-    extern void call_stack_dump(void);
+    void call_stack_dump(void);
     call_stack_dump();
+#endif
+#ifdef CONFIG_MTRACE
+  } else if (0 == strcmp(arg, "mtrace")) {
+    void mtrace_dump(void);
+    mtrace_dump();
 #endif
   } else if (0 == strcmp(arg, "w")) {
     watchpoint_display();
