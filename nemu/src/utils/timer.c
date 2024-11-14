@@ -14,6 +14,7 @@
  ***************************************************************************************/
 
 #include <common.h>
+
 // clang-format off
 #include MUXDEF(CONFIG_TIMER_GETTIMEOFDAY, <sys/time.h>, <time.h>)
 // clang-format on
