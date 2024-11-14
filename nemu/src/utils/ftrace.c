@@ -16,7 +16,7 @@
 
 static int elf_fd = -1;
 
-enum FUNC_TYPE { CALL, RET };
+enum FUNC_TYPE { NONE = 0, CALL, RET };
 
 static struct {
   vaddr_t pos;
@@ -24,7 +24,7 @@ static struct {
   int depth;
   enum FUNC_TYPE type;
 } call_history[HISTORY_SIZE];
-static int len = 0;
+static int rear = 0;
 
 static int depth = 0;
 static vaddr_t call_stack[MAX_DEPTH];
@@ -32,11 +32,11 @@ static vaddr_t call_stack[MAX_DEPTH];
 void push_call_stack(vaddr_t pc, vaddr_t pos) {
   Assert(depth < HISTORY_SIZE, "call stack overflow");
   // printf("len = %d\n", len);
-  call_history[len].pos = pos;
-  call_history[len].type = CALL;
-  call_history[len].pc = pc;
-  call_history[len].depth = depth;
-  len++;
+  call_history[rear].pos = pos;
+  call_history[rear].type = CALL;
+  call_history[rear].pc = pc;
+  call_history[rear].depth = depth;
+  rear = (rear + 1) % HISTORY_SIZE;
   call_stack[depth++] = pc;
 }
 
@@ -44,11 +44,11 @@ void pop_call_stack(vaddr_t pos) {
   Assert(depth > 0, "call stack underflow");
   depth--;
   vaddr_t pc = call_stack[depth];
-  call_history[len].pos = pos;
-  call_history[len].type = RET;
-  call_history[len].pc = pc;
-  call_history[len].depth = depth;
-  len++;
+  call_history[rear].pos = pos;
+  call_history[rear].type = RET;
+  call_history[rear].pc = pc;
+  call_history[rear].depth = depth;
+  rear = (rear + 1) % HISTORY_SIZE;
   call_stack[depth] = 0;
 }
 
@@ -92,7 +92,10 @@ static const char *func_name(Elf *elf, vaddr_t pc) {
 }
 
 static void dump_call_history(Elf *elf) {
-  for (int i = 0; i < len; i++) {
+  for (int i = rear + 1; i != rear; i = (i + 1) % HISTORY_SIZE) {
+    if (call_history[i].type == NONE) {
+      continue;
+    }
     vaddr_t pos = call_history[i].pos;  // call point
     printf("0x%08x: ", pos);
     int depth = call_history[i].depth;  // indent
