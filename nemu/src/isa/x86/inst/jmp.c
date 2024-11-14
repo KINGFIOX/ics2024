@@ -19,8 +19,8 @@ void calla(Decode* s, int w, word_t imm) {
 }
 
 void ret(Decode* s, int w) {
-  assert(4 == w);
-  s->dnpc = pop(w);
+  printf("ret: w = %d\n", w);
+  s->dnpc = pop(4);
 }
 
 void jcc(Decode* s, word_t imm, uint8_t subcode) {
