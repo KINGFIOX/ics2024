@@ -49,7 +49,7 @@ union header {
 
 typedef union header Header;
 
-static Header base;
+static Header dummy;
 
 static Header *freep;
 
@@ -76,10 +76,11 @@ void *malloc(size_t nbytes) {
   const uint32_t nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;  // 向上对齐 + 1. 都是按照一个 Header 来对齐的
 
   Header *prevp = freep;
-  if (prevp == NULL) {
-    base.s.ptr = freep = prevp = heap.start;
-    base.s.size = (char *)heap.end - (char *)heap.start;
-    printf("base: %x, base.s.ptr: %x, freep: %x\n", &base, base.s.ptr, freep);
+  if (prevp == NULL) {  // initialize the free_list
+    dummy.s.ptr = freep = prevp = heap.start;
+    dummy.s.size = 0;
+    freep->s.size = (char *)heap.end - (char *)heap.start;
+    printf("base: %x, base.s.ptr: %x, freep: %x\n", &dummy, dummy.s.ptr, freep);
   }
 
   for (Header *p = prevp->s.ptr; /*dead loop*/; prevp = p, p = p->s.ptr) {
@@ -91,7 +92,7 @@ void *malloc(size_t nbytes) {
         p += p->s.size;
         p->s.size = nunits;
       }
-      printf("base: %x, p: %x, freep: %x\n", base.s.ptr, (char *)p + 1, freep);
+      printf("base: %x, p: %x, freep: %x\n", dummy.s.ptr, (char *)p + 1, freep);
       freep = prevp;
       return (void *)(p + 1);
     }
