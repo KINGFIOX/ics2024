@@ -471,6 +471,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 #define gp7()                                           \
   do {                                                  \
     switch (gp_idx) {                                   \
+      case 0b011: /*lidtl*/                             \
+        cpu.idtr = Rr(rd, w);                           \
+        break;                                          \
       case 0b110:                                       \
         Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false)); \
         break;                                          \
@@ -649,6 +652,8 @@ static inline void shrd(int w, int rd, int rs, vaddr_t addr) {
 void _2byte_esc(Decode *s, bool is_operand_size_16) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   INSTPAT_START();
+  // 0f 01 18 lidtl (%eax)
+  INSTPAT("0000 0001", lidtl, E, 4, gp7());
   //   100067:       0f 94 c2                sete   %dl
   INSTPAT("1001 ????", setcc, E, 1, setcc(opcode, rd));
   // INSTPAT("1001 0???", sete, a2r, 0, Rw(rd, 1, (cpu.eflags.zf != 0)));
