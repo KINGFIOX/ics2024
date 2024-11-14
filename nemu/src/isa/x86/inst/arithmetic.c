@@ -81,7 +81,7 @@ word_t sub(int w, word_t op1_, word_t op2_, bool sbb) {
   bool op2_sign = !!(op2 & sign_mask);
   bool ret_sign = !!(ret_u64 & sign_mask);
 
-  cpu.eflags.cf = !!(op1 < op2);                    // cf
+  cpu.eflags.cf = !!(ret_u64 & (~mask));            // cf
   cpu.eflags.pf = (1 == ones(ret_u64 & mask) % 2);  // pf
   cpu.eflags.zf = !(ret_u64 & mask);                // zf
   cpu.eflags.sf = ret_sign;                         // sf
