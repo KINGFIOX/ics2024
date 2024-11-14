@@ -42,6 +42,7 @@ void push_call_stack(vaddr_t pc, vaddr_t pos) {
 
 void pop_call_stack(vaddr_t pos) {
   Assert(depth > 0, "call stack underflow");
+  depth--;
   vaddr_t pc = call_stack[depth];
   call_history[len].pos = pos;
   call_history[len].type = RET;
@@ -49,7 +50,6 @@ void pop_call_stack(vaddr_t pos) {
   call_history[len].depth = depth;
   len++;
   call_stack[depth] = 0;
-  depth--;
 }
 
 static void close_elf(void) {
