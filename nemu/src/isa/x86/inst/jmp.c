@@ -10,8 +10,8 @@ void callo(Decode* s, int w, word_t imm) {
   push(w, s->snpc);
   s->dnpc = s->snpc + imm;
 #ifdef CONFIG_FTRACE
-  extern void push_call_stack(vaddr_t);
-  push_call_stack(s->dnpc);
+  extern void push_call_stack(vaddr_t, vaddr_t);
+  push_call_stack(s->dnpc, cpu.pc);
 #endif
 }
 
@@ -21,16 +21,16 @@ void calla(Decode* s, int w, word_t imm) {
   push(w, s->snpc);
   s->dnpc = imm;
 #ifdef CONFIG_FTRACE
-  extern void push_call_stack(vaddr_t);
-  push_call_stack(s->dnpc);
+  extern void push_call_stack(vaddr_t, vaddr_t);
+  push_call_stack(s->dnpc, cpu.pc);
 #endif
 }
 
 void ret(Decode* s, int w) {
   s->dnpc = pop(4);
 #ifdef CONFIG_FTRACE
-  extern void pop_call_stack(void);
-  pop_call_stack();
+  extern void pop_call_stack(vaddr_t);
+  pop_call_stack(cpu.pc);
 #endif
 }
 
