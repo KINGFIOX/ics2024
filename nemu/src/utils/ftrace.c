@@ -65,7 +65,7 @@ void load_elf(const char *elf_file) {
 void call_stack_dump(void) {
   Assert(elf_fd, "elf_fd is NULL");
   Elf *elf = elf_begin(elf_fd, ELF_C_READ, NULL);
-  Assert(elf, "failed to open elf file");
+  Assert(elf != NULL, "failed to open elf file");
 
   Elf_Scn *scn = NULL;
   while ((scn = elf_nextscn(elf, scn)) != NULL) {
