@@ -62,13 +62,7 @@ void load_elf(const char *elf_file) {
   atexit(&close_elf);
 }
 
-void call_stack_dump(void) {
-  Assert(elf_version(EV_CURRENT) != EV_NONE, "libelf is out of date");  // must be called before elf_begin
-
-  Assert(elf_fd, "elf_fd is NULL");
-  Elf *elf = elf_begin(elf_fd, ELF_C_READ, NULL);
-  Assert(elf != NULL, "failed to open elf file");
-
+static const char *func_name(Elf *elf, vaddr_t pc) {
   Elf_Scn *scn = NULL;
   while ((scn = elf_nextscn(elf, scn)) != NULL) {
     GElf_Shdr shdr;
@@ -84,12 +78,40 @@ void call_stack_dump(void) {
         gelf_getsym(data, i, &sym);
 
         //
-        if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC && sym.st_value == call_history[0].pc) {
-          printf("function found: %s\n", elf_strptr(elf, shdr.sh_link, sym.st_name));
+        if (ELF32_ST_TYPE(sym.st_info) == STT_FUNC && sym.st_value == pc) {
+          return elf_strptr(elf, shdr.sh_link, sym.st_name);
         }
       }
     }
   }
+  return NULL;
+}
+
+static void dump_call_history(Elf *elf) {
+  for (int i = 0; i < len; i++) {
+    int depth = call_history[i].depth;  // indent
+    for (int j = 0; j < depth; j++) {
+      printf("\t");
+    }
+    vaddr_t pc = call_history[i].pc;
+    const char *name = func_name(elf, pc);
+    Assert(name, "Can not find function name of pc: %x", pc);
+    if (call_history[i].type == CALL) {
+      printf("%s\n", name);
+    } else {
+      printf("%s\n", name);
+    }
+  }
+}
+
+void call_stack_dump(void) {
+  Assert(elf_version(EV_CURRENT) != EV_NONE, "libelf is out of date");  // must be called before elf_begin
+
+  Assert(elf_fd, "elf_fd is NULL");
+  Elf *elf = elf_begin(elf_fd, ELF_C_READ, NULL);
+  Assert(elf != NULL, "failed to open elf file");
+
+  dump_call_history(elf);
 
   elf_end(elf);
 }
