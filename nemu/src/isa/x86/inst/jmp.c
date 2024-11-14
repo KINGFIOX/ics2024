@@ -9,6 +9,10 @@ void callo(Decode* s, int w, word_t imm) {
   assert(4 == w);
   push(w, s->snpc);
   s->dnpc = s->snpc + imm;
+#ifdef CONFIG_FTRACE
+  extern void push_call_stack(vaddr_t);
+  push_call_stack(s->dnpc);
+#endif
 }
 
 // offset
@@ -16,11 +20,19 @@ void calla(Decode* s, int w, word_t imm) {
   assert(4 == w);
   push(w, s->snpc);
   s->dnpc = imm;
+#ifdef CONFIG_FTRACE
+  extern void push_call_stack(vaddr_t);
+  push_call_stack(s->dnpc);
+#endif
 }
 
 void ret(Decode* s, int w) {
   printf("ret: w = %d\n", w);
   s->dnpc = pop(4);
+#ifdef CONFIG_FTRACE
+  extern void pop_call_stack(void);
+  pop_call_stack();
+#endif
 }
 
 void jcc(Decode* s, word_t imm, uint8_t subcode) {
