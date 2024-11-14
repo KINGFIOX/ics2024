@@ -77,8 +77,9 @@ void *malloc(size_t nbytes) {
 
   Header *prevp = freep;
   if (prevp == NULL) {  // initialize the free_list
-    dummy.s.ptr = freep = prevp = heap.start;
+    dummy.s.ptr = freep = heap.start;
     dummy.s.size = 0;
+    prevp = &dummy;
     freep->s.size = (char *)heap.end - (char *)heap.start;
     printf("base: %x, base.s.ptr: %x, freep: %x\n", &dummy, dummy.s.ptr, freep);
   }
