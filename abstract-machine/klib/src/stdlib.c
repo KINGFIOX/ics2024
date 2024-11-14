@@ -79,6 +79,7 @@ void *malloc(size_t nbytes) {
   if (prevp == NULL) {
     base.s.ptr = freep = prevp = heap.start;
     base.s.size = (char *)heap.end - (char *)heap.start;
+    printf("base: %x, base.s.ptr: %x, freep: %x\n", &base, base.s.ptr, freep);
   }
 
   for (Header *p = prevp->s.ptr; /*dead loop*/; prevp = p, p = p->s.ptr) {
