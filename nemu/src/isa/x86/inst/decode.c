@@ -696,7 +696,11 @@ static inline void out_(int w, word_t data, word_t port) {
 
 static inline void rep(Decode *s, int w) {
   uint8_t opcode = x86_inst_fetch(s, 1);
-  s->dnpc = s->snpc - 2;
+  if (Rr(R_ECX, w) > 0) {
+    s->dnpc = s->snpc - 2;
+  } else {
+    s->dnpc = s->snpc;
+  }
   switch (opcode) {
     case 0xa5:
       Mw(Rr(R_EDI, w), w, Mr(Rr(R_ESI, w), w));
