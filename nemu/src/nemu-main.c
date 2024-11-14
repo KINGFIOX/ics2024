@@ -33,6 +33,10 @@ void sig_handler(int signo, siginfo_t *info, void *ucontext) {
     void mtrace_dump();
     mtrace_dump();
 #endif
+#ifdef CONFIG_FTRACE
+    void call_stack_dump();
+    call_stack_dump();
+#endif
   }
   exit(EXIT_FAILURE);
 }
@@ -54,6 +58,11 @@ int main(int argc, char *argv[]) {
 
   /* Start engine. */
   engine_start();
+
+#ifdef CONFIG_FTRACE
+  void call_stack_dump();
+  call_stack_dump();
+#endif
 
   return is_exit_status_bad();
 }

@@ -170,9 +170,17 @@ void cpu_exec(uint64_t n) {
     case NEMU_END:
     case NEMU_ABORT:
       if (nemu_state.state == NEMU_ABORT) {
+#ifdef CONFIG_ITRACE
         print_iringbuf();
+#endif
+#ifdef CONFIG_MTRACE
         void mtrace_dump();
         mtrace_dump();
+#endif
+#ifdef CONFIG_FTRACE
+        void call_stack_dump();
+        call_stack_dump();
+#endif
       }
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED)
