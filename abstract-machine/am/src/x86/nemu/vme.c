@@ -7,8 +7,7 @@ static void *(*pgalloc_usr)(int) = NULL;
 static void (*pgfree_usr)(void *) = NULL;
 static int vme_enable = 0;
 
-static Area segments[] = {  // Kernel memory mappings
-    NEMU_PADDR_SPACE};
+static Area segments[] = {NEMU_PADDR_SPACE};  // // Kernel memory mappings
 
 #define USER_SPACE RANGE(0x40000000, 0xc0000000)
 
@@ -18,8 +17,7 @@ bool vme_init(void *(*pgalloc_f)(int), void (*pgfree_f)(void *)) {
 
   kas.ptr = pgalloc_f(PGSIZE);
 
-  int i;
-  for (i = 0; i < LENGTH(segments); i++) {
+  for (int i = 0; i < LENGTH(segments); i++) {
     void *va = segments[i].start;
     for (; va < segments[i].end; va += PGSIZE) {
       map(&kas, va, va, 0);
