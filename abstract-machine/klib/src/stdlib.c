@@ -27,6 +27,12 @@ int atoi(const char *nptr) {
   return x;
 }
 
+// On native, malloc() will be called during initializaion of C runtime.
+// Therefore do not call panic() here, else it will yield a dead recursion:
+//   panic() -> putchar() -> (glibc) -> malloc() -> panic()
+
+#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
+
 extern Area heap;
 
 typedef long Align;
@@ -62,12 +68,6 @@ void free(void *ap) {
   }
   freep = p;
 }
-
-// On native, malloc() will be called during initializaion of C runtime.
-// Therefore do not call panic() here, else it will yield a dead recursion:
-//   panic() -> putchar() -> (glibc) -> malloc() -> panic()
-
-#if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 
 static Header *morecore(uint32_t nu) {
   if (nu < 4096) nu = 4096;
