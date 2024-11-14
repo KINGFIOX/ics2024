@@ -93,7 +93,7 @@ void *malloc(size_t nbytes) {
       freep = prevp;
       return (void *)(p + 1);
     }
-    printf("base: %p, p: %p, freep: %p\n", base.s.ptr, p, freep);
+    printf("base: %x, p: %x, freep: %x\n", base.s.ptr, p, freep);
     if (p == freep) {
       return NULL;
     }
