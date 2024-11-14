@@ -81,10 +81,11 @@ void *malloc(size_t nbytes) {
     dummy.s.size = 0;
     prevp = &dummy;
     freep->s.size = (char *)heap.end - (char *)heap.start;
+    freep->s.ptr = NULL;
     printf("base: %x, base.s.ptr: %x, freep: %x\n", &dummy, dummy.s.ptr, freep);
   }
 
-  for (Header *p = prevp->s.ptr; /*dead loop*/; prevp = p, p = p->s.ptr) {
+  for (Header *p = prevp->s.ptr; p != NULL; prevp = p, p = p->s.ptr) {
     if (p->s.size >= nunits) {
       if (p->s.size == nunits) {
         prevp->s.ptr = p->s.ptr;  // delete this node from free_list(linked list)
@@ -97,10 +98,8 @@ void *malloc(size_t nbytes) {
       freep = prevp;
       return (void *)(p + 1);
     }
-    if (p == freep) {
-      return NULL;
-    }
   }
+  return NULL;
 }
 
 #else
