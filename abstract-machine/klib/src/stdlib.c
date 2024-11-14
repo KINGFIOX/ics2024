@@ -35,6 +35,8 @@ int atoi(const char *nptr) {
 
 extern Area heap;
 
+// 这里比较有意思的是: i386 下: ptr, long 都是 4byte
+
 typedef long Align;
 
 union header {
@@ -48,11 +50,12 @@ union header {
 typedef union header Header;
 
 static Header base;
+
 static Header *freep;
 
 void free(void *ap) {
-  Header *p;
   Header *bp = (Header *)ap - 1;
+  Header *p;
   for (p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
     if (p >= p->s.ptr && (bp > p || bp < p->s.ptr)) break;
   if (bp + bp->s.size == p->s.ptr) {
@@ -69,27 +72,19 @@ void free(void *ap) {
   freep = p;
 }
 
-static Header *morecore(uint32_t nu) {
-  if (nu < 4096) nu = 4096;
-  char *p = (char *)heap.start;
-  if (p == (char *)-1) return 0;
-  Header *hp = (Header *)p;
-  hp->s.size = nu;
-  free((void *)(hp + 1));
-  return freep;
-}
-
 void *malloc(size_t nbytes) {
-  Header *prevp;
-  const uint32_t nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;
-  if ((prevp = freep) == 0) {
-    base.s.ptr = freep = prevp = &base;
-    base.s.size = 0;
+  const uint32_t nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;  // 向上对齐 + 1. 都是按照一个 Header 来对齐的
+
+  Header *prevp = freep;
+  if (prevp == NULL) {
+    base.s.ptr = freep = prevp = heap.start;
+    base.s.size = (char *)heap.end - (char *)heap.start;
   }
-  for (Header *p = prevp->s.ptr;; prevp = p, p = p->s.ptr) {
+
+  for (Header *p = prevp->s.ptr; /*dead loop*/; prevp = p, p = p->s.ptr) {
     if (p->s.size >= nunits) {
       if (p->s.size == nunits) {
-        prevp->s.ptr = p->s.ptr;
+        prevp->s.ptr = p->s.ptr;  // delete this node from free_list(linked list)
       } else {
         p->s.size -= nunits;
         p += p->s.size;
@@ -98,10 +93,9 @@ void *malloc(size_t nbytes) {
       freep = prevp;
       return (void *)(p + 1);
     }
+    printf("base: %p, p: %p, freep: %p\n", base.s.ptr, p, freep);
     if (p == freep) {
-      if ((p = morecore(nunits)) == 0) {
-        return 0;
-      }
+      return NULL;
     }
   }
 }
