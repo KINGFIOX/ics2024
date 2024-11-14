@@ -6,7 +6,7 @@
 static FILE *elf_fp = NULL;
 
 static void close_elf(void) {
-  Assert(elf_fp);
+  Assert(elf_fp, "elf_fp is NULL");
   fclose(elf_fp);
   elf_fp = NULL;
 }
