@@ -91,6 +91,7 @@ void *malloc(size_t nbytes) {
         p->s.size -= nunits;
       }
       printf("ret: %x\n", ret);
+      printf("ret + 1: %x\n", ret + 1);
       return (void *)(ret + 1);  // skip the header
     }
   }
