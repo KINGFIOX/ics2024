@@ -695,10 +695,10 @@ static inline void out_(int w, word_t data, word_t port) {
 }
 
 static inline void rep(int w) {
-  for (; Rr(R_ECX, w) > 0; Rw(R_ECX, w, Rr(R_ECX, w) - 1)) {
-    Mw(Rr(R_EDI, w), w, Mr(Rr(R_ESI, w), w));
-    Rw(R_ESI, w, Rr(R_ESI, w) + w);
-    Rw(R_EDI, w, Rr(R_EDI, w) + w);
+  word_t di = Rr(R_EDI, w);
+  word_t si = Rr(R_ESI, w);
+  for (word_t i = Rr(R_ECX, w); i > 0; i--, si += w, di += w) {
+    Mw(di, w, Mr(si, w));
   }
 }
 
