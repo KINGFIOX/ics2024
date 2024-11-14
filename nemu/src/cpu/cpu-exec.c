@@ -25,13 +25,6 @@
  */
 #define MAX_INST_TO_PRINT 10
 
-#ifdef CONFIG_ITRACE
-
-iringbuf_t iringbuf[ITRACE_BUF_SIZE];
-int rear = 0;
-
-#endif
-
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;  // global variable, number of guest instructions executed
 static uint64_t g_timer = 0;   // unit: us
@@ -58,7 +51,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 }
 
-static void exec_once(Decode *s, vaddr_t pc) {
+static bool exec_once(Decode *s, vaddr_t pc) {
   // printf("pc = %x\n", pc);
   s->pc = pc;
   s->snpc = pc;
@@ -66,12 +59,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = s->dnpc;
 
 #ifdef CONFIG_ITRACE
-
-  int len = s->snpc - pc;
-  iringbuf[rear].pc = pc;
-  iringbuf[rear].len = len;
-  rear = (rear + 1) % ITRACE_BUF_SIZE;
-  // 可以注册一个 handler, 程序退出的时候, 打印 iringbuf
 
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -91,15 +78,41 @@ static void exec_once(Decode *s, vaddr_t pc) {
   bool disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   bool ret = disassemble(p, s->logbuf + sizeof(s->logbuf) - p, MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
   if (!ret) {
-    panic("disassemble failed");
+    return false;
   }
 #endif
+  return true;
 }
+
+#ifdef CONFIG_ITRACE
+
+#define ITRACE_BUF_SIZE 32
+typedef struct {
+  char str[128];
+  vaddr_t pc;
+} iringbuf_t;
+
+static iringbuf_t iringbuf[ITRACE_BUF_SIZE];
+static int rear = 0;
+
+#endif
 
 static void execute(uint64_t n) {
   Decode s;
   for (; n > 0; n--) {
-    exec_once(&s, cpu.pc);
+    bool ret __attribute__((unused));
+    ret = exec_once(&s, cpu.pc);
+    if (!ret) {
+      // print
+      for (int i = (rear + 1) % ITRACE_BUF_SIZE; i != rear; i = (i + 1) % ITRACE_BUF_SIZE) {
+        printf("%s\n", iringbuf[i].str);
+      }
+    } else {
+      // record
+      strncpy(iringbuf[rear].str, s.logbuf, sizeof(iringbuf[rear].str));
+      iringbuf[rear].pc = cpu.pc;
+      rear = (rear + 1) % ITRACE_BUF_SIZE;
+    }
     g_nr_guest_inst++;
     trace_and_difftest(&s, cpu.pc);
     if (nemu_state.state != NEMU_RUNNING) break;
