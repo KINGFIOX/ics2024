@@ -94,8 +94,11 @@ static void dump_call_history(Elf *elf) {
       printf("\t");
     }
     vaddr_t pc = call_history[i].pc;
+    if (pc == 0) {
+      printf("pc = 0, i = %d, depth = %d\n", i, depth);
+      continue;
+    }
     const char *name = func_name(elf, pc);
-    Assert(name, "Can not find function name of pc: %x", pc);
     if (call_history[i].type == CALL) {
       printf("%s\n", name);
     } else {
