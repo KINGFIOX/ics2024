@@ -59,6 +59,17 @@ static void exec_once(Decode *s, vaddr_t pc) {
   cpu.pc = s->dnpc;
 
 #ifdef CONFIG_ITRACE
+
+  static struct {
+    vaddr_t pc;
+    int len;
+  } iringbuf[MAX_INST_TO_PRINT] = {};
+  static int rear = 0;
+  int len = s->snpc - pc;
+  iringbuf[rear].pc = pc;
+  iringbuf[rear].len = len;
+  rear = (rear + 1) % MAX_INST_TO_PRINT;
+
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
