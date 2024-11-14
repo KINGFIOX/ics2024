@@ -556,10 +556,8 @@ static inline void div1(int w, word_t divisor) {
     Rw(R_AH, 1, dividend % divisor);
   } else {
     uint64_t dividend = ((uint64_t)Rr(R_EDX, w) << (w * 8)) | Rr(R_EAX, w);
-    printf("divisor = %x, dividend = %lx\n", divisor, dividend);
     word_t rem = dividend % divisor;
     word_t quo = dividend / divisor;
-    printf("rem = %x, quo = %x\n", rem, quo);
     Rw(R_EAX, w, quo);
     Rw(R_EDX, w, rem);
   }
@@ -770,9 +768,9 @@ again:
   //   1045f0:       21 d0                   and    %edx,%eax
   INSTPAT("0010 0001", and, G2E, 0, Rw(rd, w, and_(w, Rr(rd, w), Rr(rs, w))));
   //   10004d:       32 06                   xor    (%esi),%al
-  INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
+  INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), RMr(rs, w))));
   //   100052:       33 14 85 e0 01 10 00    xor    0x1001e0(,%eax,4),%edx
-  INSTPAT("0011 0011", xor, E2G, 0, Rw(rd, w, xor_(w, Rr(rd, w), Mr(addr, w))));
+  INSTPAT("0011 0011", xor, E2G, 0, Rw(rd, w, xor_(w, Rr(rd, w), RMr(rs, w))));
 
   // A0       MOV AL,moffs8
   INSTPAT("1000 0000", gp1, I2E, 1, gp1());
