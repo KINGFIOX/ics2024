@@ -90,10 +90,10 @@ void *malloc(size_t nbytes) {
         p += p->s.size;
         p->s.size = nunits;
       }
+      printf("base: %x, p: %x, freep: %x\n", base.s.ptr, (char *)p + 1, freep);
       freep = prevp;
       return (void *)(p + 1);
     }
-    printf("base: %x, p: %x, freep: %x\n", base.s.ptr, p, freep);
     if (p == freep) {
       return NULL;
     }
