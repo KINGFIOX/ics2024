@@ -99,8 +99,8 @@ static int parse_args(int argc, char *argv[]) {
           img_file = optarg;
         }
 #ifdef CONFIG_FTRACE
+        printf("optarg: %s\n", optarg);
         if (!dot && 0 == strcmp(dot + 1, "elf")) {
-          printf("optarg: %s\n", optarg);
           extern void load_elf(const char *);
           load_elf(optarg);
         }
