@@ -422,6 +422,9 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       case 0b000: /*rd=rd+imm*/                   \
         RMw(add(w, RMr(rd, w), imm, false));      \
         break;                                    \
+      case 0b001: /*rd=rd or imm*/                \
+        RMw(or_(w, RMr(rd, w), imm));             \
+        break;                                    \
       case 0b010: /*cmp*/                         \
         cmp(w, RMr(rd, w), imm);                  \
         break;                                    \
