@@ -14,13 +14,31 @@
  ***************************************************************************************/
 
 #include <common.h>
+#include <signal.h>
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
+void sig_handler(int signo, siginfo_t *info, void *ucontext) {
+  if (signo == SIGABRT) {
+    extern void print_iringbuf();
+    print_iringbuf();
+    extern void print_pc();
+    print_pc();
+  }
+  exit(EXIT_FAILURE);
+}
+
 int main(int argc, char *argv[]) {
+  // catch SIGABRT
+  struct sigaction sa;
+  memset(&sa, 0, sizeof(sa));
+  sa.sa_sigaction = &sig_handler;
+  sa.sa_flags = 0;
+  sigaction(SIGABRT, &sa, NULL);
+
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();

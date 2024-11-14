@@ -97,6 +97,14 @@ static int rear = 0;
 
 #endif
 
+void print_iringbuf() {
+  for (int i = (rear + 1) % ITRACE_BUF_SIZE; i != rear; i = (i + 1) % ITRACE_BUF_SIZE) {
+    if (iringbuf[i].pc != 0) {
+      printf("%s\n", iringbuf[i].str);
+    }
+  }
+}
+
 static void execute(uint64_t n) {
   Decode s;
   for (; n > 0; n--) {
@@ -104,9 +112,7 @@ static void execute(uint64_t n) {
     ret = exec_once(&s, cpu.pc);
     if (!ret) {
       // print
-      for (int i = (rear + 1) % ITRACE_BUF_SIZE; i != rear; i = (i + 1) % ITRACE_BUF_SIZE) {
-        printf("%s\n", iringbuf[i].str);
-      }
+      nemu_state.state = NEMU_ABORT;
     } else {
       // record
       strncpy(iringbuf[rear].str, s.logbuf, sizeof(iringbuf[rear].str));
@@ -163,6 +169,7 @@ void cpu_exec(uint64_t n) {
 
     case NEMU_END:
     case NEMU_ABORT:
+      print_iringbuf();
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED)
                                           : (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) : ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
@@ -172,3 +179,5 @@ void cpu_exec(uint64_t n) {
       statistic();  // print the statistic information while quitting
   }
 }
+
+void print_pc() { printf("pc = %x\n", cpu.pc); }
