@@ -41,7 +41,7 @@ typedef long Align;
 
 union header {
   struct {
-    union header *ptr;
+    union header *next;
     uint32_t size;
   } s;
   Align x;
@@ -56,18 +56,18 @@ static Header *freep;  // point to the first header of free_list
 void free(void *ap) {
   Header *bp = (Header *)ap - 1;
   Header *p;
-  for (p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
-    if (p >= p->s.ptr && (bp > p || bp < p->s.ptr)) break;
-  if (bp + bp->s.size == p->s.ptr) {
-    bp->s.size += p->s.ptr->s.size;
-    bp->s.ptr = p->s.ptr->s.ptr;
+  for (p = freep; !(bp > p && bp < p->s.next); p = p->s.next)
+    if (p >= p->s.next && (bp > p || bp < p->s.next)) break;
+  if (bp + bp->s.size == p->s.next) {
+    bp->s.size += p->s.next->s.size;
+    bp->s.next = p->s.next->s.next;
   } else
-    bp->s.ptr = p->s.ptr;
+    bp->s.next = p->s.next;
   if (p + p->s.size == bp) {
     p->s.size += bp->s.size;
-    p->s.ptr = bp->s.ptr;
+    p->s.next = bp->s.next;
   } else {
-    p->s.ptr = bp;
+    p->s.next = bp;
   }
   freep = p;
 }
@@ -75,30 +75,42 @@ void free(void *ap) {
 void *malloc(size_t nbytes) {
   const uint32_t nunits = (nbytes + sizeof(Header) - 1) / sizeof(Header) + 1;  // 向上对齐 + 1. 都是按照一个 Header 来对齐的
 
-  Header *prevp = freep;
-  if (prevp == NULL) {  // initialize the free_list
-    dummy.s.ptr = freep = heap.start;
+  if (freep == NULL) {  // initialize the free_list and the dummy node
+    dummy.s.next = heap.start;
     dummy.s.size = 0;
-    prevp = &dummy;
+    freep = heap.start;
     freep->s.size = (char *)heap.end - (char *)heap.start;
-    freep->s.ptr = NULL;
-    printf("base: %x, base.s.ptr: %x, freep: %x, size: %d\n", &dummy, dummy.s.ptr, freep, freep->s.size);
+    freep->s.next = NULL;
+    printf("base: %x, base.s.ptr: %x, freep: %x, size: %x\n", &dummy, dummy.s.next, freep, freep->s.size);
   }
+  Header *prevp = freep;
 
-  for (Header *p = prevp->s.ptr; p != NULL; prevp = p, p = p->s.ptr) {
+  for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
     if (p->s.size >= nunits) {
       if (p->s.size == nunits) {
-        prevp->s.ptr = p->s.ptr;  // delete this node from free_list(linked list)
+        prevp->s.next = p->s.next;
       } else {
         p->s.size -= nunits;
         p += p->s.size;
         p->s.size = nunits;
       }
-      printf("base: %x, p: %x, freep: %x\n", dummy.s.ptr, (char *)p + 1, freep);
-      freep = prevp;
-      return (void *)(p + 1);
     }
+    return (void *)(p + 1);
   }
+  // for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
+  //   if (p->s.size >= nunits) {
+  //     if (p->s.size == nunits) {
+  //       prevp->s.next = p->s.next;  // delete this node from free_list(linked list)
+  //     } else {
+  //       p->s.size -= nunits;
+  //       p += p->s.size;
+  //       p->s.size = nunits;
+  //     }
+  //     printf("base: %x, p: %x, freep: %x\n", dummy.s.next, (char *)p + 1, freep);
+  //     freep = prevp;
+  //     return (void *)(p + 1);
+  //   }
+  // }
   return NULL;
 }
 
