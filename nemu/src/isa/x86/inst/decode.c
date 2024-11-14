@@ -780,7 +780,7 @@ again:
   INSTPAT("1000 1001", mov, G2E, 0, RMw(src1));
 
   // 8A  /r   MOV r8,r/m8
-  INSTPAT("1000 1010", mov, E2G, 1, printf("addr = %x\n", addr); Rw(rd, w, RMr(rs, w)));
+  INSTPAT("1000 1010", mov, E2G, 1, Rw(rd, w, RMr(rs, w)));
   // 8B  /r   MOV r16,r/m16
   // 8B  /r   MOV r32,r/m32
   INSTPAT("1000 1011", mov, E2G, 0, Rw(rd, w, RMr(rs, w)));
