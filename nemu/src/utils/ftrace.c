@@ -95,7 +95,13 @@ static void dump_call_history(Elf *elf) {
     }
     vaddr_t pc = call_history[i].pc;
     if (pc == 0) {
-      printf("pc = 0, i = %d, depth = %d\n", i, depth);
+      char *type;
+      if (call_history[i].type == CALL) {
+        type = "call";
+      } else {
+        type = "ret";
+      }
+      printf("%s pc = 0, i = %d, depth = %d\n", type, i, depth);
       continue;
     }
     const char *name = func_name(elf, pc);
