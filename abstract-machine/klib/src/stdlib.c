@@ -95,6 +95,7 @@ void *malloc(size_t nbytes) {
         p->s.size = nunits;
       }
     }
+    printf("base: %x, p: %x\n", dummy.s.next, (char *)p + 1);
     return (void *)(p + 1);
   }
   // for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
