@@ -72,6 +72,10 @@ static int parse_args(int argc, char *argv[]) {
       {"port", required_argument, NULL, 'p'}, {"help", no_argument, NULL, 'h'},      {0, 0, NULL, 0},
   };
 
+  for (int i = 0; i < argc; i++) {
+    printf("%s\n", argv[i]);
+  }
+
   // shortopts:
   // l:/d:/p: 表示: required_argument
   // - 表示: 允许使用长选项
