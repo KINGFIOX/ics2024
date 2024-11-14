@@ -2,7 +2,7 @@
 
 #ifdef CONFIG_MTRACE
 
-#define MTRACE_BUF_SIZE 256
+#define MTRACE_BUF_SIZE 128
 
 static struct {
   vaddr_t addr;

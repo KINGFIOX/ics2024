@@ -11,7 +11,7 @@
 
 #ifdef CONFIG_FTRACE
 
-#define HISTORY_SIZE 4096
+#define HISTORY_SIZE 256
 #define MAX_DEPTH 128
 
 static int elf_fd = -1;
