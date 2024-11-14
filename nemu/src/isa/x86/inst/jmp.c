@@ -27,7 +27,6 @@ void calla(Decode* s, int w, word_t imm) {
 }
 
 void ret(Decode* s, int w) {
-  printf("ret: w = %d\n", w);
   s->dnpc = pop(4);
 #ifdef CONFIG_FTRACE
   extern void pop_call_stack(void);
