@@ -51,7 +51,7 @@ typedef union header Header;
 
 static Header dummy;
 
-static Header *freep;
+static Header *freep;  // point to the first header of free_list
 
 void free(void *ap) {
   Header *bp = (Header *)ap - 1;
@@ -82,7 +82,7 @@ void *malloc(size_t nbytes) {
     prevp = &dummy;
     freep->s.size = (char *)heap.end - (char *)heap.start;
     freep->s.ptr = NULL;
-    printf("base: %x, base.s.ptr: %x, freep: %x\n", &dummy, dummy.s.ptr, freep);
+    printf("base: %x, base.s.ptr: %x, freep: %x, size: %d\n", &dummy, dummy.s.ptr, freep, freep->s.size);
   }
 
   for (Header *p = prevp->s.ptr; p != NULL; prevp = p, p = p->s.ptr) {
