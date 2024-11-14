@@ -416,55 +416,30 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
 }
 
 // gp1's gp_idx from INSTPAT_START
-#define gp1()                                                                     \
-  do {                                                                            \
-    switch (gp_idx) {                                                             \
-      case 0b000: /*rd=rd+imm*/                                                   \
-        if (rd != -1) {                                                           \
-          Rw(rd, w, add(w, Rr(rd, w), imm, false));                               \
-        } else {                                                                  \
-          Mw(addr, w, add(w, Mr(addr, w), imm, false));                           \
-        }                                                                         \
-        break;                                                                    \
-      case 0b010: /*cmp*/                                                         \
-        if (rd != -1) {                                                           \
-          cmp(w, Rr(rd, w), imm);                                                 \
-        } else {                                                                  \
-          cmp(w, Mr(addr, w), imm);                                               \
-        }                                                                         \
-        break;                                                                    \
-      case 0b100: /*rd=rd&imm*/                                                   \
-        if (rd != -1) {                                                           \
-          Rw(rd, w, and_(w, Rr(rd, w), imm));                                     \
-        } else {                                                                  \
-          Mw(addr, w, and_(w, Mr(addr, w), imm));                                 \
-        }                                                                         \
-        break;                                                                    \
-      case 0b101: /*rd=rd-imm*/                                                   \
-        if (rd != -1) {                                                           \
-          Rw(rd, w, sub(w, Rr(rd, w), imm, false));                               \
-        } else {                                                                  \
-          Mw(addr, w, sub(w, Mr(addr, w), imm, false));                           \
-        }                                                                         \
-        break;                                                                    \
-      case 0b110: /*rd=rd xor imm*/                                               \
-        if (rd != -1) {                                                           \
-          Rw(rd, w, xor_(w, Rr(rd, w), imm));                                     \
-        } else {                                                                  \
-          Mw(addr, w, xor_(w, Mr(addr, w), imm));                                 \
-        }                                                                         \
-        break;                                                                    \
-      case 0b111: /*cmp*/                                                         \
-        /*printf("addr = %x, imm = %x, rs = %d, rd = %d\n", addr, imm, rs, rd);*/ \
-        if (rd != -1) {                                                           \
-          cmp(w, Rr(rd, w), imm);                                                 \
-        } else {                                                                  \
-          cmp(w, Mr(addr, w), imm);                                               \
-        }                                                                         \
-        break;                                                                    \
-      default:                                                                    \
-        Assert(false, "gp_idx = 0b%03b", gp_idx);                                 \
-    };                                                                            \
+#define gp1()                                     \
+  do {                                            \
+    switch (gp_idx) {                             \
+      case 0b000: /*rd=rd+imm*/                   \
+        RMw(add(w, RMr(rd, w), imm, false));      \
+        break;                                    \
+      case 0b010: /*cmp*/                         \
+        cmp(w, RMr(rd, w), imm);                  \
+        break;                                    \
+      case 0b100: /*rd=rd&imm*/                   \
+        RMw(and_(w, RMr(rd, w), imm));            \
+        break;                                    \
+      case 0b101: /*rd=rd-imm*/                   \
+        RMw(sub(w, RMr(rd, w), imm, false));      \
+        break;                                    \
+      case 0b110: /*rd=rd xor imm*/               \
+        RMw(xor_(w, RMr(rd, w), imm));            \
+        break;                                    \
+      case 0b111: /*cmp*/                         \
+        cmp(w, RMr(rd, w), imm);                  \
+        break;                                    \
+      default:                                    \
+        Assert(false, "gp_idx = 0b%03b", gp_idx); \
+    };                                            \
   } while (0)
 
 #define gp5()                                      \
@@ -600,25 +575,13 @@ static inline void div1(int w, word_t divisor) {
   do {                                                                 \
     switch (gp_idx) {                                                  \
       case 0b100:                                                      \
-        if (rd != -1) {                                                \
-          Rw(rd, w, shl(w, Rr(rd, w), op2));                           \
-        } else {                                                       \
-          Mw(addr, w, shl(w, Mr(addr, w), op2));                       \
-        }                                                              \
+        RMw(shl(w, RMr(rd, w), op2));                                  \
         break;                                                         \
       case 0b101:                                                      \
-        if (rd != -1) {                                                \
-          Rw(rd, w, shr(w, Rr(rd, w), op2));                           \
-        } else {                                                       \
-          Mw(addr, w, shr(w, Mr(addr, w), op2));                       \
-        }                                                              \
+        RMw(shr(w, RMr(rd, w), op2));                                  \
         break;                                                         \
       case 0b111:                                                      \
-        if (rd != -1) {                                                \
-          Rw(rd, w, sar(w, Rr(rd, w), op2));                           \
-        } else {                                                       \
-          Mw(addr, w, sar(w, Mr(addr, w), op2));                       \
-        }                                                              \
+        RMw(sar(w, RMr(rd, w), op2));                                  \
         break;                                                         \
       default:                                                         \
         printf("%s:%d gp_idx = 0b%03b\n", __FILE__, __LINE__, gp_idx); \
@@ -660,19 +623,11 @@ static inline void setcc(uint8_t opcode, int rd) {
 static inline void shrd(int w, int rd, int rs, vaddr_t addr) {
   uint64_t op1, op2;
   op1 = Rr(rs, w);
-  if (rd != -1) {
-    op2 = Rr(rd, w);
-  } else {
-    op2 = Mr(addr, w);
-  }
+  op2 = RMr(rd, w);
   uint64_t ret = op1 << (w * 8) | op2;
   uint64_t cl = Rr(R_CL, 1);
   ret = ret >> cl;
-  if (rd != -1) {
-    Rw(rd, w, ret & ((1ULL << (w * 8)) - 1));
-  } else {
-    Mw(addr, w, ret & ((1ULL << (w * 8)) - 1));
-  }
+  RMw(ret & ((1ULL << (w * 8)) - 1));  // write rd
   Rw(rs, w, ret >> (w * 8));
 
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
@@ -728,14 +683,6 @@ static inline void out_(int w, word_t data, word_t port) {
   assert(w == 1);
   extern void pio_write(ioaddr_t addr, int len, uint32_t data);
   pio_write(port, w, data);
-}
-
-static inline void add_rm(int w, int rd, int rs, vaddr_t addr) {
-  if (rd == -1) {
-    Mw(addr, w, add(w, Mr(addr, w), Rr(rs, w), false));
-  } else {
-    Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), false));
-  }
 }
 
 int isa_exec_once(Decode *s) {
@@ -880,7 +827,7 @@ again:
   INSTPAT("0100 1???", dec, r, 0, Rw(rd, w, sub(w, Rr(rd, w), 1, false)));
 
   // 10005e:       01 f2                   add    %esi,%edx
-  INSTPAT("0000 0001", add, G2E, 0, add_rm(w, rd, rs, addr));
+  INSTPAT("0000 0001", add, G2E, 0, RMw(add(w, RMr(rd, w), Rr(rs, w), false)));
 
   //   100043:       03 04 9d dc 01 10 00    add    0x1001dc(,%ebx,4),%eax
   INSTPAT("0000 0011", add, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), false)));
