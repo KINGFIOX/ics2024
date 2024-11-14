@@ -75,6 +75,7 @@ static int parse_args(int argc, char *argv[]) {
   // shortopts:
   // l:/d:/p: 表示: required_argument
   // - 表示: 允许使用长选项
+  // 1: 表示, 不带 -<char> 的第一个参数
   int o;
   while ((o = getopt_long(argc, argv, "-bhl:d:p:", table, NULL)) != -1) {
     switch (o) {
