@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "common.h"
 #include "inst.h"
 
@@ -192,9 +194,19 @@ word_t or_(int w, word_t op1, word_t op2) {
 
 word_t not_(int w, word_t op1) { return xor_(w, op1, all); }
 
-word_t sar(int w, word_t op1, word_t op2) {
+word_t sar(int w, word_t op1_, word_t op2) {
   assert(w == 4);
-  sword_t ret = (sword_t)op1 >> op2;
+
+  word_t op1 = 0;
+  if (4 == w) {
+    op1 = (int32_t)op1_;
+  } else if (2 == w) {
+    op1 = (int32_t)(int16_t)op1_;
+  } else if (1 == w) {
+    op1 = (int32_t)(int8_t)op1_;
+  }
+
+  sword_t ret = (op1 >> op2);
 
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
 
@@ -205,7 +217,6 @@ word_t sar(int w, word_t op1, word_t op2) {
 }
 
 word_t shl(int w, word_t op1, word_t op2) {
-  assert(w == 4);
   word_t ret = op1 << op2;
 
   // TODO: sf, cf, of. 可能有循环移位之类的, 没法确定
