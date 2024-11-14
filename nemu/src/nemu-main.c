@@ -33,10 +33,11 @@ void sig_handler(int signo, siginfo_t *info, void *ucontext) {
     void mtrace_dump();
     mtrace_dump();
 #endif
-#ifdef CONFIG_FTRACE
-    void call_stack_dump();
-    call_stack_dump();
-#endif
+    // could not use ftrace here, because Assert in it
+    // #ifdef CONFIG_FTRACE
+    //     void call_stack_dump();
+    //     call_stack_dump();
+    // #endif
   }
   exit(EXIT_FAILURE);
 }
