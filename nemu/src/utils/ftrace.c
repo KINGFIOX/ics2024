@@ -93,7 +93,7 @@ static const char *func_name(Elf *elf, vaddr_t pc) {
 static void dump_call_history(Elf *elf) {
   for (int i = 0; i < len; i++) {
     vaddr_t pos = call_history[i].pos;  // call point
-    printf("pos: %x", pos);
+    printf("0x%08x: ", pos);
     int depth = call_history[i].depth;  // indent
     for (int j = 0; j < depth; j++) {
       printf(" ");
