@@ -774,13 +774,13 @@ again:
   INSTPAT("1000 0100", test, G2E, 1, test(w, Rr(rs, w), RMr(rd, w)));
 
   // 88  /r   MOV r/m8,r8
-  INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
+  INSTPAT("1000 1000", mov, G2E, 1, RMw(Rr(rs, w)));  // register memory write
   // 89  /r   MOV r/m16,r16
   // 89  /r   MOV r/m32,r32
   INSTPAT("1000 1001", mov, G2E, 0, RMw(src1));
 
   // 8A  /r   MOV r8,r/m8
-  INSTPAT("1000 1010", mov, E2G, 1, printf("%x\n", RMr(rs, w)); Rw(rd, w, RMr(rs, w)));
+  INSTPAT("1000 1010", mov, E2G, 1, /*printf("%x\n", RMr(rs, w));*/ Rw(rd, w, RMr(rs, w)));
   // 8B  /r   MOV r16,r/m16
   // 8B  /r   MOV r32,r/m32
   INSTPAT("1000 1011", mov, E2G, 0, Rw(rd, w, RMr(rs, w)));
