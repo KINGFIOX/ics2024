@@ -597,7 +597,6 @@ static inline void div1(int w, word_t divisor) {
   } while (0)
 
 static inline void movz_l(int w, int rd, int rs, vaddr_t addr, bool sign, int width) {
-  // assert(w == 4);
   assert(width == 1 || width == 2 || width == 4);
   word_t op1 = RMr(rd, width);
   if (sign) {
