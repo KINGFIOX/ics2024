@@ -6,10 +6,8 @@
 static FILE *elf_fp = NULL;
 
 static void close_elf(void) {
-  if (elf_fp) {
-    fclose(elf_fp);
-    elf_fp = NULL;
-  }
+  fclose(elf_fp);
+  elf_fp = NULL;
 }
 
 void load_elf(const char *elf_file) {
