@@ -23,10 +23,12 @@ int is_exit_status_bad();
 
 void sig_handler(int signo, siginfo_t *info, void *ucontext) {
   if (signo == SIGABRT) {
-    extern void print_iringbuf();
+    void print_iringbuf();
     print_iringbuf();
-    extern void print_pc();
+    void print_pc();
     print_pc();
+    void mtrace_dump();
+    mtrace_dump();
   }
   exit(EXIT_FAILURE);
 }
