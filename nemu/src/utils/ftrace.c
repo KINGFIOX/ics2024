@@ -31,6 +31,7 @@ static vaddr_t call_stack[MAX_DEPTH];
 
 void push_call_stack(vaddr_t pc, vaddr_t pos) {
   Assert(depth < HISTORY_SIZE, "call stack overflow");
+  printf("len = %d\n", len);
   call_history[len].pos = pos;
   call_history[len].type = CALL;
   call_history[len].pc = pc;
