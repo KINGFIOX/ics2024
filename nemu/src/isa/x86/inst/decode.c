@@ -688,7 +688,6 @@ static inline void cltd() {
 }
 
 static inline void out_(int w, word_t data, word_t port) {
-  assert(w == 1);
   extern void pio_write(ioaddr_t addr, int len, uint32_t data);
   pio_write(port, w, data);
 }
