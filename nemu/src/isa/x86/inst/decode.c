@@ -849,7 +849,7 @@ again:
   //   100054:       39 04 9d 40 01 10 00    cmp    %eax,0x100140(,%ebx,4)
   INSTPAT("0011 1001", cmp, E2G, 0, cmp(w, RMr(rs, w), Rr(rd, w)));
   //   10004c:       38 d8                   cmp    %bl,%al
-  INSTPAT("0011 1000", cmp, G2E, 1, cmp(w, Rr(rd, w), Rr(rs, w)));
+  INSTPAT("0011 1000", cmp, G2E, 1, cmp(w, RMr(rd, w), Rr(rs, w)));
 
   INSTPAT("0100 0???", inc, r, 0, Rw(rd, w, add(w, Rr(rd, w), 1, false)));
 
