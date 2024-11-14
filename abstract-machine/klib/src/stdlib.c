@@ -60,7 +60,7 @@ void free(void *ap) {
       break;
     }
   }
-  if (p == NULL) {
+  if (p == NULL) {  // rear
     // dummy
   }
 }
@@ -78,7 +78,6 @@ void *malloc(size_t nbytes) {
   Header *prevp = &dummy;
 
   for (Header *p = prevp->s.next; p != NULL; prevp = p, p = p->s.next) {
-    printf("p: %x\n", (char *)p + 1);
     if (p->s.size >= nunits) {
       Header *ret;
       if (p->s.size == nunits) {
@@ -89,6 +88,7 @@ void *malloc(size_t nbytes) {
         ret->s.size = nunits;
         p->s.size -= nunits;
       }
+      printf("ret: %x\n", ret);
       return (void *)(ret + 1);  // skip the header
     }
   }
