@@ -2,7 +2,7 @@
 
 #ifdef CONFIG_MTRACE
 
-#define MTRACE_BUF_SIZE 128
+#define MTRACE_BUF_SIZE 256
 
 enum RW_TYPE { READ = 0, WRITE = 1 };
 
