@@ -36,7 +36,9 @@ void reg_write(int idx, int width, word_t data);
 
 #define Rr reg_read
 #define Rw reg_write
+
 #define Mr vaddr_read
+
 #define Mw vaddr_write
 
 #endif
