@@ -2,36 +2,26 @@
 
 #ifdef CONFIG_MTRACE
 
+#define MTRACE_BUF_SIZE 256
+
 static struct {
   vaddr_t addr;
   vaddr_t pc;
-} *buf = NULL;
+} buf[MTRACE_BUF_SIZE];
 
-static size_t buf_size = 0;
-static size_t buf_len = 0;
-
-#define MTRACE_BUF_SIZE 256
+int rear = 0;
 
 void mtrace_log(vaddr_t addr, vaddr_t pc) {
-  if (buf_len + 8 > buf_size) {
-    if (buf == NULL) {
-      buf = malloc(MTRACE_BUF_SIZE);
-      assert(buf);
-      buf_size = MTRACE_BUF_SIZE;
-    } else {
-      buf = realloc(buf, buf_size * 2);
-      assert(buf);
-      buf_size *= 2;
-    }
-  }
-  buf[buf_len].addr = addr;
-  buf[buf_len].pc = pc;
-  buf_len += 1;
+  buf[rear].addr = addr;
+  buf[rear].pc = pc;
+  rear = (rear + 1) % MTRACE_BUF_SIZE;
 }
 
 void mtrace_dump() {
-  for (size_t i = 0; i < buf_len; i++) {
-    printf("%x: %x\n", buf[i].pc, buf[i].addr);
+  for (int i = 0; i < MTRACE_BUF_SIZE; i++) {
+    if (buf[i].pc != 0) {
+      printf("%x: %x\n", buf[i].pc, buf[i].addr);
+    }
   }
 }
 
