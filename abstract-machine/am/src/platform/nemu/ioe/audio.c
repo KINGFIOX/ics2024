@@ -1,4 +1,5 @@
 #include <am.h>
+#include <klib.h>
 #include <nemu.h>
 
 #define AUDIO_FREQ_ADDR (AUDIO_ADDR + 0x00)
@@ -22,7 +23,6 @@ void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
   outl(AUDIO_CHANNELS_ADDR, ctrl->channels);
   outl(AUDIO_SAMPLES_ADDR, ctrl->samples);
   outl(AUDIO_INIT_ADDR, 1);
-  //	printf("%d, %d, %d", ctrl->freq, ctrl->channels, ctrl->samples);
 }
 
 void __am_audio_status(AM_AUDIO_STATUS_T *stat) { stat->count = inl(AUDIO_COUNT_ADDR); }
