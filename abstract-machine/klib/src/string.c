@@ -26,7 +26,9 @@ char *strncpy(char *dst, const char *src, size_t n) {
 
 char *strcat(char *dst, const char *src) {
   char *os = dst;
-  while (*dst) dst++;
+  while (*dst) {
+    dst++;
+  }
   while ((*dst++ = *src++) != 0);
   return os;
 }
@@ -54,11 +56,15 @@ void *memmove(void *vdst, const void *vsrc, size_t n) {
   char *dst = vdst;
   const char *src = vsrc;
   if (src > dst) {
-    while (n-- > 0) *dst++ = *src++;
+    while (n-- > 0) {
+      *dst++ = *src++;
+    }
   } else {
     dst += n;
     src += n;
-    while (n-- > 0) *--dst = *--src;
+    while (n-- > 0) {
+      *--dst = *--src;
+    }
   }
   return vdst;
 }
