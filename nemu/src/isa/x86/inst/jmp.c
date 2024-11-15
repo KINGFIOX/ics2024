@@ -91,3 +91,8 @@ void jmpo(Decode* s, word_t imm) { s->dnpc = s->snpc + imm; }
 
 // absolute
 void jmpa(Decode* s, word_t imm) { s->dnpc = imm; }
+
+void int_(Decode* s, word_t imm, word_t pc) {
+  push(4, pc);
+  s->dnpc = 4 * imm + cpu.idtr;
+}

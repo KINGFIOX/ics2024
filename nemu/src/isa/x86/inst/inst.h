@@ -30,6 +30,7 @@ word_t or_(int w, word_t op1, word_t op2);
 void jcc(Decode* s, word_t imm, uint8_t subcode);
 void jmpo(Decode* s, word_t imm);
 void jmpa(Decode* s, word_t imm);
+void int_(Decode* s, word_t imm, word_t pc);
 
 word_t reg_read(int idx, int width);
 void reg_write(int idx, int width, word_t data);

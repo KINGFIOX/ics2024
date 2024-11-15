@@ -921,6 +921,9 @@ again:
   //   1000f0:       d3 e0                   shl    %cl,%eax
   INSTPAT("1101 0011", gp2, cl2E, 0, word_t op2 = Rr(R_CL, 1); gp2());
 
+  // cd 81 int $0x81
+  INSTPAT("1100 1101", int_, I, 1, int_(s, imm, cpu.pc));
+
   INSTPAT("1100 1100", nemu_trap, N, 0, NEMUTRAP(s->pc, cpu.eax));
 
   //   100093:       eb d3                   jmp    100068 <rc_crc32+0x40>
