@@ -507,7 +507,6 @@ static inline void imul1(int w, word_t op1) {
 }
 
 static inline void mul1(int w, word_t op1_) {
-  assert(0);
   assert(4 == w || 2 == w || 1 == w);
   uint64_t sign_mask = (1ULL << (w * 8 - 1));
   uint64_t op2 = 0;
