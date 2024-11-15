@@ -222,13 +222,13 @@ word_t or_(int w, word_t op1, word_t op2) {
 word_t not_(int w, word_t op1) { return xor_(w, op1, all); }
 
 word_t sar(int w, word_t op1_, word_t op2) {
-  word_t op1 = 0;
+  sword_t op1 = 0;
   if (4 == w) {
-    op1 = (int32_t)op1_;
+    op1 = op1_;
   } else if (2 == w) {
-    op1 = (int32_t)(int16_t)op1_;
+    op1 = (int16_t)op1_;
   } else if (1 == w) {
-    op1 = (int32_t)(int8_t)op1_;
+    op1 = (int8_t)op1_;
   }
 
   sword_t ret = (op1 >> op2);
