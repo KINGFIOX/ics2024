@@ -292,6 +292,7 @@ enum {
   TYPE_cl_G2E,  // Ev <- GvCL // use for shld/shrd
   TYPE_N,       // none
   TYPE_a2r,
+  TYPE_dx2a,
 };
 
 #define INSTPAT_INST(s) opcode
@@ -333,6 +334,8 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       decode_rm(s, rd_, addr, gp_idx, w);
       break;
     case TYPE_a2dx:
+      break;
+    case TYPE_dx2a:
       break;
     case TYPE_Eb2G:
       decode_rm(s, rd_, addr, rs, 1);
@@ -692,6 +695,11 @@ static inline void out_(int w, word_t data, word_t port) {
   pio_write(port, w, data);
 }
 
+static inline word_t in_(int w, word_t port) {
+  uint32_t pio_read(ioaddr_t addr, int len);
+  return pio_read(port, w);
+}
+
 static inline void rep(Decode *s, int w) {
   uint8_t opcode = x86_inst_fetch(s, 1);
   switch (opcode) {
@@ -729,6 +737,8 @@ again:
 
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
+  // ed in (%dx),%eax
+  INSTPAT("1110 1101", in, dx2a, 0, printf("in w = %d\n", w); Rw(R_EAX, w, in_(w, Rr(R_DX, w))));
   //   10016f:       ee                      out    %al,(%dx)
   INSTPAT("1110 1110", out, a2dx, 1, out_(w, Rr(R_AL, w), Rr(R_DX, 2)));
   // ef out %eax,(%dx)
