@@ -179,7 +179,7 @@ word_t xor_(int w, word_t op1, word_t op2) {
   return ret;
 }
 
-word_t roll(int w, word_t op1, word_t op2) {
+word_t rol(int w, word_t op1, word_t op2) {
   int sign_mask = (1 << (w * 8 - 1));
 
   word_t ret = (op1 << op2) & ((1 << (8 * w)) - 1);
