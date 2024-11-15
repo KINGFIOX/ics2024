@@ -196,6 +196,7 @@ word_t ror(int w, word_t op1, word_t op2) {
   word_t high = (op1 << (8 * w - op2));
   printf("high = 0x%08x\n", high);
   word_t ret = high | low;
+  ret &= (1 << (8 * w)) - 1;
 
   cpu.eflags.cf = !!(op1 & 1);  // cf
   return ret;
