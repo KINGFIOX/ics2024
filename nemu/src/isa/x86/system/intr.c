@@ -22,10 +22,6 @@ word_t isa_raise_intr(word_t NO, vaddr_t ret_addr) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * That is, use ``NO'' to index the IDT.
    */
-  void push(int width, word_t data);
-  push(4, ret_addr);
-  cpu.pc = cpu.idtr + NO * 4;
-  printf("NO = %d, idtr = %x\n", NO, cpu.idtr);
   return 0;
 }
 
