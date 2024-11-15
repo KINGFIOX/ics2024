@@ -583,6 +583,9 @@ static inline void div1(int w, word_t divisor) {
 #define gp2()                                                          \
   do {                                                                 \
     switch (gp_idx) {                                                  \
+      case 0b000:                                                      \
+        RMw(shl(w, RMr(rd, w), op2));                                  \
+        break;                                                         \
       case 0b100:                                                      \
         RMw(shl(w, RMr(rd, w), op2));                                  \
         break;                                                         \
