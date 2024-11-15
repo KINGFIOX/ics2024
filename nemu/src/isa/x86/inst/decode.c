@@ -859,6 +859,8 @@ again:
   //
   INSTPAT("0110 1010", push, SI, 0, push(w, imm));  // 这个 width = 0 是试出来的
 
+  INSTPAT("0110 1011", imul3, SI_E2G, 0, Rw(rd, w, imul2(w, imm, Rr(w, rs))));
+
   INSTPAT("0101 1???", pop, r, 0, Rw(rd, w, pop(w)));
 
   //   100060:       3b 94 bb 60 01 10 00    cmp    0x100160(%ebx,%edi,4),%edx
