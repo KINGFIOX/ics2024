@@ -25,6 +25,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t ret_addr) {
   void push(int width, word_t data);
   push(4, ret_addr);
   cpu.pc = cpu.idtr + NO * 4;
+  printf("cpu.pc = %x\n", cpu.pc);
   return 0;
 }
 
