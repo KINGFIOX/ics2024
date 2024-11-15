@@ -225,8 +225,6 @@ static inline uint16_t inw(int port) {
 
 static inline uint32_t inl(int port) {
   uint32_t data;
-  int printf(const char *fmt, ...);
-  printf("port = 0x%08, (uint16_t)port = %x\n", port, (uint16_t)port);  //
   asm volatile("inl %1, %0" : "=a"(data) : "d"((uint16_t)port));
   return data;
 }
