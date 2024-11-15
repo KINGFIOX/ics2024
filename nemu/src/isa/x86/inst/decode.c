@@ -586,6 +586,9 @@ static inline void div1(int w, word_t divisor) {
       case 0b000:                                                      \
         RMw(rol(w, RMr(rd, w), op2));                                  \
         break;                                                         \
+      case 0b001:                                                      \
+        RMw(ror(w, RMr(rd, w), op2));                                  \
+        break;                                                         \
       case 0b100:                                                      \
         RMw(shl(w, RMr(rd, w), op2));                                  \
         break;                                                         \

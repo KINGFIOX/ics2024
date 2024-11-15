@@ -189,6 +189,14 @@ word_t rol(int w, word_t op1, word_t op2) {
   return ret;
 }
 
+word_t ror(int w, word_t op1, word_t op2) {
+  word_t ret = (op1 >> op2) & ((1 << (8 * w - op2)) - 1);  // low
+  ret |= (op1 << (8 * w - op2)) & ((1 << (8 * w)) - 1);    // high
+
+  cpu.eflags.cf = !!(op1 & 1);  // cf
+  return ret;
+}
+
 word_t or_(int w, word_t op1, word_t op2) {
   int sign_mask = (1 << (w * 8 - 1));
   word_t ret = op1 | op2;
