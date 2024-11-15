@@ -72,6 +72,8 @@ typedef union {
       uint32_t _val_eflags;
     };
     uint32_t idtr;  // 中断描述符表寄存器
+
+    bool INTR;
   };
 
 } x86_CPU_state;

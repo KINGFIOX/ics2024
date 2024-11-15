@@ -28,7 +28,7 @@ void add_alarm_handle(alarm_handler_t h) {
   handler[idx++] = h;
 }
 
-static void alarm_sig_handler(int signum) {
+static void alarm_sig_handler(int signum) {  // setitimer 导致的
   int i;
   for (i = 0; i < idx; i++) {
     handler[i]();
@@ -46,6 +46,6 @@ void init_alarm() {
   it.it_value.tv_sec = 0;
   it.it_value.tv_usec = 1000000 / TIMER_HZ;
   it.it_interval = it.it_value;
-  ret = setitimer(ITIMER_VIRTUAL, &it, NULL);
+  ret = setitimer(ITIMER_VIRTUAL, &it, NULL);  // 时间一到
   Assert(ret == 0, "Can not set timer");
 }
