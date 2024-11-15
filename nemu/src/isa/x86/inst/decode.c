@@ -349,7 +349,6 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_G2E:  // General to Either
       decode_rm(s, rd_, addr, rs, w);
-      src1r(*rs);
       break;
     case TYPE_E2G:
       decode_rm(s, rs, addr, rd_, w);
@@ -785,10 +784,10 @@ again:
   INSTPAT("1000 0100", test, G2E, 1, test(w, Rr(rs, w), RMr(rd, w)));
 
   // 88  /r   MOV r/m8,r8
-  INSTPAT("1000 1000", mov, G2E, 1, RMw(src1));  // register memory write
+  INSTPAT("1000 1000", mov, G2E, 1, RMw(Rr(rs, w)));  // register memory write
   // 89  /r   MOV r/m16,r16
   // 89  /r   MOV r/m32,r32
-  INSTPAT("1000 1001", mov, G2E, 0, RMw(src1));
+  INSTPAT("1000 1001", mov, G2E, 0, RMw(Rr(rs, w)));
 
   // 8A  /r   MOV r8,r/m8
   INSTPAT("1000 1010", mov, E2G, 1, Rw(rd, w, RMr(rs, w)));
