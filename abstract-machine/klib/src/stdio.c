@@ -111,6 +111,9 @@ int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
       case 'd':
         off += sprintint(buf + off, va_arg(ap, int), 10, 1);
         break;
+      case 'c':
+        off += sputc(buf + off, va_arg(ap, int));
+        break;
       case 'x':
         off += sprintint(buf + off, va_arg(ap, int), 16, 1);
         break;
