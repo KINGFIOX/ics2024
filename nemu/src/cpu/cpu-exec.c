@@ -97,6 +97,7 @@ static int rear = 0;
 
 #endif
 
+#ifdef CONFIG_ITRACE
 void print_iringbuf() {
   for (int i = (rear + 1) % ITRACE_BUF_SIZE; i != rear; i = (i + 1) % ITRACE_BUF_SIZE) {
     if (iringbuf[i].pc != 0) {
@@ -104,6 +105,7 @@ void print_iringbuf() {
     }
   }
 }
+#endif
 
 static void execute(uint64_t n) {
   Decode s;

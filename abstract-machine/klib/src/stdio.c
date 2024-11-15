@@ -93,7 +93,7 @@ int snprintf(char *buf, size_t sz, const char *fmt, ...) {
   return off;
 }
 
-int vsnprintf(char *restrict buf, size_t sz, const char *fmt, va_list ap) {
+int vsnprintf(char *buf, size_t sz, const char *fmt, va_list ap) {
   if (fmt == 0) panic("null fmt");
 
   char *s;
