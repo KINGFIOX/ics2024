@@ -339,14 +339,7 @@ static void decode_operand(Decode *s, uint8_t opcode, int *rd_, word_t *src1, wo
       break;
     case TYPE_SI_E2G:
       decode_rm(s, rs, addr, rd_, w);
-      Assert(4 == w || 2 == w || 1 == w, "");
-      if (4 == w) {
-        simm(4);
-      } else if (2 == w) {
-        simm(2);
-      } else if (1 == w) {
-        simm(1);
-      }
+      simm(1);
       break;
     case TYPE_Eb2G:
       decode_rm(s, rd_, addr, rs, 1);
