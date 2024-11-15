@@ -738,7 +738,7 @@ again:
   INSTPAT("0000 1111", 2byte_esc, N, 0, _2byte_esc(s, is_operand_size_16));
 
   // ed in (%dx),%eax
-  INSTPAT("1110 1101", in, dx2a, 0, printf("in w = %d\n", w); Rw(R_EAX, w, in_(w, Rr(R_DX, w))));
+  INSTPAT("1110 1101", in, dx2a, 0, Rw(R_EAX, w, in_(w, Rr(R_DX, 2))));
   //   10016f:       ee                      out    %al,(%dx)
   INSTPAT("1110 1110", out, a2dx, 1, out_(w, Rr(R_AL, w), Rr(R_DX, 2)));
   // ef out %eax,(%dx)
