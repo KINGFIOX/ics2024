@@ -744,6 +744,8 @@ again:
 
   // ed in (%dx),%eax
   INSTPAT("1110 1101", in, dx2a, 0, Rw(R_EAX, w, in_(w, Rr(R_DX, 2))));
+  // 83 c4 10 add $0x10,%esp
+  INSTPAT("1000 0011", gp1, SI2E, 0, gp1());
   //   10016f:       ee                      out    %al,(%dx)
   INSTPAT("1110 1110", out, a2dx, 1, out_(w, Rr(R_AL, w), Rr(R_DX, 2)));
   // ef out %eax,(%dx)
