@@ -706,6 +706,7 @@ static inline void out_(int w, word_t data, word_t port) {
 static inline word_t in_(int w, word_t port) {
   // printf("in_: addr = %x\n", port);
   uint32_t pio_read(ioaddr_t addr, int len);
+  printf("0x%08x\n", port);
   return pio_read(port, w);
 }
 
