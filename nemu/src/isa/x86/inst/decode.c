@@ -870,7 +870,7 @@ again:
   //
   INSTPAT("0110 1010", push, SI, 0, push(w, imm));  // 这个 width = 0 是试出来的
 
-  INSTPAT("0110 1011", imul3, SI_E2G, 0, Rw(rd, w, imul2(w, RMr(rs, w), imm)));
+  INSTPAT("0110 1011", imul3, SI_E2G, 0, printf("w = %d\n", w); Rw(rd, w, imul2(w, RMr(rs, w), imm)));
 
   INSTPAT("0101 1???", pop, r, 0, Rw(rd, w, pop(w)));
 
