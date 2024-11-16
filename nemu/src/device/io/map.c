@@ -20,19 +20,24 @@
 
 #define IO_SPACE_MAX (32 * 1024 * 1024)
 
-static uint8_t *io_space = NULL;
-static uint8_t *p_space = NULL;
+static uint8_t *io_space = NULL;  // malloc in init_map
+static uint8_t *p_space = NULL;   // malloc in init_map
+
+void init_map() {
+  io_space = malloc(IO_SPACE_MAX);
+  assert(io_space);  // malloc can't be failed
+  p_space = io_space;
+}
 
 uint8_t *new_space(int size) {
   uint8_t *p = p_space;
-  // page aligned;
-  size = (size + (PAGE_SIZE - 1)) & ~PAGE_MASK;
-  p_space += size;
+  size = (size + (PAGE_SIZE - 1)) & ~PAGE_MASK;  // page aligned;
+  p_space += size;                               //
   assert(p_space - io_space < IO_SPACE_MAX);
   return p;
 }
 
-static void check_bound(IOMap *map, paddr_t addr) {
+static void check_bound(const IOMap *map, paddr_t addr) {
   if (map == NULL) {
     Assert(map != NULL, "address (" FMT_PADDR ") is out of bound at pc = " FMT_WORD, addr, cpu.pc);
   } else {
@@ -41,16 +46,18 @@ static void check_bound(IOMap *map, paddr_t addr) {
   }
 }
 
+/**
+ * @brief
+ *
+ * @param c void (*)(uint32_t, int, bool)
+ * @param offset
+ * @param len
+ * @param is_write
+ */
 static void invoke_callback(io_callback_t c, paddr_t offset, int len, bool is_write) {
   if (c != NULL) {
     c(offset, len, is_write);
   }
-}
-
-void init_map() {
-  io_space = malloc(IO_SPACE_MAX);
-  assert(io_space);  // malloc can't be failed
-  p_space = io_space;
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {

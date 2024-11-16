@@ -1,7 +1,7 @@
 #include <am.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define BLKSZ 512
 
@@ -26,16 +26,16 @@ void __am_disk_config(AM_DISK_CONFIG_T *cfg) {
   cfg->blkcnt = disk_size;
 }
 
-void __am_disk_status(AM_DISK_STATUS_T *stat) {
-  stat->ready = 1;
-}
+void __am_disk_status(AM_DISK_STATUS_T *stat) { stat->ready = 1; }
 
 void __am_disk_blkio(AM_DISK_BLKIO_T *io) {
   if (fp) {
     fseek(fp, io->blkno * BLKSZ, SEEK_SET);
     int ret;
-    if (io->write) ret = fwrite(io->buf, io->blkcnt * BLKSZ, 1, fp);
-    else ret = fread(io->buf, io->blkcnt * BLKSZ, 1, fp);
+    if (io->write)
+      ret = fwrite(io->buf, io->blkcnt * BLKSZ, 1, fp);
+    else
+      ret = fread(io->buf, io->blkcnt * BLKSZ, 1, fp);
     assert(ret == 1);
   }
 }

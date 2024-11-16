@@ -22,7 +22,9 @@ enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, 
 static uint8_t *sbuf = NULL;
 static uint32_t *audio_base = NULL;
 
-static void audio_io_handler(uint32_t offset, int len, bool is_write) {}
+static void audio_io_handler(uint32_t offset, int len, bool is_write) {
+  // do nothing
+}
 
 void init_audio() {
   uint32_t space_size = sizeof(uint32_t) * nr_reg;

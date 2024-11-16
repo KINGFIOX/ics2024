@@ -1,17 +1,13 @@
 #include <am.h>
-#include <stdio.h>
 #include <klib-macros.h>
+#include <stdio.h>
 
 void __am_platform_dummy();
 void __am_exit_platform(int code);
 
-void trm_init() {
-  __am_platform_dummy();
-}
+void trm_init() { __am_platform_dummy(); }
 
-void putch(char ch) {
-  putchar(ch);
-}
+void putch(char ch) { putchar(ch); }
 
 void halt(int code) {
   const char *fmt = "Exit code = 40h\n";

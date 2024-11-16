@@ -1,4 +1,5 @@
 #include <stdatomic.h>
+
 #include "platform.h"
 
 int __am_mpe_init = 0;
@@ -16,7 +17,8 @@ bool mpe_init(void (*entry)()) {
       char ch;
       assert(read(sync_pipe[0], &ch, 1) == 1);
       assert(ch == '+');
-      close(sync_pipe[0]); close(sync_pipe[1]);
+      close(sync_pipe[0]);
+      close(sync_pipe[1]);
 
       thiscpu->cpuid = i;
       __am_init_timer_irq();
@@ -31,8 +33,9 @@ bool mpe_init(void (*entry)()) {
   for (int i = 1; i < cpu_count(); i++) {
     assert(write(sync_pipe[1], "+", 1) == 1);
   }
-  close(sync_pipe[0]); close(sync_pipe[1]);
-  
+  close(sync_pipe[0]);
+  close(sync_pipe[1]);
+
   entry();
   panic("MP entry should not return\n");
 }
@@ -42,10 +45,6 @@ int cpu_count() {
   return __am_ncpu;
 }
 
-int cpu_current() {
-  return thiscpu->cpuid;
-}
+int cpu_current() { return thiscpu->cpuid; }
 
-int atomic_xchg(int *addr, int newval) {
-  return atomic_exchange((int *)addr, newval);
-}
+int atomic_xchg(int *addr, int newval) { return atomic_exchange((int *)addr, newval); }

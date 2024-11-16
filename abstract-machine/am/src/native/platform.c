@@ -1,16 +1,17 @@
 #define _GNU_SOURCE
-#include <sys/mman.h>
-#include <sys/auxv.h>
+#include "platform.h"
+
 #include <dlfcn.h>
 #include <elf.h>
-#include <stdlib.h>
 #include <stdio.h>
-#include "platform.h"
+#include <stdlib.h>
+#include <sys/auxv.h>
+#include <sys/mman.h>
 
 #define MAX_CPU 16
 #define TRAP_PAGE_START (void *)0x100000
-#define PMEM_START (void *)0x1000000  // for nanos-lite with vme disabled
-#define PMEM_SIZE (128 * 1024 * 1024) // 128MB
+#define PMEM_START (void *)0x1000000   // for nanos-lite with vme disabled
+#define PMEM_SIZE (128 * 1024 * 1024)  // 128MB
 static int pmem_fd = 0;
 static void *pmem = NULL;
 static ucontext_t uc_example = {};
@@ -20,9 +21,7 @@ __am_cpu_t *__am_cpu_struct = NULL;
 int __am_ncpu = 0;
 int __am_pgsize = 0;
 
-static void save_context_handler(int sig, siginfo_t *info, void *ucontext) {
-  memcpy_libc(&uc_example, ucontext, sizeof(uc_example));
-}
+static void save_context_handler(int sig, siginfo_t *info, void *ucontext) { memcpy_libc(&uc_example, ucontext, sizeof(uc_example)); }
 
 static void save_example_context() {
   // getcontext() does not save segment registers. In the signal
@@ -69,21 +68,18 @@ static void init_platform() {
   int ret2 = ftruncate_libc(pmem_fd, PMEM_SIZE);
   assert(ret2 == 0);
 
-  pmem = mmap(PMEM_START, PMEM_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC,
-      MAP_SHARED | MAP_FIXED, pmem_fd, 0);
+  pmem = mmap(PMEM_START, PMEM_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_FIXED, pmem_fd, 0);
   assert(pmem != (void *)-1);
 
   // allocate private per-cpu structure
-  thiscpu = mmap(NULL, sizeof(*thiscpu), PROT_READ | PROT_WRITE,
-      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  thiscpu = mmap(NULL, sizeof(*thiscpu), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   assert(thiscpu != (void *)-1);
   thiscpu->cpuid = 0;
   thiscpu->vm_head = NULL;
 
   // create trap page to receive syscall and yield by SIGSEGV
   int sys_pgsz = sysconf(_SC_PAGESIZE);
-  void *ret = mmap(TRAP_PAGE_START, sys_pgsz, PROT_NONE,
-      MAP_SHARED | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
+  void *ret = mmap(TRAP_PAGE_START, sys_pgsz, PROT_NONE, MAP_SHARED | MAP_ANONYMOUS | MAP_FIXED, -1, 0);
   assert(ret != (void *)-1);
 
   // save the address of memcpy() in glibc, since it may be linked with klib
@@ -94,7 +90,7 @@ static void init_platform() {
   Elf64_Phdr *phdr = (void *)getauxval(AT_PHDR);
   int phnum = (int)getauxval(AT_PHNUM);
   int i;
-  for (i = 0; i < phnum; i ++) {
+  for (i = 0; i < phnum; i++) {
     if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_W)) {
       // allocate temporary memory
       extern char end;
@@ -121,8 +117,7 @@ static void init_platform() {
       assert(ret2 == 0);
 
       // map the sections again with MAP_SHARED, which will be shared across fork()
-      ret = mmap_libc(vaddr_align, size, PROT_READ | PROT_WRITE | PROT_EXEC,
-          MAP_SHARED | MAP_FIXED | MAP_ANONYMOUS, -1, 0);
+      ret = mmap_libc(vaddr_align, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_FIXED | MAP_ANONYMOUS, -1, 0);
       assert(ret == vaddr_align);
 
       // restore the data in the sections
@@ -151,7 +146,7 @@ static void init_platform() {
   // save the context template
   save_example_context();
 #ifdef __x86_64__
-  uc_example.uc_mcontext.fpregs = NULL; // clear the FPU context
+  uc_example.uc_mcontext.fpregs = NULL;  // clear the FPU context
 #endif
   __am_get_intr_sigmask(&uc_example.uc_sigmask);
 
@@ -172,7 +167,7 @@ static void init_platform() {
   setbuf(stdout, NULL);
 
   const char *args = getenv("mainargs");
-  halt(main(args ? args : "")); // call main here!
+  halt(main(args ? args : ""));  // call main here!
 }
 
 void __am_exit_platform(int code) {
@@ -189,8 +184,7 @@ void __am_pmem_map(void *va, void *pa, int prot) {
   // all readable pages executable as well
   if (prot & MMAP_READ) mmap_prot |= PROT_READ | PROT_EXEC;
   if (prot & MMAP_WRITE) mmap_prot |= PROT_WRITE;
-  void *ret = mmap(va, __am_pgsize, mmap_prot,
-      MAP_SHARED | MAP_FIXED, pmem_fd, (uintptr_t)(pa - pmem));
+  void *ret = mmap(va, __am_pgsize, mmap_prot, MAP_SHARED | MAP_FIXED, pmem_fd, (uintptr_t)(pa - pmem));
   assert(ret != (void *)-1);
 }
 
@@ -199,34 +193,25 @@ void __am_pmem_unmap(void *va) {
   assert(ret == 0);
 }
 
-void __am_get_example_uc(Context *r) {
-  memcpy_libc(&r->uc, &uc_example, sizeof(uc_example));
-}
+void __am_get_example_uc(Context *r) { memcpy_libc(&r->uc, &uc_example, sizeof(uc_example)); }
 
-void __am_get_intr_sigmask(sigset_t *s) {
-  memcpy_libc(s, &__am_intr_sigmask, sizeof(__am_intr_sigmask));
-}
+void __am_get_intr_sigmask(sigset_t *s) { memcpy_libc(s, &__am_intr_sigmask, sizeof(__am_intr_sigmask)); }
 
-int __am_is_sigmask_sti(sigset_t *s) {
-  return !sigismember(s, SIGVTALRM);
-}
+int __am_is_sigmask_sti(sigset_t *s) { return !sigismember(s, SIGVTALRM); }
 
-void __am_send_kbd_intr() {
-  kill(getpid(), SIGUSR1);
-}
+void __am_send_kbd_intr() { kill(getpid(), SIGUSR1); }
 
 void __am_pmem_protect() {
-//  int ret = mprotect(PMEM_START, PMEM_SIZE, PROT_NONE);
-//  assert(ret == 0);
+  //  int ret = mprotect(PMEM_START, PMEM_SIZE, PROT_NONE);
+  //  assert(ret == 0);
 }
 
 void __am_pmem_unprotect() {
-//  int ret = mprotect(PMEM_START, PMEM_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
-//  assert(ret == 0);
+  //  int ret = mprotect(PMEM_START, PMEM_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
+  //  assert(ret == 0);
 }
 
 // This dummy function will be called in trm.c.
 // The purpose of this dummy function is to let linker add this file to the object
 // file set. Without it, the constructor of @_init_platform will not be linked.
-void __am_platform_dummy() {
-}
+void __am_platform_dummy() {}

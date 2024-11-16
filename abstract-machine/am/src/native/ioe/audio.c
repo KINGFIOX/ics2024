@@ -1,8 +1,8 @@
 #define _GNU_SOURCE
-#include <fcntl.h>
-#include <unistd.h>
-#include <klib.h>
 #include <SDL.h>
+#include <fcntl.h>
+#include <klib.h>
+#include <unistd.h>
 
 static int rfd = -1, wfd = -1;
 static volatile int count = 0;
@@ -57,9 +57,7 @@ void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
   }
 }
 
-void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
-  stat->count = count;
-}
+void __am_audio_status(AM_AUDIO_STATUS_T *stat) { stat->count = count; }
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
   int len = ctl->buf.end - ctl->buf.start;

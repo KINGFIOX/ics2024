@@ -23,14 +23,15 @@
 static alarm_handler_t handler[MAX_HANDLER] = {};
 static int idx = 0;
 
+// called in src/device/timer.c
 void add_alarm_handle(alarm_handler_t h) {
   assert(idx < MAX_HANDLER);
   handler[idx++] = h;
 }
 
-static void alarm_sig_handler(int signum) {  // setitimer 导致的
-  int i;
-  for (i = 0; i < idx; i++) {
+// as a handler fo SIGVTALRM which is set by setitimer
+static void alarm_sig_handler(int signum) {
+  for (int i = 0; i < idx; i++) {
     handler[i]();
   }
 }

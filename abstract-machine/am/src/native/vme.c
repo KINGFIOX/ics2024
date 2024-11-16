@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include <search.h>
+
 #include "platform.h"
 
 #define USER_SPACE RANGE(0x40000000, 0xc0000000)
@@ -19,15 +20,14 @@ typedef struct VMHead {
   int nr_page;
 } VMHead;
 
-#define list_foreach(p, head) \
-  for (p = (PageMap *)(head); p != NULL; p = p->next)
+#define list_foreach(p, head) for (p = (PageMap *)(head); p != NULL; p = p->next)
 
 extern int __am_pgsize;
 static int vme_enable = 0;
-static void* (*pgalloc)(int) = NULL;
+static void *(*pgalloc)(int) = NULL;
 static void (*pgfree)(void *) = NULL;
 
-bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
+bool vme_init(void *(*pgalloc_f)(int), void (*pgfree_f)(void *)) {
   pgalloc = pgalloc_f;
   pgfree = pgfree_f;
   vme_enable = 1;
@@ -36,7 +36,7 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
 
 void protect(AddrSpace *as) {
   assert(as != NULL);
-  VMHead *h = pgalloc(__am_pgsize); // used as head of the list
+  VMHead *h = pgalloc(__am_pgsize);  // used as head of the list
   assert(h != NULL);
   memset(h, 0, sizeof(*h));
   int max_pg = (USER_SPACE.end - USER_SPACE.start) / __am_pgsize;
@@ -48,8 +48,7 @@ void protect(AddrSpace *as) {
   as->area = USER_SPACE;
 }
 
-void unprotect(AddrSpace *as) {
-}
+void unprotect(AddrSpace *as) {}
 
 void __am_switch(Context *c) {
   if (!vme_enable) return;
@@ -92,17 +91,17 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   assert(vm_head != NULL);
   char buf[32];
   snprintf(buf, 32, "%x", va);
-  ENTRY item = { .key = buf };
+  ENTRY item = {.key = buf};
   ENTRY *item_find;
   hsearch_r(item, FIND, &item_find, &vm_head->hash);
   if (item_find == NULL) {
-    pp = pgalloc(__am_pgsize); // this will waste memory, any better idea?
+    pp = pgalloc(__am_pgsize);  // this will waste memory, any better idea?
     snprintf(pp->key, 32, "%x", va);
     item.key = pp->key;
     item.data = pp;
     int ret = hsearch_r(item, ENTER, &item_find, &vm_head->hash);
     assert(ret != 0);
-    vm_head->nr_page ++;
+    vm_head->nr_page++;
   } else {
     pp = item_find->data;
   }
@@ -120,14 +119,14 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
   }
 }
 
-Context* ucontext(AddrSpace *as, Area kstack, void *entry) {
-  Context *c = (Context*)kstack.end - 1;
+Context *ucontext(AddrSpace *as, Area kstack, void *entry) {
+  Context *c = (Context *)kstack.end - 1;
 
   __am_get_example_uc(c);
   AM_REG_PC(&c->uc) = (uintptr_t)entry;
   AM_REG_SP(&c->uc) = (uintptr_t)USER_SPACE.end;
 
-  int ret = sigemptyset(&(c->uc.uc_sigmask)); // enable interrupt
+  int ret = sigemptyset(&(c->uc.uc_sigmask));  // enable interrupt
   assert(ret == 0);
   c->vm_head = as->ptr;
 
@@ -136,6 +135,4 @@ Context* ucontext(AddrSpace *as, Area kstack, void *entry) {
   return c;
 }
 
-int __am_in_userspace(void *addr) {
-  return vme_enable && thiscpu->vm_head != NULL && IN_RANGE(addr, USER_SPACE);
-}
+int __am_in_userspace(void *addr) { return vme_enable && thiscpu->vm_head != NULL && IN_RANGE(addr, USER_SPACE); }
