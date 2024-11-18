@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/auxv.h>
+#include <sys/auxv.h>  // aux, auxiliary, 辅助
 #include <sys/mman.h>
 
 int memfd_create(const char *name, unsigned int flags);  // forward declaration
@@ -21,7 +21,7 @@ static int pmem_fd = 0;
 static void *pmem = NULL;
 
 static void *(*memcpy_libc)(void *, const void *, size_t) = NULL;
-sigset_t __am_intr_sigmask = {};
+
 __am_cpu_t *__am_cpu_struct = NULL;
 int __am_ncpu = 0;
 int __am_pgsize = 0;
@@ -31,13 +31,13 @@ int __am_pgsize = 0;
 static ucontext_t uc_example = {};
 
 static void save_context_handler(int sig, siginfo_t *info, void *ucontext) {
-  // siginfo_t likely the enum { SIGxxx(data) } in rust (代数类型)
+  // NOTE: siginfo_t likely the enum { SIGxxx(data) } in rust (代数类型)
   // ucontext the status when the signal is triggered. register, stack, etc.
   memcpy_libc(&uc_example, ucontext, sizeof(uc_example));
 }
 
 static void save_example_context() {
-  // getcontext() does not save segment registers.
+  // NOTE: getcontext() does not save segment registers.
   // In the signal handler, restoring a context previously saved by getcontext()
   //   will trigger segmentation fault because of the invalid segment registers.
   // So we save the example context during signal handling to get a context with everything valid.
@@ -76,14 +76,22 @@ static void setup_sigaltstack() {
 
 /* ---------- load ---------- */
 
+sigset_t __am_intr_sigmask = {};
+
 int main(const char *args);
 
 // __attribute__((constructor)) means: This function is called before main()
 
 __attribute__((constructor)) static void init_platform() {
-  pmem_fd = memfd_create("pmem", 0);  // create memory object and set up mapping to simulate the physical memory.
+  // create memory object and set up mapping to simulate the physical memory.
+  pmem_fd = memfd_create("pmem", 0);
   assert(pmem_fd != -1);
-  // use dynamic linking to avoid linking to the same function in RT-Thread
+  // use dynamic linking to avoid linking to the same function in RT-Thread.
+  // NOTE: This ensure the function is called in the glibc, not in the RT-Thread.
+  //
+  // NOTE: If the first argument of `dlsym' is set to RTLD_NEXT the run-time address
+  //   of the symbol called NAME in the next shared object is returned.
+  // The "next" relation is defined by the order the shared objects were loaded.
   int (*ftruncate_libc)(int, off_t) = dlsym(RTLD_NEXT, "ftruncate");
   assert(ftruncate_libc != NULL);
   int ret2 = ftruncate_libc(pmem_fd, PMEM_SIZE);
@@ -98,8 +106,8 @@ __attribute__((constructor)) static void init_platform() {
   // allocate private per-cpu structure
   thiscpu = mmap(NULL, sizeof(*thiscpu), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   assert(thiscpu != (void *)-1);
-  thiscpu->cpuid = 0;
   thiscpu->vm_head = NULL;
+  thiscpu->cpuid = 0;
 
   // create trap page to receive syscall and yield by SIGSEGV
   int sys_pgsz = sysconf(_SC_PAGESIZE);
@@ -111,16 +119,22 @@ __attribute__((constructor)) static void init_platform() {
   assert(memcpy_libc != NULL);
 
   // remap writable sections as MAP_SHARED
-  Elf64_Phdr *phdr = (void *)getauxval(AT_PHDR);  // aux, auxiliary, 辅助
+  Elf64_Phdr *phdr = (void *)getauxval(AT_PHDR);
   int phnum = (int)getauxval(AT_PHNUM);
+  // an ELF file has amount of phdr, each phdr describes a segment of the ELF file
   for (int i = 0; i < phnum; i++) {
+    // remap writable PT_LOAD segment (generally .data / .bss) into MAP_SHARED
+    // 这是为了: 进程之间共享全局变量
     if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_W)) {  // loadable && writable
       // allocate temporary memory
-      extern char end;
+      extern char end;  // NOTE: extern char end is a general way to get the end of the data section.
       void *vaddr = (void *)&end - phdr[i].p_memsz;
-      uintptr_t pad = (uintptr_t)vaddr & 0xfff;
+      // vaddr 相比 phdr[i].p_vaddr 是动态的(运行时)
+      uintptr_t pad = (uintptr_t)vaddr & 0xfff;  // padding byte should be used to align
       void *vaddr_align = vaddr - pad;
       uintptr_t size = phdr[i].p_memsz + pad;
+
+      // temporary memory to save the .data and .bss
       void *temp_mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
       assert(temp_mem != (void *)-1);
 
@@ -128,7 +142,9 @@ __attribute__((constructor)) static void init_platform() {
       memcpy_libc(temp_mem, vaddr_align, size);
 
       // save the address of mmap() which will be used after munamp(),
-      // since calling the library functions requires accessing GOT, which will be unmapped
+      // since calling the library functions requires accessing GOT(global offset table), which will be unmapped
+      // 暂时保存 mmap_libc, 因为: 在 munmap() 之后, 可能没法访问 GOT, 那么就没法直接调用 mmap(), 这里暂时保存到栈上
+      // 因为 GOT 对应的 section 有 PT_LOAD, PF_W
       void *(*mmap_libc)(void *, size_t, int, int, int, off_t) = dlsym(RTLD_NEXT, "mmap");
       assert(mmap_libc != NULL);
       // load the address of memcpy() on stack, which can still be accessed
@@ -171,18 +187,18 @@ __attribute__((constructor)) static void init_platform() {
 #ifdef __x86_64__
   uc_example.uc_mcontext.fpregs = NULL;  // clear the FPU context
 #endif
-  __am_get_intr_sigmask(&uc_example.uc_sigmask);
+  __am_get_intr_sigmask(&uc_example.uc_sigmask);  // save the __am_intr_sigmask into uc_example.uc_sigmask
 
-  // disable interrupts by default
+  // disable interrupts by default. native use signal to emulate the interrupt happened on real cpu
   iset(0);
 
   // set ncpu
-  const char *smp = getenv("smp");
+  const char *smp = getenv("smp");  // set in Makefile
   __am_ncpu = smp ? atoi(smp) : 1;
   assert(0 < __am_ncpu && __am_ncpu <= MAX_CPU);
 
   // set pgsize
-  const char *pgsize = getenv("pgsize");
+  const char *pgsize = getenv("pgsize");  // 环境变量中没有设置就用默认的了, not set in Makefile
   __am_pgsize = pgsize ? atoi(pgsize) : sys_pgsz;
   assert(__am_pgsize > 0 && __am_pgsize % sys_pgsz == 0);
 
@@ -193,10 +209,10 @@ __attribute__((constructor)) static void init_platform() {
   halt(main(args ? args : ""));  // call main here!
 }
 
-void __am_exit_platform(int code) {  //
+void __am_exit_platform(int code) {  // called in halt()
   // let Linux clean up other resource
   extern int __am_mpe_init;
-  // kill: If pid equals 0, then sig is sent to every process in the process group of the calling process.
+  // NOTE: kill: If pid equals 0, then sig is sent to every process in the process group of the calling process.
   if (__am_mpe_init && cpu_count() > 1) kill(0, SIGKILL);
   exit(code);
 }
@@ -219,8 +235,19 @@ void __am_pmem_unmap(void *va) {
 
 void __am_get_example_uc(Context *r) { memcpy_libc(&r->uc, &uc_example, sizeof(uc_example)); }
 
+/**
+ * @brief copy __am_intr_sigmask into s
+ *
+ * @param s
+ */
 void __am_get_intr_sigmask(sigset_t *s) { memcpy_libc(s, &__am_intr_sigmask, sizeof(__am_intr_sigmask)); }
 
+/**
+ * @brief is alarm in the s ?
+ *
+ * @param s
+ * @return bool
+ */
 int __am_is_sigmask_sti(sigset_t *s) { return !sigismember(s, SIGVTALRM); }
 
 void __am_send_kbd_intr() {
