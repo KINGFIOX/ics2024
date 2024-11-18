@@ -248,9 +248,9 @@ static int cmd_help(char *arg) {
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
-static char last_cmd[256];
+static char *last_str;
 static int last_i;
-static char last_args[256];
+static char *last_args;
 
 void sdb_mainloop() {
   if (is_batch_mode) {  // batch mode
@@ -261,8 +261,8 @@ void sdb_mainloop() {
   for (char *str; (str = rl_gets()) != NULL;) {
     char *str_end = str + strlen(str);
 
-    if (strlen(str) == 0 && last_cmd[0] != '\0') {
-      str = last_cmd;
+    if (strlen(str) == 0 && last_str[0] != '\0') {
+      str = last_str;
       str_end = str + strlen(str);
       printf("%s\n", str);
       if (cmd_table[last_i].handler(last_args) < 0) {
@@ -297,8 +297,8 @@ void sdb_mainloop() {
         if (cmd_table[i].handler(args) < 0) {
           return;  // execute error happened
         }
-        strncpy(last_cmd, str, sizeof(last_cmd));
-        strncpy(last_args, args, sizeof(last_args));
+        last_args = args;
+        last_str = str;
         last_i = i;
         break;
       }
