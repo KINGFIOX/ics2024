@@ -18,8 +18,6 @@
 #include <memory/host.h>
 #include <memory/vaddr.h>
 
-extern uint32_t inst_fetch(vaddr_t *pc, int len);
-
 #define IO_SPACE_MAX (32 * 1024 * 1024)
 
 static uint8_t *io_space = NULL;  // malloc in init_map
