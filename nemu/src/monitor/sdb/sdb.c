@@ -297,8 +297,14 @@ void sdb_mainloop() {
         if (cmd_table[i].handler(args) < 0) {
           return;  // execute error happened
         }
-        last_args = args;
-        last_str = str;
+        if (last_args != NULL) {
+          free(last_args);
+        }
+        if (last_str != NULL) {
+          free(last_str);
+        }
+        last_str = strdup(str);
+        last_args = strdup(args);
         last_i = i;
         break;
       }
