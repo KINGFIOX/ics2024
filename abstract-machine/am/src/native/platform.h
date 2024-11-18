@@ -38,6 +38,7 @@ typedef struct {
   Event ev;  // similar to cause register in mips/riscv
   uint8_t sigstack[32768];
 } __am_cpu_t;
+
 extern __am_cpu_t *__am_cpu_struct;
 #define thiscpu __am_cpu_struct
 

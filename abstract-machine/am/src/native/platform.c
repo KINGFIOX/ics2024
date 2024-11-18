@@ -10,29 +10,37 @@
 #include <sys/auxv.h>
 #include <sys/mman.h>
 
+int memfd_create(const char *name, unsigned int flags);  // forward declaration
+
 #define MAX_CPU 16
 #define TRAP_PAGE_START (void *)0x100000
+
 #define PMEM_START (void *)0x1000000   // for nanos-lite with vme disabled
 #define PMEM_SIZE (128 * 1024 * 1024)  // 128MB
 static int pmem_fd = 0;
 static void *pmem = NULL;
-static ucontext_t uc_example = {};
+
 static void *(*memcpy_libc)(void *, const void *, size_t) = NULL;
 sigset_t __am_intr_sigmask = {};
 __am_cpu_t *__am_cpu_struct = NULL;
 int __am_ncpu = 0;
 int __am_pgsize = 0;
 
-int memfd_create(const char *name, unsigned int flags);
+/* ---------- ucontext example ---------- */
 
-static void save_context_handler(int sig, siginfo_t *info, void *ucontext) { memcpy_libc(&uc_example, ucontext, sizeof(uc_example)); }
+static ucontext_t uc_example = {};
+
+static void save_context_handler(int sig, siginfo_t *info, void *ucontext) {
+  // siginfo_t likely the enum { SIGxxx(data) } in rust (代数类型)
+  // ucontext the status when the signal is triggered. register, stack, etc.
+  memcpy_libc(&uc_example, ucontext, sizeof(uc_example));
+}
 
 static void save_example_context() {
-  // getcontext() does not save segment registers. In the signal
-  // handler, restoring a context previously saved by getcontext()
-  // will trigger segmentation fault because of the invalid segment
-  // registers. So we save the example context during signal handling
-  // to get a context with everything valid.
+  // getcontext() does not save segment registers.
+  // In the signal handler, restoring a context previously saved by getcontext()
+  //   will trigger segmentation fault because of the invalid segment registers.
+  // So we save the example context during signal handling to get a context with everything valid.
   struct sigaction s;
   void *(*memset_libc)(void *, int, size_t) = dlsym(RTLD_NEXT, "memset");
   memset_libc(&s, 0, sizeof(s));
@@ -41,7 +49,7 @@ static void save_example_context() {
   int ret = sigaction(SIGUSR1, &s, NULL);
   assert(ret == 0);
 
-  raise(SIGUSR1);
+  raise(SIGUSR1);  // trigger save_context_handler(), to get the example of the ucontext
 
   s.sa_flags = 0;
   s.sa_handler = SIG_DFL;
@@ -49,22 +57,31 @@ static void save_example_context() {
   assert(ret == 0);
 }
 
+/* ---------- signal stack ---------- */
+
+// The signal stack is used to handle the signal when the stack is exhausted.
+// when the stack of handler is exhausted, the signal stack would use the stack set in sigaltstack(). interesting.
+
 static void setup_sigaltstack() {
   assert(sizeof(thiscpu->sigstack) >= SIGSTKSZ);
-  stack_t ss;
-  ss.ss_sp = thiscpu->sigstack;
-  ss.ss_size = sizeof(thiscpu->sigstack);
-  ss.ss_flags = 0;
+  stack_t ss = {
+      .ss_sp = thiscpu->sigstack,
+      .ss_flags = 0,
+      .ss_size = sizeof(thiscpu->sigstack),
+  };
+
   int ret = sigaltstack(&ss, NULL);
   assert(ret == 0);
 }
 
+/* ---------- load ---------- */
+
 int main(const char *args);
 
-static void init_platform() __attribute__((constructor));
-static void init_platform() {
-  // create memory object and set up mapping to simulate the physical memory
-  pmem_fd = memfd_create("pmem", 0);
+// __attribute__((constructor)) means: This function is called before main()
+
+__attribute__((constructor)) static void init_platform() {
+  pmem_fd = memfd_create("pmem", 0);  // create memory object and set up mapping to simulate the physical memory.
   assert(pmem_fd != -1);
   // use dynamic linking to avoid linking to the same function in RT-Thread
   int (*ftruncate_libc)(int, off_t) = dlsym(RTLD_NEXT, "ftruncate");
@@ -72,6 +89,9 @@ static void init_platform() {
   int ret2 = ftruncate_libc(pmem_fd, PMEM_SIZE);
   assert(ret2 == 0);
 
+  // FIXED means: addr is forced
+  // cat /proc/<pid>/maps
+  // 01000000-09000000 rwxs 00000000 00:01 373389                             /memfd:pmem (deleted)
   pmem = mmap(PMEM_START, PMEM_SIZE, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_FIXED, pmem_fd, 0);
   assert(pmem != (void *)-1);
 
@@ -91,11 +111,10 @@ static void init_platform() {
   assert(memcpy_libc != NULL);
 
   // remap writable sections as MAP_SHARED
-  Elf64_Phdr *phdr = (void *)getauxval(AT_PHDR);
+  Elf64_Phdr *phdr = (void *)getauxval(AT_PHDR);  // aux, auxiliary, 辅助
   int phnum = (int)getauxval(AT_PHNUM);
-  int i;
-  for (i = 0; i < phnum; i++) {
-    if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_W)) {
+  for (int i = 0; i < phnum; i++) {
+    if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_W)) {  // loadable && writable
       // allocate temporary memory
       extern char end;
       void *vaddr = (void *)&end - phdr[i].p_memsz;
@@ -174,9 +193,10 @@ static void init_platform() {
   halt(main(args ? args : ""));  // call main here!
 }
 
-void __am_exit_platform(int code) {
+void __am_exit_platform(int code) {  //
   // let Linux clean up other resource
   extern int __am_mpe_init;
+  // kill: If pid equals 0, then sig is sent to every process in the process group of the calling process.
   if (__am_mpe_init && cpu_count() > 1) kill(0, SIGKILL);
   exit(code);
 }
@@ -203,7 +223,10 @@ void __am_get_intr_sigmask(sigset_t *s) { memcpy_libc(s, &__am_intr_sigmask, siz
 
 int __am_is_sigmask_sti(sigset_t *s) { return !sigismember(s, SIGVTALRM); }
 
-void __am_send_kbd_intr() { kill(getpid(), SIGUSR1); }
+void __am_send_kbd_intr() {
+  raise(SIGUSR1);
+  // kill(getpid(), SIGUSR1);
+}
 
 void __am_pmem_protect() {
   //  int ret = mprotect(PMEM_START, PMEM_SIZE, PROT_NONE);
