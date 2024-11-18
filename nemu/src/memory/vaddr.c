@@ -20,4 +20,10 @@ word_t vaddr_ifetch(vaddr_t addr, int len) { return paddr_read(addr, len); }
 
 word_t vaddr_read(vaddr_t addr, int len) { return paddr_read(addr, len); }
 
-void vaddr_write(vaddr_t addr, int len, word_t data) { paddr_write(addr, len, data); }
+void vaddr_write(vaddr_t addr, int len, word_t data) {
+  if (0x109f54 <= addr && addr < 0x109f54 + 4) {
+    printf("cpu.pc = %x\n, data = 0x%08x", cpu.pc, data);
+  }
+
+  paddr_write(addr, len, data);
+}
