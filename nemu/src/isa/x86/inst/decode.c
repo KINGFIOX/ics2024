@@ -316,7 +316,9 @@ static inline void idiv(int w, word_t op) {
 
 static inline void ret_imm(Decode *s, int w, word_t imm) {
   ret(s, w);
-  push(4, imm);
+  for (int i = 0; i < imm; i++) {
+    pop(1);
+  }
 }
 
 /**
