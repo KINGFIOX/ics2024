@@ -5,28 +5,29 @@
 
 #define KEY_QUEUE_LEN 1024
 static int key_queue[KEY_QUEUE_LEN] = {};
-static int key_f = 0, key_r = 0;
+static int key_f /*front*/ = 0, key_r /*rear*/ = 0;
+
 static SDL_mutex *key_queue_lock = NULL;
 
 #define XX(k) [SDL_SCANCODE_##k] = AM_KEY_##k,
 
-// #define AM_KEYS(_) \
-//   _(ESCAPE)        \
-//   _(F1)            \
-//   _(F2)            \
-//   _(F3)            \
-//   _(F4)            \
-//   _(F5)            \
-//   _(F6)            \
+// #define AM_KEYS(_)
+//   _(ESCAPE)
+//   _(F1)
+//   _(F2)
+//   _(F3)
+//   _(F4)
+//   _(F5)
+//   _(F6)
 //   _(F7)
 
-// XX(ESCAPE)  \
-// XX(F1)      \
-// XX(F2)      \
-// XX(F3)      \
-// XX(F4)      \
-// XX(F5)      \
-// XX(F6)      \
+// XX(ESCAPE)
+// XX(F1)
+// XX(F2)
+// XX(F3)
+// XX(F4)
+// XX(F5)
+// XX(F6)
 // XX(F7)
 
 // [SDL_SCANCODE_ESCAPE] = AM_KEY_ESCAPE,
@@ -39,6 +40,7 @@ static SDL_mutex *key_queue_lock = NULL;
 // [SDL_SCANCODE_F7] = AM_KEY_F7,
 
 static int keymap[256] = {AM_KEYS(XX)};
+
 // static int keymap[256] = {
 //     [SDL_SCANCODE_ESCAPE] = AM_KEY_ESCAPE,
 //     [SDL_SCANCODE_F1] = AM_KEY_F1,
@@ -51,7 +53,10 @@ static int keymap[256] = {AM_KEYS(XX)};
 //     [SDL_SCANCODE_F8] = AM_KEY_F8,
 // };
 
-static int event_thread(void *args) {
+// #define AM_KEY_NAMES(key) AM_KEY_##key,
+// enum { AM_KEY_NONE = 0, AM_KEYS(AM_KEY_NAMES) };
+
+static int event_thread(void *) {
   SDL_Event event;
   while (1) {
     SDL_WaitEvent(&event);
@@ -63,14 +68,14 @@ static int event_thread(void *args) {
         SDL_Keysym k = event.key.keysym;  // key that pressed or released
         int keydown = event.key.type == SDL_KEYDOWN;
         int scancode = k.scancode;
-        if (keymap[scancode] != 0) {
+        if (keymap[scancode] != AM_KEY_NONE) {
           int am_code = keymap[scancode] | (keydown ? KEYDOWN_MASK : 0);
           SDL_LockMutex(key_queue_lock);
           key_queue[key_r] = am_code;
           key_r = (key_r + 1) % KEY_QUEUE_LEN;
           SDL_UnlockMutex(key_queue_lock);
           void __am_send_kbd_intr();
-          __am_send_kbd_intr();
+          __am_send_kbd_intr();  // signal to emulate the interrupt
         }
         break;
       }
