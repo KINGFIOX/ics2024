@@ -315,7 +315,7 @@ static inline void idiv(int w, word_t op) {
 }
 
 static inline void ret_imm(Decode *s, int w, word_t imm) {
-  Rw(R_EAX, w, imm);
+  push(4, imm);
   ret(s, w);
 }
 
@@ -929,7 +929,7 @@ again:
   INSTPAT("1100 0001", shr, Ib2E, 0, word_t op2 = imm; gp2());
   // c0 f8 02 sar $0xw,%al
   INSTPAT("1100 0000", gp2, Ib2E, 1, word_t op2 = imm; gp2());
-
+  // c2 04 00 ret $0x4
   INSTPAT("1100 0010", ret, I, 2, ret_imm(s, w, imm));
 
   //   1000f0:       d3 e0                   shl    %cl,%eax
