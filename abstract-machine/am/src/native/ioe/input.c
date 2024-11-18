@@ -56,7 +56,7 @@ static int keymap[256] = {AM_KEYS(XX)};
 // #define AM_KEY_NAMES(key) AM_KEY_##key,
 // enum { AM_KEY_NONE = 0, AM_KEYS(AM_KEY_NAMES) };
 
-static int event_thread(void *) {
+static int event_thread(void *args) {
   SDL_Event event;
   while (1) {
     SDL_WaitEvent(&event);
@@ -93,7 +93,7 @@ void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true; }
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *kbd) {
   int k = AM_KEY_NONE;
 
-  SDL_LockMutex(key_queue_lock);
+  SDL_LockMutex(key_queue_lock);  // pop the key from the queue
   if (key_f != key_r) {
     k = key_queue[key_f];
     key_f = (key_f + 1) % KEY_QUEUE_LEN;
