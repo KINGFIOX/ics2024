@@ -721,13 +721,13 @@ static inline void rep(Decode *s, int w) {
   Rw(R_ECX, w, Rr(R_ECX, w) - 1);
   switch (opcode) {
     case 0xa5:
-      Mw(Rr(R_EDI, w), w, Mr(Rr(R_ESI, w), w));
       Rw(R_ESI, w, Rr(R_ESI, w) + w);
       Rw(R_EDI, w, Rr(R_EDI, w) + w);
+      Mw(Rr(R_EDI, w), w, Mr(Rr(R_ESI, w), w));
       break;
     case 0xab:
-      Mw(Rr(R_EDI, w), w, Rr(rs, w));
       Rw(R_EDI, w, Rr(R_EDI, w) + w);
+      Mw(Rr(R_EDI, w), w, Rr(rs, w));
       break;
     default:
       printf("%s:%d rep opcode = 0x%02x\n", __FILE__, __LINE__, opcode);
