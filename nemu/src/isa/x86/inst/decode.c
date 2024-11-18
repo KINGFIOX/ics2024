@@ -717,7 +717,6 @@ static inline word_t in_(int w, word_t port) {
 
 static inline void rep(Decode *s, int w) {
   uint8_t opcode = x86_inst_fetch(s, 1);
-  int rs = opcode & 0b0111;
   vaddr_t edi = Rr(R_EDI, w);
   vaddr_t esi = Rr(R_ESI, w);
   switch (opcode) {
@@ -726,8 +725,8 @@ static inline void rep(Decode *s, int w) {
       Rw(R_ESI, w, esi + w);
       break;
     case 0xab:
-      Mw(edi, w, Rr(rs, w));
-      Assert(Mr(edi, w) == Rr(rs, w), "impossible rep mov");
+      Mw(edi, w, Rr(R_EAX, w));
+      Assert(Mr(edi, w) == Rr(R_EAX, w), "impossible rep mov");
       break;
     default:
       printf("%s:%d rep opcode = 0x%02x\n", __FILE__, __LINE__, opcode);
