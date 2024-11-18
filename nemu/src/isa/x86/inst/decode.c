@@ -314,6 +314,11 @@ static inline void idiv(int w, word_t op) {
   Rw(R_EDX, 4, (word_t)(dividend % divisor));
 }
 
+static inline void ret_imm(Decode *s, int w, word_t imm) {
+  Rw(R_EAX, w, imm);
+  ret(s, w);
+}
+
 /**
  * @brief
  *
@@ -924,6 +929,8 @@ again:
   INSTPAT("1100 0001", shr, Ib2E, 0, word_t op2 = imm; gp2());
   // c0 f8 02 sar $0xw,%al
   INSTPAT("1100 0000", gp2, Ib2E, 1, word_t op2 = imm; gp2());
+
+  INSTPAT("1100 0010", ret, I, 2, ret_imm(s, w, imm));
 
   //   1000f0:       d3 e0                   shl    %cl,%eax
   INSTPAT("1101 0011", gp2, cl2E, 0, word_t op2 = Rr(R_CL, 1); gp2());
