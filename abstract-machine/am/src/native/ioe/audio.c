@@ -1,23 +1,34 @@
 #define _GNU_SOURCE
+
 #include <SDL.h>
 #include <fcntl.h>
 #include <klib.h>
 #include <unistd.h>
 
 static int rfd = -1, wfd = -1;
-static volatile int count = 0;
+static volatile int count = 0;  // count of bytes in the pipe
+
+int pipe2(int pipefd[2], int flags);
 
 void __am_audio_init() {
   int fds[2];
   int ret = pipe2(fds, O_NONBLOCK);
   assert(ret == 0);
-  rfd = fds[0];
-  wfd = fds[1];
+  rfd = fds[0];  // read
+  wfd = fds[1];  // write
 }
 
+/**
+ * @brief
+ *
+ * @param userdata
+ * @param stream (return)
+ * @param len
+ */
 static void audio_play(void *userdata, uint8_t *stream, int len) {
   int nread = len;
   if (count < len) nread = count;
+
   int b = 0;
   while (b < nread) {
     int n = read(rfd, stream, nread);
@@ -30,24 +41,25 @@ static void audio_play(void *userdata, uint8_t *stream, int len) {
   }
 }
 
-static void audio_write(uint8_t *buf, int len) {
+static void audio_write(const uint8_t *buf, int len) {
   int nwrite = 0;
   while (nwrite < len) {
     int n = write(wfd, buf, len);
-    if (n == -1) n = 0;
+    if (n == -1) n = 0;  // because of non-block
     count += n;
     nwrite += n;
   }
 }
 
 void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
-  SDL_AudioSpec s = {};
-  s.freq = ctrl->freq;
-  s.format = AUDIO_S16SYS;
-  s.channels = ctrl->channels;
-  s.samples = ctrl->samples;
-  s.callback = audio_play;
-  s.userdata = NULL;
+  SDL_AudioSpec s = {
+      .freq = ctrl->freq,
+      .format = AUDIO_S16SYS,
+      .channels = ctrl->channels,
+      .samples = ctrl->samples,
+      .callback = audio_play,
+      .userdata = NULL,
+  };
 
   count = 0;
   int ret = SDL_InitSubSystem(SDL_INIT_AUDIO);

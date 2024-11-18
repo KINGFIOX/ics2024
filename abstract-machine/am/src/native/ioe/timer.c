@@ -1,5 +1,5 @@
 #include <am.h>
-#include <nemu.h>
+// #include <nemu.h>
 #include <sys/time.h>
 #include <time.h>
 

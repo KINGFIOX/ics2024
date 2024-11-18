@@ -1,8 +1,10 @@
 #define _GNU_SOURCE
+
 #include "platform.h"
 
 #include <dlfcn.h>
 #include <elf.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/auxv.h>
@@ -20,6 +22,8 @@ sigset_t __am_intr_sigmask = {};
 __am_cpu_t *__am_cpu_struct = NULL;
 int __am_ncpu = 0;
 int __am_pgsize = 0;
+
+int memfd_create(const char *name, unsigned int flags);
 
 static void save_context_handler(int sig, siginfo_t *info, void *ucontext) { memcpy_libc(&uc_example, ucontext, sizeof(uc_example)); }
 

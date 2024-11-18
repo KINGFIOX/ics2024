@@ -2,13 +2,14 @@
 #define ARCH_H__
 
 #ifndef __USE_GNU
-# define __USE_GNU
+#define __USE_GNU
 #endif
 
+#include <stdint.h>
 #include <ucontext.h>
 
 struct Context {
-  uintptr_t ksp;
+  uintptr_t ksp;  // kernel
   void *vm_head;
   ucontext_t uc;
 #ifdef __x86_64__
@@ -18,6 +19,7 @@ struct Context {
 };
 
 #ifdef __x86_64__
+// uc 用于存储用户态的上下文, 寄存器状态, 信号掩码, 栈指针等
 #define GPR1 uc.uc_mcontext.gregs[REG_RDI]
 #define GPR2 uc.uc_mcontext.gregs[REG_RSI]
 #define GPR3 uc.uc_mcontext.gregs[REG_RDX]
@@ -32,10 +34,10 @@ struct Context {
 #elif defined(__riscv)
 // FIXME: may be wrong
 #define GPR1 uc.uc_mcontext.__gregs[REG_A0]
-#define GPR2 uc.uc_mcontext.__gregs[REG_A0+1]
-#define GPR3 uc.uc_mcontext.__gregs[REG_A0+2]
-#define GPR4 uc.uc_mcontext.__gregs[REG_A0+3]
-#define GPRx uc.uc_mcontext.__gregs[REG_A0+4]
+#define GPR2 uc.uc_mcontext.__gregs[REG_A0 + 1]
+#define GPR3 uc.uc_mcontext.__gregs[REG_A0 + 2]
+#define GPR4 uc.uc_mcontext.__gregs[REG_A0 + 3]
+#define GPRx uc.uc_mcontext.__gregs[REG_A0 + 4]
 #else
 #error Unsupported architecture
 #endif

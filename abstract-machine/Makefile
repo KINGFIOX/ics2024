@@ -1,6 +1,6 @@
 # Makefile for AbstractMachine Kernels and Libraries
 
-ARCH = x86-nemu
+ARCH = native
 
 ### *Get a more readable version of this Makefile* by `make html` (requires python-markdown)
 html:
