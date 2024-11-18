@@ -727,6 +727,7 @@ static inline void rep(Decode *s, int w) {
       break;
     case 0xab:
       Mw(edi, w, Rr(rs, w));
+      Assert(Mr(edi, w) == Rr(rs, w), "impossible rep mov");
       break;
     default:
       printf("%s:%d rep opcode = 0x%02x\n", __FILE__, __LINE__, opcode);
