@@ -29,6 +29,8 @@ void init_map() {
   p_space = io_space;
 }
 
+extern uint32_t inst_fetch(vaddr_t *pc, int len);
+
 uint8_t *new_space(int size) {
   uint8_t *p = p_space;
   size = (size + (PAGE_SIZE - 1)) & ~PAGE_MASK;  // page aligned;
