@@ -9,7 +9,47 @@ static int key_f = 0, key_r = 0;
 static SDL_mutex *key_queue_lock = NULL;
 
 #define XX(k) [SDL_SCANCODE_##k] = AM_KEY_##k,
+
+// #define AM_KEYS(_) \
+//   _(ESCAPE)        \
+//   _(F1)            \
+//   _(F2)            \
+//   _(F3)            \
+//   _(F4)            \
+//   _(F5)            \
+//   _(F6)            \
+//   _(F7)
+
+// XX(ESCAPE)  \
+// XX(F1)      \
+// XX(F2)      \
+// XX(F3)      \
+// XX(F4)      \
+// XX(F5)      \
+// XX(F6)      \
+// XX(F7)
+
+// [SDL_SCANCODE_ESCAPE] = AM_KEY_ESCAPE,
+// [SDL_SCANCODE_F1] = AM_KEY_F1,
+// [SDL_SCANCODE_F2] = AM_KEY_F2,
+// [SDL_SCANCODE_F3] = AM_KEY_F3,
+// [SDL_SCANCODE_F4] = AM_KEY_F4,
+// [SDL_SCANCODE_F5] = AM_KEY_F5,
+// [SDL_SCANCODE_F6] = AM_KEY_F6,
+// [SDL_SCANCODE_F7] = AM_KEY_F7,
+
 static int keymap[256] = {AM_KEYS(XX)};
+// static int keymap[256] = {
+//     [SDL_SCANCODE_ESCAPE] = AM_KEY_ESCAPE,
+//     [SDL_SCANCODE_F1] = AM_KEY_F1,
+//     [SDL_SCANCODE_F2] = AM_KEY_F2,
+//     [SDL_SCANCODE_F3] = AM_KEY_F3,
+//     [SDL_SCANCODE_F4] = AM_KEY_F4,
+//     [SDL_SCANCODE_F5] = AM_KEY_F5,
+//     [SDL_SCANCODE_F6] = AM_KEY_F6,
+//     [SDL_SCANCODE_F7] = AM_KEY_F7,
+//     [SDL_SCANCODE_F8] = AM_KEY_F8,
+// };
 
 static int event_thread(void *args) {
   SDL_Event event;
@@ -17,10 +57,10 @@ static int event_thread(void *args) {
     SDL_WaitEvent(&event);
     switch (event.type) {
       case SDL_QUIT:
-        halt(0);
-      case SDL_KEYDOWN:
+        halt(0);         // trm
+      case SDL_KEYDOWN:  // this keydown/keyup means: the key is pressed/released
       case SDL_KEYUP: {
-        SDL_Keysym k = event.key.keysym;
+        SDL_Keysym k = event.key.keysym;  // key that pressed or released
         int keydown = event.key.type == SDL_KEYDOWN;
         int scancode = k.scancode;
         if (keymap[scancode] != 0) {

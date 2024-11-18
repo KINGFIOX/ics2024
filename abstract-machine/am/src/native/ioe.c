@@ -4,6 +4,9 @@
 bool __am_has_ioe = false;
 static bool ioe_init_done = false;
 
+/* ---------- handler ---------- */
+//
+
 void __am_timer_init();
 void __am_gpu_init();
 void __am_input_init();
@@ -46,14 +49,17 @@ bool ioe_init() {
   return true;
 }
 
-static void fail(void *buf) { panic("access nonexist register"); }
+static void nonexist(void *buf) { panic("access nonexist register"); }
 
 void __am_ioe_init() {
-  for (int i = 0; i < LENGTH(lut); i++)
-    if (!lut[i]) lut[i] = fail;
+  for (int i = 0; i < LENGTH(lut); i++) {
+    if (!lut[i]) {
+      lut[i] = nonexist;
+    }
+  }
   __am_timer_init();
   __am_gpu_init();
-  __am_input_init();
+  __am_input_init();  // keyboard
   __am_uart_init();
   __am_audio_init();
   __am_disk_init();
