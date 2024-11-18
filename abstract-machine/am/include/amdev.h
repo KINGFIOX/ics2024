@@ -12,6 +12,12 @@
   } AM_##reg##_T;
 
 AM_DEVREG(1, UART_CONFIG, RD, bool present);
+// enum { AM_UART_CONFIG = (1) };
+// typedef struct {
+//   _Bool present;
+// } AM_UART_CONFIG_T;
+// ;
+
 AM_DEVREG(2, UART_TX, WR, char data);
 AM_DEVREG(3, UART_RX, RD, char data);
 AM_DEVREG(4, TIMER_CONFIG, RD, bool present, has_rtc);
