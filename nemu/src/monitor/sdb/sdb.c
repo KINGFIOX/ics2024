@@ -303,8 +303,12 @@ void sdb_mainloop() {
         if (last_str != NULL) {
           free(last_str);
         }
-        last_str = strdup(str);
-        last_args = strdup(args);
+        if (str != NULL) {
+          last_str = strdup(str);
+        }
+        if (last_args != NULL) {
+          last_args = strdup(args);
+        }
         last_i = i;
         break;
       }
