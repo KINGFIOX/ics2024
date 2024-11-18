@@ -248,6 +248,10 @@ static int cmd_help(char *arg) {
 
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
+static char last_cmd[256];
+static int last_i;
+static char last_args[256];
+
 void sdb_mainloop() {
   if (is_batch_mode) {  // batch mode
     cmd_c(NULL);
@@ -256,6 +260,16 @@ void sdb_mainloop() {
 
   for (char *str; (str = rl_gets()) != NULL;) {
     char *str_end = str + strlen(str);
+
+    if (strlen(str) == 0 && last_cmd[0] != '\0') {
+      str = last_cmd;
+      str_end = str + strlen(str);
+      printf("%s\n", str);
+      if (cmd_table[last_i].handler(last_args) < 0) {
+        return;
+      }
+      continue;
+    }
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");
@@ -281,8 +295,11 @@ void sdb_mainloop() {
     for (i = 0; i < NR_CMD; i++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
         if (cmd_table[i].handler(args) < 0) {
-          return;
+          return;  // execute error happened
         }
+        strncpy(last_cmd, str, sizeof(last_cmd));
+        strncpy(last_args, args, sizeof(last_args));
+        last_i = i;
         break;
       }
     }
