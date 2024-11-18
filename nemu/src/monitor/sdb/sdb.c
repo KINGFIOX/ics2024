@@ -264,7 +264,6 @@ void sdb_mainloop() {
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");  // 空行
     if (cmd == NULL) {
-      printf("%s", last_str);
       if (cmd_table[last_i].handler(last_args) < 0) {
         return;
       }
