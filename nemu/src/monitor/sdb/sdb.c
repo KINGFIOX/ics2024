@@ -249,7 +249,7 @@ static int cmd_help(char *arg) {
 void sdb_set_batch_mode() { is_batch_mode = true; }
 
 static char *last_str;
-static int last_i;
+static int last_i;  // init with 0 which is the index of cmd_help
 static char *last_args;
 
 void sdb_mainloop() {
@@ -262,10 +262,9 @@ void sdb_mainloop() {
     char *str_end = str + strlen(str);
 
     /* extract the first token as the command */
-    char *cmd = strtok(str, " ");
+    char *cmd = strtok(str, " ");  // 空行
     if (cmd == NULL) {
-      str = last_str;
-      printf("%s", str);
+      printf("%s", last_str);
       if (cmd_table[last_i].handler(last_args) < 0) {
         return;
       }
