@@ -263,8 +263,7 @@ void sdb_mainloop() {
 
     if (strlen(str) == 0 && last_str[0] != '\0') {
       str = last_str;
-      str_end = str + strlen(str);
-      printf("%s", last_str);
+      printf("%s", str);
       if (cmd_table[last_i].handler(last_args) < 0) {
         return;
       }
