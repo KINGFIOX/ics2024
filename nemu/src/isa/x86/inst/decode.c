@@ -817,7 +817,7 @@ again:
   INSTPAT("1000 1010", mov, E2G, 1, Rw(rd, w, RMr(rs, w)));
   // 8B  /r   MOV r16,r/m16
   // 8B  /r   MOV r32,r/m32
-  INSTPAT("1000 1011", mov, E2G, 0, printf("addr = 0x%08x\n", addr); Rw(rd, w, RMr(rs, w)));
+  INSTPAT("1000 1011", mov, E2G, 0, printf("(0x%08x, 0x%08x, 8)", Rr(R_EAX, 4), Rr(R_EDX, 4)); printf("addr = 0x%08x\n", addr); Rw(rd, w, RMr(rs, w)));
 
   // A0       MOV AL,moffs8     4
   INSTPAT("1010 0000", mov, O2a, 1, Rw(R_EAX, 1, Mr(addr, 1)));
