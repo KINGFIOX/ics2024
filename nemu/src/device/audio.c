@@ -30,7 +30,6 @@ static int read_(uint8_t *stream, int len) {
   const int sbuf_size = audio_base[reg_sbuf_size];
   const int front = audio_base[reg_front];
   for (int i = 0; i < len; i++) {
-    printf("sbuf[(front + i) %% sbuf_size] = %d\n", sbuf[(front + i) % sbuf_size]);
     stream[i] = sbuf[(front + i) % sbuf_size];
   }
   audio_base[reg_front] = (front + len) % sbuf_size;

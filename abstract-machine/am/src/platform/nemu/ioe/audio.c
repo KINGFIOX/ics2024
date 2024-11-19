@@ -44,10 +44,12 @@ static int write_(const uint8_t *buf, int len) {
 
   const int rear = (front + count) % ab_size;
   volatile uint8_t *const ab = (uint8_t *)(uintptr_t)AUDIO_ADDR;
+  printf("ab = %x\n", ab);
 
   int avail = ab_size - count - 1;
   int nwrite = len < avail ? len : avail;
   for (int i = 0; i < nwrite; i++) {
+    printf("buf[i] = %d\n", buf[i]);
     ab[(rear + i) % ab_size] = buf[i];  // mmio write
   }
 
