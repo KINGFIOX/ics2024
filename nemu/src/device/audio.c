@@ -78,6 +78,7 @@ static void audio_pio_handler(uint32_t offset, int len, bool is_write) {
 }
 
 static void audio_mmio_handler(uint32_t offset, int len, bool is_write) {
+  Assert(0 <= offset && offset < audio_base[reg_sbuf_size], "offset out of bound");
   //  printf("sbuf[%d] = %d\n", offset, sbuf[offset]);
 }
 
