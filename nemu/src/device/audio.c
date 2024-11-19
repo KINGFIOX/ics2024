@@ -27,6 +27,7 @@ static SDL_AudioSpec spec = {};
 
 static int read_(uint8_t *stream, int len) {
   Assert(sbuf, "sbuf is not initialized");
+  assert(0);
   const int sbuf_size = audio_base[reg_sbuf_size];
   const int front = audio_base[reg_front];
   for (int i = 0; i < len; i++) {
@@ -77,7 +78,10 @@ static void audio_pio_handler(uint32_t offset, int len, bool is_write) {
   }
 }
 
-static void audio_mmio_handler(uint32_t offset, int len, bool is_write) { printf("sbuf[%d] = %d\n", offset, sbuf[offset]); }
+static void audio_mmio_handler(uint32_t offset, int len, bool is_write) {
+  assert(0);
+  printf("sbuf[%d] = %d\n", offset, sbuf[offset]);
+}
 
 void init_audio() {
   uint32_t space_size = sizeof(uint32_t) * nr_reg;
