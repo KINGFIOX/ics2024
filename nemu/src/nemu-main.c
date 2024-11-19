@@ -38,6 +38,10 @@ void sig_handler(int signo, siginfo_t *info, void *ucontext) {
     void call_stack_dump(void);
     call_stack_dump();
 #endif
+#ifdef CONFIG_DTRACE
+    void dtrace_dump(void);
+    dtrace_dump();
+#endif
   }
   exit(EXIT_FAILURE);
 }

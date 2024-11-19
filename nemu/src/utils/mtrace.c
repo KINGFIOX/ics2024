@@ -29,10 +29,8 @@ void mtrace_dump(void) {
       continue;
     }
     const char* str = buf[i].type == READ ? "READ " : "WRITE";
-    if (buf[i].pc != 0) {
-      printf("0x%08x: %s 0x%08x : ", buf[i].pc, str, buf[i].addr);
-      printf("%02x %02x %02x %02x\n", buf[i].data & 0xff, (buf[i].data >> 8) & 0xff, (buf[i].data >> 16) & 0xff, (buf[i].data >> 24) & 0xff);
-    }
+    printf("0x%08x: %s 0x%08x : ", buf[i].pc, str, buf[i].addr);
+    printf("%02x %02x %02x %02x\n", buf[i].data & 0xff, (buf[i].data >> 8) & 0xff, (buf[i].data >> 16) & 0xff, (buf[i].data >> 24) & 0xff);
   }
 }
 

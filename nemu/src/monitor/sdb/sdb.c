@@ -213,6 +213,11 @@ static int cmd_info(char *arg) {
     void mtrace_dump(void);
     mtrace_dump();
 #endif
+#ifdef CONFIG_DTRACE
+  } else if (0 == strcmp(arg, "dtrace")) {
+    void dtrace_dump(void);
+    dtrace_dump();
+#endif
   } else if (0 == strcmp(arg, "w")) {
     watchpoint_display();
   } else {
