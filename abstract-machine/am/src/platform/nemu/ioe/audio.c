@@ -43,7 +43,7 @@ static int write_(const uint8_t *buf, int len) {
   const int ab_size = inl(AUDIO_SBUF_SIZE_ADDR);
 
   const int rear = (front + count) % ab_size;
-  uint8_t *const ab = (uint8_t *)(uintptr_t)AUDIO_ADDR;
+  volatile uint8_t *const ab = (uint8_t *)(uintptr_t)AUDIO_ADDR;
 
   int avail = ab_size - count - 1;
   int nwrite = len < avail ? len : avail;
