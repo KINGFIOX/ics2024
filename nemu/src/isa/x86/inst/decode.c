@@ -775,6 +775,8 @@ again:
   INSTPAT("0000 1010", or, E2G, 1, Rw(rd, w, or_(w, Rr(rd, w), Mr(addr, w))));
   //   100071:       22 02                   and    (%edx),%al
   INSTPAT("0010 0010", and, E2G, 1, Rw(rd, w, and_(w, Rr(rd, w), Mr(addr, w))));
+  // def_INSTR_IDTAB("0010 0011", E2G, and);
+  INSTPAT("0010 0011", and, E2G, 0, Rw(rd, w, and_(w, Rr(rd, w), Mr(addr, w))));
   //   1045f0:       21 d0                   and    %edx,%eax
   INSTPAT("0010 0001", and, G2E, 0, Rw(rd, w, and_(w, Rr(rd, w), Rr(rs, w))));
   //   10004d:       32 06                   xor    (%esi),%al
