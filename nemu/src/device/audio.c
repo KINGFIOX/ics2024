@@ -42,7 +42,7 @@ static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   // do nothing
-  if (audio_base[reg_init] == 1) {
+  if (audio_base[reg_init] != 0) {
     s.format = AUDIO_S16SYS;
     s.userdata = NULL;
     s.freq = audio_base[reg_freq];
