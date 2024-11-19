@@ -639,8 +639,11 @@ static inline void setcc(uint8_t opcode, int rd) {
     case 0x4:  // sete
       Rw(rd, 1, (cpu.eflags.zf));
       break;
-    case 0xf:  // sete
-      Rw(rd, 1, (cpu.eflags.zf == 0 && cpu.eflags.sf == cpu.eflags.of));
+    case 0xe:  // setle
+      Rw(rd, 1, (cpu.eflags.zf && cpu.eflags.sf != cpu.eflags.of));
+      break;
+    case 0xf:  // setg
+      Rw(rd, 1, (!cpu.eflags.zf && cpu.eflags.sf == cpu.eflags.of));
       break;
     default:
       Assert(false, "invalid subcode %04b", subcode);
