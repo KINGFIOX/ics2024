@@ -32,7 +32,7 @@ static int read_(uint8_t *stream, int len) {
   for (int i = 0; i < len; i++) {
     stream[i] = sbuf[(front + i) % sbuf_size];
   }
-  audio_base[reg_front] = (front + len) % sbuf_size;
+  audio_base[reg_front] = (front + len) % sbuf_size;  // consume
   return len;
 }
 
