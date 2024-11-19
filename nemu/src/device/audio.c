@@ -77,7 +77,10 @@ static void audio_pio_handler(uint32_t offset, int len, bool is_write) {
   }
 }
 
-static void audio_mmio_handler(uint32_t offset, int len, bool is_write) { printf("sbuf[%d] = %d\n", offset, sbuf[offset]); }
+static void audio_mmio_handler(uint32_t offset, int len, bool is_write) {
+  assert(0);
+  printf("sbuf[%d] = %d\n", offset, sbuf[offset]);
+}
 
 void init_audio() {
   uint32_t space_size = sizeof(uint32_t) * nr_reg;
