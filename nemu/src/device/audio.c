@@ -46,6 +46,7 @@ static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
   const int count = audio_base[reg_count];
 
   int nread = count < len ? count : len;  // min
+  printf("nread: %d\n", nread);
 
   int b = 0;
   while (b < nread) {
