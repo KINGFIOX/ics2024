@@ -5,7 +5,7 @@
 
 #define KEY_QUEUE_LEN 1024
 static int key_queue[KEY_QUEUE_LEN] = {};
-static int key_f /*front*/ = 0, key_r /*rear*/ = 0;
+static int key_f /*front*/ = 0, key_r /*rear*/ = 0;  // in xx, (xx) 的时候, 环形缓冲区 pop
 
 static SDL_mutex *key_queue_lock = NULL;
 

@@ -156,6 +156,7 @@ __attribute__((constructor)) static void init_platform() {
       assert(ret2 == 0);
 
       // map the sections again with MAP_SHARED, which will be shared across fork()
+      // fork() would be called in mpe_init()
       ret = mmap_libc(vaddr_align, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_FIXED | MAP_ANONYMOUS, -1, 0);
       assert(ret == vaddr_align);
 

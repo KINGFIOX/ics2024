@@ -20,9 +20,7 @@
 #define SCREEN_H (MUXDEF(CONFIG_VGA_SIZE_800x600, 600, 300))
 
 static uint32_t screen_width() { return MUXDEF(CONFIG_TARGET_AM, io_read(AM_GPU_CONFIG).width, SCREEN_W); }
-
 static uint32_t screen_height() { return MUXDEF(CONFIG_TARGET_AM, io_read(AM_GPU_CONFIG).height, SCREEN_H); }
-
 static uint32_t screen_size() { return screen_width() * screen_height() * sizeof(uint32_t); }
 
 static void *vmem = NULL;
@@ -32,7 +30,7 @@ static uint32_t *vgactl_port_base = NULL;
 #ifndef CONFIG_TARGET_AM
 #include <SDL2/SDL.h>
 
-static SDL_Renderer *renderer = NULL;
+static SDL_Renderer *renderer = NULL;  // 渲染器
 static SDL_Texture *texture = NULL;
 
 static void init_screen() {
@@ -62,6 +60,11 @@ static inline void update_screen() { io_write(AM_GPU_FBDRAW, 0, 0, vmem, screen_
 void vga_update_screen() {
   // TODO: call `update_screen()` when the sync register is non-zero,
   // then zero out the sync register
+  Assert(vgactl_port_base, "vgactl_port is not initialized");
+  if (vgactl_port_base[1] != 0) {
+    update_screen();
+    vgactl_port_base[1] = 0;
+  }
 }
 
 void init_vga() {
