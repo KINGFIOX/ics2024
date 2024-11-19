@@ -43,9 +43,9 @@ static int write_once(uint8_t *buf, int len) {
   assert(len >= 0);
   assert(buf != NULL);
   const int ab_cnt = inl(AUDIO_COUNT_ADDR);
-  const int ab_size = inl(AUDIO_SBUF_SIZE_ADDR) - ab_cnt;
-  uint8_t *const ab = (uint8_t *)AUDIO_SBUF_ADDR;  // mmio
-  int n = len < ab_size - 1 ? len : ab_size - 1;   // min(len, ab_size - 1)
+  const int ab_size = inl(AUDIO_SBUF_SIZE_ADDR);
+  uint8_t *const ab = (uint8_t *)AUDIO_SBUF_ADDR;          // mmio
+  int n = len < ab_size - 1 ? len : ab_size - 1 - ab_cnt;  // min(len, ab_size - 1)
   for (int i = 0; i < n; i++) {
     ab[(ab_rear + i) % ab_size] = buf[i];
   }
