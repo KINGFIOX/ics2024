@@ -18,44 +18,53 @@
 #include <device/map.h>
 
 // 在 enum 最后一个位置放上: nr_reg, 这种写法有意思
-enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, nr_reg /*number of regs*/ };
+enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, reg_nr_write, nr_reg /*number of regs*/ };
 
 static uint8_t *sbuf = NULL;
 static uint32_t sbuf_pos = 0;
 static uint32_t *audio_base = NULL;
 
-static SDL_AudioSpec s = {};
+static SDL_AudioSpec spec = {};
 
+/**
+ * @brief
+ *
+ * @param udata
+ * @param stream
+ * @param len 需要这么多数据
+ */
 static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
-  memset(stream, 0, len);
-  uint32_t used_cnt = audio_base[reg_count];
-  if (len > used_cnt) len = used_cnt;
-
-  uint32_t sbuf_size = audio_base[reg_sbuf_size] / sizeof(uint8_t);
-  if ((sbuf_pos + len) > sbuf_size) {
-    SDL_MixAudio(stream, sbuf + sbuf_pos, sbuf_size - sbuf_pos, SDL_MIX_MAXVOLUME);
-    SDL_MixAudio(stream + (sbuf_size - sbuf_pos), sbuf + (sbuf_size - sbuf_pos), len - (sbuf_size - sbuf_pos), SDL_MIX_MAXVOLUME);
-  } else
-    SDL_MixAudio(stream, sbuf + sbuf_pos, len, SDL_MIX_MAXVOLUME);
-  sbuf_pos = (sbuf_pos + len) % sbuf_size;
+  const int sbuf_size = audio_base[reg_sbuf_size];
+  if (audio_base[reg_count] == 0) {
+    return;
+  }
+  len = len > audio_base[reg_count] ? audio_base[reg_count] : len;  // min(len, audio_base[reg_count])
+  for (int i = 0; i < len; i++) {
+    stream[i] = sbuf[sbuf_pos];
+    sbuf_pos = (sbuf_pos + 1) % sbuf_size;
+  }
   audio_base[reg_count] -= len;
 }
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
   // do nothing
   if (audio_base[reg_init] != 0) {
-    s.format = AUDIO_S16SYS;
-    s.userdata = NULL;
-    s.freq = audio_base[reg_freq];
-    s.channels = audio_base[reg_channels];
-    s.samples = audio_base[reg_samples];
-    s.callback = sdl_audio_callback;
+    spec.format = AUDIO_S16SYS;
+    spec.userdata = NULL;
+    spec.freq = audio_base[reg_freq];
+    spec.channels = audio_base[reg_channels];
+    spec.samples = audio_base[reg_samples];
+    spec.callback = sdl_audio_callback;
     int ret = SDL_InitSubSystem(SDL_INIT_AUDIO);
     if (ret == 0) {
-      SDL_OpenAudio(&s, NULL);
+      SDL_OpenAudio(&spec, NULL);  // 当调用 SDL_OpenAudio 后, SDL 开始音频播放. 当 SDL 库内部的 数据 buffer 低于一定阈值时, invoke callback
       SDL_PauseAudio(0);
     }
     audio_base[reg_init] = 0;
+  }
+  if (audio_base[reg_nr_write] != 0) {
+    audio_base[reg_count] += audio_base[reg_nr_write];
+    audio_base[reg_nr_write] = 0;
   }
 }
 
@@ -70,4 +79,5 @@ void init_audio() {
 
   sbuf = (uint8_t *)new_space(CONFIG_SB_SIZE);  // sbuf_size
   add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, NULL);
+  audio_base[reg_sbuf_size] = CONFIG_SB_SIZE;
 }
