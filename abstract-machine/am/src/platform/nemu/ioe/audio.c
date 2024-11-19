@@ -43,13 +43,11 @@ static int write_(const uint8_t *buf, int len) {
   const int ab_size = inl(AUDIO_SBUF_SIZE_ADDR);
 
   const int rear = (front + count) % ab_size;
-  volatile uint8_t *const ab = (uint8_t *)(uintptr_t)AUDIO_ADDR;
-  printf("ab = %x\n", ab);
+  volatile uint8_t *const ab = (uint8_t *)(uintptr_t)AUDIO_SBUF_ADDR;
 
   int avail = ab_size - count - 1;
   int nwrite = len < avail ? len : avail;
   for (int i = 0; i < nwrite; i++) {
-    printf("buf[i] = %d\n", buf[i]);
     ab[(rear + i) % ab_size] = buf[i];  // mmio write
   }
 
@@ -61,9 +59,9 @@ static void audio_write(const uint8_t *buf, int len) {
   while (nwrite < len) {
     int n = write_((uint8_t *)buf + nwrite, len - nwrite);
     nwrite += n;
-    printf("front=%d, sbuf_size=%d\n", inl(AUDIO_FRONT_ADDR), inl(AUDIO_SBUF_SIZE_ADDR));
+    // printf("front=%d, sbuf_size=%d\n", inl(AUDIO_FRONT_ADDR), inl(AUDIO_SBUF_SIZE_ADDR));
     outl(AUDIO_COUNT_ADDR, inl(AUDIO_COUNT_ADDR) + n);  // count += n
-    printf("count = %d\n", inl(AUDIO_COUNT_ADDR));
+    // printf("count = %d\n", inl(AUDIO_COUNT_ADDR));
   }
 }
 
