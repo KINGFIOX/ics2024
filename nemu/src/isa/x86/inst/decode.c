@@ -768,17 +768,17 @@ again:
   INSTPAT("1110 1001", jmp, J, 4, jmpo(s, imm));
 
   //   100010:       31 c0                   xor    %eax,%eax
-  INSTPAT("0011 0001", xor, G2E, 0, Rw(rd, w, xor_(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0011 0001", xor, G2E, 0, RMw(xor_(w, Rr(rd, w), Rr(rs, w))));
   //   100074:       09 d0                   or     %edx,%eax
-  INSTPAT("0000 1001", or, G2E, 0, Rw(rd, w, or_(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0000 1001", or, G2E, 0, RMw(or_(w, Rr(rd, w), Rr(rs, w))));
   //   10007c:       0a 02                   or     (%edx),%al
-  INSTPAT("0000 1010", or, E2G, 1, Rw(rd, w, or_(w, Rr(rd, w), Mr(addr, w))));
+  INSTPAT("0000 1010", or, E2G, 1, RMw(or_(w, Rr(rd, w), Mr(addr, w))));
   //   100071:       22 02                   and    (%edx),%al
   INSTPAT("0010 0010", and, E2G, 1, Rw(rd, w, and_(w, Rr(rd, w), Mr(addr, w))));
   // def_INSTR_IDTAB("0010 0011", E2G, and);
   INSTPAT("0010 0011", and, E2G, 0, Rw(rd, w, and_(w, Rr(rd, w), Mr(addr, w))));
   //   1045f0:       21 d0                   and    %edx,%eax
-  INSTPAT("0010 0001", and, G2E, 0, Rw(rd, w, and_(w, Rr(rd, w), Rr(rs, w))));
+  INSTPAT("0010 0001", and, G2E, 0, RMw(and_(w, Rr(rd, w), Rr(rs, w))));
   //   10004d:       32 06                   xor    (%esi),%al
   INSTPAT("0011 0010", xor, E2G, 1, Rw(rd, w, xor_(w, Rr(rd, w), RMr(rs, w))));
   //   100052:       33 14 85 e0 01 10 00    xor    0x1001e0(,%eax,4),%edx
@@ -828,12 +828,12 @@ again:
   INSTPAT("1010 0001", mov, O2a, 0, Rw(R_EAX, w, Mr(addr, w)));
 
   //   1004b5:       19 da                   sbb    %ebx,%edx
-  INSTPAT("0001 1001", sbb, G2E, 0, Rw(rd, w, sub(w, Rr(rd, w), Rr(rs, w), true)));
+  INSTPAT("0001 1001", sbb, G2E, 0, RMw(sub(w, Rr(rd, w), Rr(rs, w), true)));
 
   //   100066:       13 14 cd 84 03 10 00    adc    0x100384(,%ecx,8),%edx
   INSTPAT("0001 0011", adc, E2G, 0, Rw(rd, w, add(w, Rr(rd, w), Mr(addr, w), true)));
   //   10005f:       11 da                   adc    %ebx,%edx
-  INSTPAT("0001 0001", adc, G2E, 0, Rw(rd, w, add(w, Rr(rd, w), Rr(rs, w), true)));
+  INSTPAT("0001 0001", adc, G2E, 0, RMw(add(w, Rr(rd, w), Rr(rs, w), true)));
 
   // A2       MOV moffs8,AL     2
   INSTPAT("1010 0010", mov, a2O, 1, Mw(addr, 1, Rr(R_EAX, 1)));
