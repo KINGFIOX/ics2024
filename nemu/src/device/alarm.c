@@ -20,6 +20,8 @@
 
 #define MAX_HANDLER 8
 
+/* ---------- handler ---------- */
+
 static alarm_handler_t handler[MAX_HANDLER] = {};
 static int idx = 0;
 
@@ -35,6 +37,8 @@ static void alarm_sig_handler(int signum) {
     handler[i]();
   }
 }
+
+/* ----------  ---------- */
 
 void init_alarm() {
   struct sigaction s;
