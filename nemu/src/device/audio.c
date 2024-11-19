@@ -26,6 +26,7 @@ static uint32_t *audio_base = NULL;
 static SDL_AudioSpec spec = {};
 
 static int read_(uint8_t *stream, int len) {
+  Assert(sbuf, "sbuf is not initialized");
   const int sbuf_size = audio_base[reg_sbuf_size];
   const int front = audio_base[reg_front];
   for (int i = 0; i < len; i++) {
@@ -53,10 +54,10 @@ static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
     b += n;
   }
 
-  audio_base[reg_count] = count - nread;
-  if (len > nread) {
-    memset(stream + nread, 0, len - nread);
-  }
+  // audio_base[reg_count] = count - nread;
+  // if (len > nread) {
+  //   memset(stream + nread, 0, len - nread);
+  // }
 }
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
