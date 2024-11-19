@@ -48,7 +48,7 @@ static int write_(const uint8_t *buf, int len) {
   int avail = ab_size - count - 1;
   int nwrite = len < avail ? len : avail;
   for (int i = 0; i < nwrite; i++) {
-    ab[(rear + i) % ab_size] = buf[i];
+    ab[(rear + i) % ab_size] = buf[i];  // mmio write
   }
 
   return nwrite;
