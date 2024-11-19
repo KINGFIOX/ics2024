@@ -18,13 +18,22 @@
 #include <device/map.h>
 
 // 在 enum 最后一个位置放上: nr_reg, 这种写法有意思
-enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, reg_nr_write, nr_reg /*number of regs*/ };
+enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_front, reg_count, nr_reg /*number of regs*/ };
 
-static uint8_t *sbuf = NULL;
-static uint32_t sbuf_pos = 0;
+static uint8_t *sbuf = NULL;  // ring buffer
 static uint32_t *audio_base = NULL;
 
 static SDL_AudioSpec spec = {};
+
+int read(uint8_t *stream, int len) {
+  const int sbuf_size = audio_base[reg_sbuf_size];
+  const int front = audio_base[reg_front];
+  for (int i = 0; i < len; i++) {
+    stream[i] = sbuf[(front + i) % sbuf_size];
+  }
+  audio_base[reg_front] = (front + len) % sbuf_size;
+  return len;
+}
 
 /**
  * @brief
@@ -34,20 +43,24 @@ static SDL_AudioSpec spec = {};
  * @param len 需要这么多数据
  */
 static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
-  const int sbuf_size = audio_base[reg_sbuf_size];
-  if (audio_base[reg_count] == 0) {
-    return;
+  const int count = audio_base[reg_count];
+
+  int nread = len;
+  if (count < len) nread = count;
+
+  int b = 0;
+  while (b < nread) {
+    int n = read(stream + b, nread - b);
+    b += n;
   }
-  len = len > audio_base[reg_count] ? audio_base[reg_count] : len;  // min(len, audio_base[reg_count])
-  for (int i = 0; i < len; i++) {
-    stream[i] = sbuf[sbuf_pos];
-    sbuf_pos = (sbuf_pos + 1) % sbuf_size;
+
+  audio_base[reg_count] = count - nread;
+  if (len > nread) {
+    memset(stream + nread, 0, len - nread);
   }
-  audio_base[reg_count] -= len;
 }
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
-  // do nothing
   if (audio_base[reg_init] != 0) {
     spec.format = AUDIO_S16SYS;
     spec.userdata = NULL;
@@ -61,10 +74,6 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
       SDL_PauseAudio(0);
     }
     audio_base[reg_init] = 0;
-  }
-  if (audio_base[reg_nr_write] != 0) {
-    audio_base[reg_count] += audio_base[reg_nr_write];
-    audio_base[reg_nr_write] = 0;
   }
 }
 

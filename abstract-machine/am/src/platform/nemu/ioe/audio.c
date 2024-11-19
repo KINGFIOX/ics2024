@@ -9,8 +9,8 @@
 #define AUDIO_SAMPLES_ADDR (AUDIO_ADDR + 0x08)    // 0x0000_0208
 #define AUDIO_SBUF_SIZE_ADDR (AUDIO_ADDR + 0x0c)  // 0x0000_020c
 #define AUDIO_INIT_ADDR (AUDIO_ADDR + 0x10)       // 0x0000_0210
-#define AUDIO_COUNT_ADDR (AUDIO_ADDR + 0x14)      // 0x0000_0214
-#define AUDIO_NR_WRITE_ADDR (AUDIO_ADDR + 0x18)   // 0x0000_0214
+#define AUDIO_FRONT_ADDR (AUDIO_ADDR + 0x14)      // 0x0000_0214
+#define AUDIO_COUNT_ADDR (AUDIO_ADDR + 0x18)      // 0x0000_0214
 
 /* ---------- audio ctrl ---------- */
 
@@ -35,35 +35,39 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
   //
 }
 
-// cpu 中的是: sbuf_front.(消费者)
-// os 中的是: sbuf_rear.(生产者)
-static int ab_rear = 0;
-
-static int write_once(uint8_t *buf, int len) {
+static int write(const uint8_t *buf, int len) {
   assert(len >= 0);
   assert(buf != NULL);
-  const int ab_cnt = inl(AUDIO_COUNT_ADDR);
+  const int front = inl(AUDIO_FRONT_ADDR);
+  const int count = inl(AUDIO_COUNT_ADDR);
   const int ab_size = inl(AUDIO_SBUF_SIZE_ADDR);
-  uint8_t *const ab = (uint8_t *)AUDIO_SBUF_ADDR;          // mmio
-  int n = len < ab_size - 1 ? len : ab_size - 1 - ab_cnt;  // min(len, ab_size - 1)
-  for (int i = 0; i < n; i++) {
-    ab[(ab_rear + i) % ab_size] = buf[i];
+
+  const int rear = (front + count) % ab_size;
+  uint8_t *const ab = (uint8_t *)(uintptr_t)AUDIO_ADDR;
+
+  int avail = ab_size - count - 1;
+  int nwrite = len < avail ? len : avail;
+  for (int i = 0; i < nwrite; i++) {
+    ab[(rear + i) % ab_size] = buf[i];
   }
-  outl(AUDIO_NR_WRITE_ADDR, n);
-  return n;
+
+  return nwrite;
 }
 
 static void audio_write(const uint8_t *buf, int len) {
   int nwrite = 0;
   while (nwrite < len) {
-    int n = write_once((uint8_t *)buf + nwrite, len - nwrite);
+    int n = write((uint8_t *)buf + nwrite, len - nwrite);
     nwrite += n;
+    outl(AUDIO_COUNT_ADDR, inl(AUDIO_COUNT_ADDR) + n);
   }
 }
 
 void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-  int len = ctl->buf.end - ctl->buf.start;
-  audio_write(ctl->buf.start, len);
+  uint8_t *start = ctl->buf.start;
+  uint8_t *end = ctl->buf.end;
+  int len = end - start;
+  audio_write(start, len);
 }
 
 /* ---------- audio config ---------- */
