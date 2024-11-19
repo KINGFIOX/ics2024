@@ -4,28 +4,21 @@
 
 #include "klib-macros.h"
 
-static int buf_pos = 0;
+#define AUDIO_FREQ_ADDR (AUDIO_ADDR + 0x00)       // 0x0000_0200
+#define AUDIO_CHANNELS_ADDR (AUDIO_ADDR + 0x04)   // 0x0000_0204
+#define AUDIO_SAMPLES_ADDR (AUDIO_ADDR + 0x08)    // 0x0000_0208
+#define AUDIO_SBUF_SIZE_ADDR (AUDIO_ADDR + 0x0c)  // 0x0000_020c
+#define AUDIO_INIT_ADDR (AUDIO_ADDR + 0x10)       // 0x0000_0210
+#define AUDIO_COUNT_ADDR (AUDIO_ADDR + 0x14)      // 0x0000_0214
+
+/* ---------- audio ctrl ---------- */
 
 void __am_audio_init() {
   AM_AUDIO_CONFIG_T cfg __attribute__((unused)) = io_read(AM_AUDIO_CONFIG);
   // do nothing
 }
 
-/* ---------- audio config ---------- */
-
-#define AUDIO_SBUF_SIZE_ADDR (AUDIO_ADDR + 0x0c)  // 0x0000_020c
-
-void __am_audio_config(AM_AUDIO_CONFIG_T *cfg) {
-  int bufsize = inl(AUDIO_SBUF_SIZE_ADDR);
-  (*cfg) = (AM_AUDIO_CONFIG_T){.present = false, .bufsize = bufsize};
-}
-
 /* ---------- audio ctrl ---------- */
-
-#define AUDIO_FREQ_ADDR (AUDIO_ADDR + 0x00)      // 0x0000_0200
-#define AUDIO_CHANNELS_ADDR (AUDIO_ADDR + 0x04)  // 0x0000_0204
-#define AUDIO_SAMPLES_ADDR (AUDIO_ADDR + 0x08)   // 0x0000_0207
-#define AUDIO_INIT_ADDR (AUDIO_ADDR + 0x10)      // 0x0000_0210
 
 void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
   outl(AUDIO_FREQ_ADDR, ctrl->freq);
@@ -36,26 +29,44 @@ void __am_audio_ctrl(AM_AUDIO_CTRL_T *ctrl) {
 
 /* ---------- audio ctrl ---------- */
 
-#define AUDIO_COUNT_ADDR (AUDIO_ADDR + 0x14)  // 0x0000_0214
-
 void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
   stat->count = inl(AUDIO_COUNT_ADDR);
   //
 }
 
-void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
-  const uint32_t buf_size = inl(AUDIO_SBUF_SIZE_ADDR) / sizeof(uint8_t);
+// cpu 中的是: sbuf_front.(消费者)
+// os 中的是: sbuf_rear.(生产者)
+static int ab_rear = 0;
 
-  uint8_t *audio = (ctl->buf).start;
-  uint32_t len = ((ctl->buf).end - (ctl->buf).start) / sizeof(uint8_t);
-
-  while (len > buf_size - inl(AUDIO_COUNT_ADDR));  // blocking
-
-  uint8_t *ab = (uint8_t *)(uintptr_t)AUDIO_ADDR;
-  for (int i = 0; i < len; i++) {
-    ab[buf_pos] = audio[i];
-    buf_pos = (buf_pos + 1) % buf_size;
+static int write_once(uint8_t *buf, int len) {
+  assert(len >= 0);
+  assert(buf != NULL);
+  const int ab_size = inl(AUDIO_SBUF_SIZE_ADDR);
+  uint8_t *const ab = (uint8_t *)AUDIO_SBUF_ADDR;
+  int n = len < ab_size - 1 ? len : ab_size - 1;  // min(len, ab_size - 1)
+  for (int i = 0; i < n; i++) {
+    ab[(ab_rear + i) % ab_size] = buf[i];
   }
+  // outl
+  return n;
+}
 
-  outl(AUDIO_COUNT_ADDR, inl(AUDIO_COUNT_ADDR) + len);
+static void audio_write(const uint8_t *buf, int len) {
+  int nwrite = 0;
+  while (nwrite < len) {
+    int n = write_once((uint8_t *)buf + nwrite, len - nwrite);
+    nwrite += n;
+  }
+}
+
+void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
+  int len = ctl->buf.end - ctl->buf.start;
+  audio_write(ctl->buf.start, len);
+}
+
+/* ---------- audio config ---------- */
+
+void __am_audio_config(AM_AUDIO_CONFIG_T *cfg) {
+  int ab_size = inl(AUDIO_SBUF_SIZE_ADDR);
+  (*cfg) = (AM_AUDIO_CONFIG_T){.present = true, .bufsize = ab_size};
 }

@@ -17,7 +17,8 @@
 #include <common.h>
 #include <device/map.h>
 
-enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, nr_reg };
+// 在 enum 最后一个位置放上: nr_reg, 这种写法有意思
+enum { reg_freq, reg_channels, reg_samples, reg_sbuf_size, reg_init, reg_count, nr_reg /*number of regs*/ };
 
 static uint8_t *sbuf = NULL;
 static uint32_t sbuf_pos = 0;
@@ -67,6 +68,6 @@ void init_audio() {
   add_mmio_map("audio", CONFIG_AUDIO_CTL_MMIO, audio_base, space_size, audio_io_handler);
 #endif
 
-  sbuf = (uint8_t *)new_space(CONFIG_SB_SIZE);
+  sbuf = (uint8_t *)new_space(CONFIG_SB_SIZE);  // sbuf_size
   add_mmio_map("audio-sbuf", CONFIG_SB_ADDR, sbuf, CONFIG_SB_SIZE, NULL);
 }
