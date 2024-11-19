@@ -25,7 +25,7 @@ static uint32_t *audio_base = NULL;
 
 static SDL_AudioSpec spec = {};
 
-int read(uint8_t *stream, int len) {
+static int read_(uint8_t *stream, int len) {
   const int sbuf_size = audio_base[reg_sbuf_size];
   const int front = audio_base[reg_front];
   for (int i = 0; i < len; i++) {
@@ -50,7 +50,7 @@ static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
 
   int b = 0;
   while (b < nread) {
-    int n = read(stream + b, nread - b);
+    int n = read_(stream + b, nread - b);
     b += n;
   }
 

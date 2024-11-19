@@ -35,7 +35,7 @@ void __am_audio_status(AM_AUDIO_STATUS_T *stat) {
   //
 }
 
-static int write(const uint8_t *buf, int len) {
+static int write_(const uint8_t *buf, int len) {
   assert(len >= 0);
   assert(buf != NULL);
   const int front = inl(AUDIO_FRONT_ADDR);
@@ -57,7 +57,7 @@ static int write(const uint8_t *buf, int len) {
 static void audio_write(const uint8_t *buf, int len) {
   int nwrite = 0;
   while (nwrite < len) {
-    int n = write((uint8_t *)buf + nwrite, len - nwrite);
+    int n = write_((uint8_t *)buf + nwrite, len - nwrite);
     nwrite += n;
     outl(AUDIO_COUNT_ADDR, inl(AUDIO_COUNT_ADDR) + n);
   }
