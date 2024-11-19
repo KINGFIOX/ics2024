@@ -54,7 +54,8 @@ static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
     b += n;
   }
 
-  // audio_base[reg_count] = count - nread;
+  audio_base[reg_count] = count - nread;
+
   // if (len > nread) {
   //   memset(stream + nread, 0, len - nread);
   // }
