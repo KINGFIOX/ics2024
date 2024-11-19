@@ -11,7 +11,7 @@
 
 #ifdef CONFIG_FTRACE
 
-#define HISTORY_SIZE 256
+#define FTRACE_HISTORY_SIZE 256
 #define MAX_DEPTH 128
 
 static int elf_fd = -1;
@@ -23,20 +23,20 @@ static struct {
   vaddr_t pc;
   int depth;
   enum FUNC_TYPE type;
-} call_history[HISTORY_SIZE];
+} call_history[FTRACE_HISTORY_SIZE];
 static int rear = 0;
 
 static int depth = 0;
 static vaddr_t call_stack[MAX_DEPTH];
 
 void push_call_stack(vaddr_t pc, vaddr_t pos) {
-  Assert(depth < HISTORY_SIZE, "call stack overflow");
+  Assert(depth < FTRACE_HISTORY_SIZE, "call stack overflow");
   // printf("len = %d\n", len);
   call_history[rear].pos = pos;
   call_history[rear].type = CALL;
   call_history[rear].pc = pc;
   call_history[rear].depth = depth;
-  rear = (rear + 1) % HISTORY_SIZE;
+  rear = (rear + 1) % FTRACE_HISTORY_SIZE;
   call_stack[depth++] = pc;
 }
 
@@ -48,7 +48,7 @@ void pop_call_stack(vaddr_t pos) {
   call_history[rear].type = RET;
   call_history[rear].pc = pc;
   call_history[rear].depth = depth;
-  rear = (rear + 1) % HISTORY_SIZE;
+  rear = (rear + 1) % FTRACE_HISTORY_SIZE;
   call_stack[depth] = 0;
 }
 
@@ -92,7 +92,7 @@ static const char *func_name(Elf *elf, vaddr_t pc) {
 }
 
 static void dump_call_history(Elf *elf) {
-  for (int i = rear + 1; i != rear; i = (i + 1) % HISTORY_SIZE) {
+  for (int i = rear + 1; i != rear; i = (i + 1) % FTRACE_HISTORY_SIZE) {
     if (call_history[i].type == NONE) {
       continue;
     }

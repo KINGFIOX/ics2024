@@ -15,9 +15,12 @@
 
 #include <device/map.h>
 
+#include "isa.h"
+
 #define PORT_IO_SPACE_MAX 65535
 
 #define NR_MAP 16
+
 static IOMap maps[NR_MAP] = {};
 static int nr_map = 0;
 
@@ -36,12 +39,23 @@ uint32_t pio_read(ioaddr_t addr, int len) {
   assert(addr + len - 1 < PORT_IO_SPACE_MAX);
   int mapid = find_mapid_by_addr(maps, nr_map, addr);
   assert(mapid != -1);
-  return map_read(addr, len, &maps[mapid]);
+  IOMap *map = &maps[mapid];
+  word_t data = map_read(addr, len, map);
+#ifdef CONFIG_DTRACE
+  void dtrace_log(vaddr_t pc, word_t data, const char *name, bool is_pio, paddr_t addr, int len, bool is_write);
+  dtrace_log(cpu.pc, data, map->name, true, addr, len, false);
+#endif
+  return data;
 }
 
 void pio_write(ioaddr_t addr, int len, uint32_t data) {
   assert(addr + len - 1 < PORT_IO_SPACE_MAX);
   int mapid = find_mapid_by_addr(maps, nr_map, addr);
   assert(mapid != -1);
-  map_write(addr, len, data, &maps[mapid]);
+  IOMap *map = &maps[mapid];
+#ifdef CONFIG_DTRACE
+  void dtrace_log(vaddr_t pc, word_t data, const char *name, bool is_pio, paddr_t addr, int len, bool is_write);
+  dtrace_log(cpu.pc, data, map->name, true, addr, len, true);
+#endif
+  map_write(addr, len, data, map);
 }

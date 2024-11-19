@@ -4,7 +4,7 @@
 
 #define MTRACE_BUF_SIZE 256
 
-enum RW_TYPE { READ = 0, WRITE = 1 };
+enum RW_TYPE { NONE = 0, READ, WRITE };
 
 static struct {
   vaddr_t addr;
@@ -23,8 +23,11 @@ void mtrace_log(vaddr_t addr, vaddr_t pc, word_t data, bool rw) {
   rear = (rear + 1) % MTRACE_BUF_SIZE;
 }
 
-void mtrace_dump() {
-  for (int i = 0; i < MTRACE_BUF_SIZE; i++) {
+void mtrace_dump(void) {
+  for (int i = rear + 1; i != rear; i = (i + 1) % MTRACE_BUF_SIZE) {
+    if (buf[i].type == NONE) {
+      continue;
+    }
     const char* str = buf[i].type == READ ? "READ " : "WRITE";
     if (buf[i].pc != 0) {
       printf("0x%08x: %s 0x%08x : ", buf[i].pc, str, buf[i].addr);
