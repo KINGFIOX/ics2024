@@ -59,8 +59,9 @@ static void audio_write(const uint8_t *buf, int len) {
   while (nwrite < len) {
     int n = write_((uint8_t *)buf + nwrite, len - nwrite);
     nwrite += n;
-    printf("front=%d, count: %d, sbuf_size=%d\n", inl(AUDIO_FRONT_ADDR), inl(AUDIO_COUNT_ADDR), inl(AUDIO_SBUF_SIZE_ADDR));
+    printf("front=%d, sbuf_size=%d\n", inl(AUDIO_FRONT_ADDR), inl(AUDIO_SBUF_SIZE_ADDR));
     outl(AUDIO_COUNT_ADDR, inl(AUDIO_COUNT_ADDR) + n);  // count += n
+    printf("count = %d\n", inl(AUDIO_COUNT_ADDR));
   }
 }
 
