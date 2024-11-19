@@ -50,7 +50,6 @@ static void sdl_audio_callback(void *udata, uint8_t *stream, int len) {
   int b = 0;
   while (b < nread) {
     int n = read_(stream + b, nread - b);
-    printf("n = read_: %d\n", n);
     b += n;
   }
 
