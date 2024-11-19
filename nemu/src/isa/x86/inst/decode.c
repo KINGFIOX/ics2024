@@ -640,7 +640,7 @@ static inline void setcc(uint8_t opcode, int rd) {
       Rw(rd, 1, (cpu.eflags.zf));
       break;
     default:
-      assert(false && "invalid subcode");
+      Assert(false, "invalid subcode %04b", subcode);
   }
 }
 
