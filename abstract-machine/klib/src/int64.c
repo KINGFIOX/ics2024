@@ -4,7 +4,7 @@
 /* Assumption: Right shift of signed negative is arithmetic shift. */
 /* Assumption: Endianness is little or big (not mixed). */
 
-#if defined(__ELF__)
+#if defined(__ELF__)  // __ELF__ 用于检测编译的目标是否使用 ELF 文件格式
 #define FNALIAS(alias_name, original_name) void alias_name() __attribute__((__alias__(#original_name)))
 #define COMPILER_RT_ALIAS(aliasee) __attribute__((__alias__(#aliasee)))
 #else
@@ -248,7 +248,7 @@ typedef union {
 } long_double_bits;
 
 #if __STDC_VERSION__ >= 199901L
-typedef float _Complex Fcomplex;
+typedef float _Complex Fcomplex;  // _Complex 是 c99 引入的一种数据类型, 用来表示复数
 typedef double _Complex Dcomplex;
 typedef long double _Complex Lcomplex;
 
@@ -333,6 +333,7 @@ uint32_t __inline __builtin_clzll(uint64_t value) {
 #include <am.h>
 
 #if !defined(__ARCH_RISCV64_MYCPU)
+
 /* Returns: a / b */
 
 COMPILER_RT_ABI di_int __divdi3(di_int a, di_int b) {
@@ -379,6 +380,7 @@ COMPILER_RT_ABI du_int __umoddi3(du_int a, du_int b) {
 }
 #endif
 
+// 用于计算无符号 64bit 整数的除法运算, 并返回商和余数. (适用于不支持 64bit 除法的 ISA)
 COMPILER_RT_ABI du_int __udivmoddi4(du_int a, du_int b, du_int* rem) {
   const unsigned n_uword_bits = sizeof(su_int) * CHAR_BIT;
   const unsigned n_udword_bits = sizeof(du_int) * CHAR_BIT;
@@ -562,6 +564,7 @@ COMPILER_RT_ABI du_int __udivmoddi4(du_int a, du_int b, du_int* rem) {
 
 // Precondition: a != 0
 
+// clz: count leading zeros. 从左到右数, 直到遇到第一个 1 为止, 一共有多少个 0
 COMPILER_RT_ABI si_int __clzsi2(si_int a) {
   su_int x = (su_int)a;
   si_int t = ((x & 0xFFFF0000) == 0) << 4;  // if (x is small) t = 16 else 0
@@ -637,6 +640,7 @@ typedef long long di_int;
 typedef unsigned su_int;
 #define CHAR_BIT __CHAR_BIT__
 
+// 从右到左数, 直到遇到第一个 1 为止, 一共有多少个 0
 si_int __ctzdi2(di_int a) {
   dwords x;
   x.all = a;
