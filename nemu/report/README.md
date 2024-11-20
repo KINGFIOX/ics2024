@@ -114,11 +114,19 @@ while (1) {
 1. 在 nemu/include/common.h 中添加一行 volatile static int dummy; 然后重新编译 NEMU.
    请问重新编译后的 NEMU 含有多少个 dummy 变量的实体? 你是如何得到这个结果的?
 
+0, 都是声明
+
+`nm xxx.elf | grep "dummy"`
+
 2. 添加上题中的代码后, 再在 nemu/include/debug.h 中添加一行 volatile static int dummy;
    然后重新编译 NEMU. 请问此时的 NEMU 含有多少个 dummy 变量的实体? 与上题中 dummy 变量实体数目进行比较, 并解释本题的结果.
 
+0, 都是声明.
+
 3. 修改添加的代码, 为两处 dummy 变量进行初始化:volatile static int dummy = 0; 然后重新编译 NEMU. 你发现了什么问题?
    为什么之前没有出现这样的问题? (回答完本题后可以删除添加的代码.)
+
+链接错误, 重定义了. 之前没有重定义
 
 ## Makefile
 
