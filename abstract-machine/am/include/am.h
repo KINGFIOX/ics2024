@@ -32,6 +32,7 @@ typedef struct {
     EVENT_IRQ_TIMER,
     EVENT_IRQ_IODEV,
   } event;
+  // 应该是相对于 scause, stval
   uintptr_t cause, ref;
   const char *msg;
 } Event;

@@ -11,12 +11,12 @@ __am_asm_trap:
   pushl $0
 
   pushl %esp
-  call __am_irq_handle
+  call __am_irq_handle # def in abstract-machine/am/src/x86/nemu/cte.c
 
   addl $4, %esp
 
   addl $4, %esp
-  popal
+  popal # push all general register, except %esp
   addl $4, %esp
 
   iret

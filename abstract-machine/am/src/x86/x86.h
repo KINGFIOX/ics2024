@@ -257,16 +257,21 @@ static inline uintptr_t get_cr0(void) {
 
 static inline void set_cr0(uintptr_t cr0) { asm volatile("mov %0, %%cr0" : : "r"(cr0)); }
 
+// interrupt descriptor table
 static inline void set_idt(void *idt, int size) {
   static volatile struct {
-    int16_t size;
-    void *idt;
+    int16_t size;  // idt limit
+    void *idt;     // idt base addr
   } __attribute__((packed)) data;
   data.size = size;
   data.idt = idt;
-  asm volatile("lidt (%0)" : : "r"(&data));
+  asm volatile("lidt (%0)" : : "r"(&data));  // load IDT into &data
 }
 
+// global descriptor table. 用于定义内存段的属性.
+// linux 不依赖 gdt 进行复杂的分段管理. 但仍然会使用 gdt 来初始化和配置基本的段描述符, 确保处理器在保护模式下正确运行.
+// 通过 gdt 的段描述符, linux 实现了内核态和用户态的特权级分离.
+// gdt 在 现代 linux 中的作用相比过去有所简化
 static inline void set_gdt(void *gdt, int size) {
   static volatile struct {
     int16_t size;
@@ -277,14 +282,18 @@ static inline void set_gdt(void *gdt, int size) {
   asm volatile("lgdt (%0)" : : "r"(&data));
 }
 
+// task register. 存储当前任务的任务状态段(TSS, task state segment)
+// deprecated. 现代操作系统不再使用. (现代操作系统都是用软件实现的多任务)
 static inline void set_tr(int selector) { asm volatile("ltr %0" : : "r"((uint16_t)selector)); }
 
+// 最近一次 page fault 的线性地址. linear addr, also known as virtual addr
 static inline uintptr_t get_cr2() {
   volatile uintptr_t val;
   asm volatile("mov %%cr2, %0" : "=r"(val));
   return val;
 }
 
+// 指向一级页表
 static inline uintptr_t get_cr3() {
   volatile uintptr_t val;
   asm volatile("mov %%cr3, %0" : "=r"(val));
@@ -295,13 +304,17 @@ static inline void set_cr3(void *pdir) { asm volatile("mov %0, %%cr3" : : "r"(pd
 
 static inline int xchg(int *addr, int newval) {
   int result;
-  asm volatile("lock xchg %0, %1" : "+m"(*addr), "=a"(result) : "1"(newval) : "cc", "memory");
+  asm volatile("lock xchg %0, %1"
+               : "+m"(*addr), "=a"(result)  // m 表示: 指向内存, + 表示: 既是输出, 也是输入; =a 表示: 将结果输出在 EAX 中
+               : "1"(newval)                // "1" 表示: 使用与第二个输出操作数相同的约束 (这在 i386 中是常见的, 因为 i386 的指令都是 2 操作数)
+               : "cc", "memory");           // cc 表示: 该操作会改变 eflags.
   return result;
 }
 
+// read time stamp counter. 指令来读取时间戳计数器的值.
 static inline uint64_t rdtsc() {
   uint32_t lo, hi;
-  asm volatile("rdtsc" : "=a"(lo), "=d"(hi));
+  asm volatile("rdtsc" : "=a"(lo), "=d"(hi));  // EAX, EDX
   return ((uint64_t)hi << 32) | lo;
 }
 
@@ -314,9 +327,12 @@ static inline void stack_switch_call(void *sp, void *entry, uintptr_t arg) {
       :
       : "b"((uintptr_t)sp), "d"(entry), "a"(arg)
 #else
+      // %esp <- (sp - 8)
+      // *(sp - 8 + 4) <- arg
+      // jmp *entry
       "movl %0, %%esp; movl %2, 4(%0); jmp *%1"
-      :
-      : "b"((uintptr_t)sp - 8), "d"(entry), "a"(arg)
+      :                                               // output
+      : "b"((uintptr_t)sp - 8), "d"(entry), "a"(arg)  // input
 #endif
   );
 }
