@@ -2,7 +2,7 @@
 #include <klib-macros.h>
 #include <stdatomic.h>
 
-bool mpe_init(void (*entry)()) {
+bool mpe_init(void (*entry)(void)) {
   entry();
   panic("MPE entry returns");
 }

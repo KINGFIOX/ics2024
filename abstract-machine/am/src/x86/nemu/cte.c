@@ -13,7 +13,7 @@ void __am_vecsys();
 void __am_vectrap();
 void __am_vecnull();
 
-Context* __am_irq_handle(Context* c) {
+Context* __am_irq_handle(Context* c) {  // call in src/$ISA/trap.S
   if (user_handler) {
     Event ev = {0};
     switch (c->irq) {
