@@ -36,3 +36,15 @@ void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
 }
 
 void __am_gpu_status(AM_GPU_STATUS_T *status) { status->ready = true; }
+
+void __am_gpu_memcpy(AM_GPU_MEMCPY_T *cpy) {
+  // uint32_t dest = cpy->dest;
+  // char *src = cpy->src;
+  // int size = cpy->size;
+  // // TODO: impl
+}
+
+void __am_gpu_render(AM_GPU_RENDER_T *ren) {
+  // uint32_t root = ren->root;
+  // // TODO: impl
+}
